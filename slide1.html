@@ -1,0 +1,1901 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blue Buck Development — Hathaway Strategic</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="Image/png" href="Images/iconweb.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      /* ==========================================================================
+   Tokens (from the original Tailwind theme config)
+   ========================================================================== */
+      :root {
+        --color-background: #0a0a0b;
+        --color-on-background: #ffffff;
+        --color-on-surface-variant: #a1a1a1;
+        --color-gold: #c5a059;
+        --color-nav-active: rgb(204, 164, 59);
+        --color-primary-container: #1c1b1b;
+        --color-outline-variant: rgba(255, 255, 255, 0.1);
+
+        --accent-gold: #eec14b;
+        --glass-border: rgba(255, 255, 255, 0.06);
+
+        --font-display: "Playfair Display", serif;
+        --font-body: "Inter", sans-serif;
+
+        --container-max: 1280px;
+        --section-gap: 160px;
+        --margin-mobile: 24px;
+        --margin-desktop: 64px;
+        --gutter: 32px;
+
+        --radius-default: 0.25rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-full: 9999px;
+      }
+
+      /* ==========================================================================
+   Reset / base
+   ========================================================================== */
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background-color: var(--color-background);
+        color: var(--color-on-background);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 24px;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      ul {
+        list-style: none;
+      }
+
+      /* Material icon sizing helpers */
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .icon-3xl {
+        font-size: 30px;
+      }
+      .icon-4xl {
+        font-size: 36px;
+      }
+
+      /* ==========================================================================
+   Reveal-on-scroll animation
+   ========================================================================== */
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateX(-50%) translateY(0);
+        }
+        50% {
+          transform: translateX(-50%) translateY(-10px);
+        }
+      }
+
+      /* =========================================================
+     NAVBAR (canonical — shared across every page, do not diverge)
+     ========================================================= */
+      header.custom-header-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        z-index: 9999;
+        background: rgba(10, 14, 23, 0.85);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      header.custom-header-wrapper .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      header.custom-header-wrapper .logo-img {
+        height: 32px;
+        width: auto;
+      }
+
+      header.custom-header-wrapper .nav-pill {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 9999px;
+        padding: 10px 32px;
+      }
+
+      header.custom-header-wrapper .nav-link {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+
+      header.custom-header-wrapper .nav-link:hover,
+      header.custom-header-wrapper .nav-link.active {
+        color: #eec14b;
+      }
+
+      header.custom-header-wrapper .nav-btn {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #eec14b;
+        background: transparent;
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        padding: 10px 24px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      header.custom-header-wrapper .nav-btn:hover {
+        background: #eec14b;
+        color: #000;
+      }
+
+      header.custom-header-wrapper .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        z-index: 10000;
+      }
+      header.custom-header-wrapper .burger-bar {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #ffffff;
+        transition: all 0.3s ease-in-out;
+      }
+
+      /* Nav link shown only inside the mobile dropdown so Consultation
+   stays reachable once the desktop CTA button is hidden on mobile. */
+      header.custom-header-wrapper .mobile-only-link {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        header.custom-header-wrapper .desktop-only-btn {
+          display: none !important;
+        }
+        header.custom-header-wrapper .mobile-nav-toggle {
+          display: flex !important;
+        }
+        header.custom-header-wrapper .mobile-only-link {
+          display: block !important;
+        }
+        header.custom-header-wrapper .nav-pill {
+          position: absolute;
+          top: 85px;
+          right: 32px;
+          width: 180px;
+          height: auto;
+          background: #111622;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          backdrop-filter: blur(20px);
+        }
+        header.custom-header-wrapper .nav-pill.menu-is-open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        header.custom-header-wrapper .nav-pill .nav-link {
+          width: 100%;
+          padding: 14px 20px;
+          box-sizing: border-box;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          font-size: 11px;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link:last-child {
+          border-bottom: none;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+          background-color: #eec14b;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(2) {
+          opacity: 0;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+          background-color: #eec14b;
+        }
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* =========================================================
+           MOBILE NAV BREAKPOINT (matches index.html / portfolio.html)
+           ========================================================= */
+      @media (max-width: 768px) {
+        /* 1. Remove Consultation Button entirely */
+        .desktop-only-btn {
+          display: none !important;
+        }
+
+        /* 2. Put Mobile Toggle exactly where Consultation was */
+        .mobile-nav-toggle {
+          display: flex !important;
+        }
+
+        /* Keep Consultation reachable via the mobile dropdown link */
+        .mobile-only-link {
+          display: block !important;
+        }
+
+        /* 3. Turn Navigation Pill into a dropdown box */
+        .nav-pill {
+          position: absolute;
+          top: 85px;
+          right: 32px;
+          width: 180px;
+          height: auto;
+          background: #111622;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          backdrop-filter: blur(20px);
+        }
+
+        /* Opened Dropdown state triggered by JS */
+        .nav-pill.menu-is-open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .nav-pill .nav-link {
+          width: 100%;
+          padding: 14px 20px;
+          box-sizing: border-box;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          font-size: 11px;
+        }
+        .nav-pill .nav-link:last-child {
+          border-bottom: none;
+        }
+
+        /* Hamburger turns into an 'X' when open */
+        .mobile-nav-toggle.menu-is-open .burger-bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+          background-color: var(--accent-gold);
+        }
+        .mobile-nav-toggle.menu-is-open .burger-bar:nth-child(2) {
+          opacity: 0;
+        }
+        .mobile-nav-toggle.menu-is-open .burger-bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+          background-color: var(--accent-gold);
+        }
+      }
+
+      /* ==========================================================================
+   Hero
+   ========================================================================== */
+      .hero {
+        position: relative;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .hero-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(10, 10, 11, 0.35) 0%,
+          rgba(10, 10, 11, 0.55) 55%,
+          rgba(10, 10, 11, 0.9) 100%
+        );
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        padding-left: var(--margin-mobile);
+        padding-right: var(--margin-mobile);
+        max-width: 896px;
+        margin: 0 auto;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-family: var(--font-body);
+        color: var(--color-gold);
+        margin-bottom: 24px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .hero-title {
+        font-family: var(--font-display);
+        color: #ffffff;
+        margin: 0 0 32px;
+        font-size: 48px;
+        line-height: 56px;
+        letter-spacing: -0.01em;
+        font-weight: 700;
+      }
+      @media (min-width: 768px) {
+        .hero-title {
+          font-size: 72px;
+          line-height: 84px;
+          letter-spacing: -0.02em;
+        }
+      }
+
+      .hero-sub {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 672px;
+        margin: 0 auto;
+      }
+
+      .scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.5);
+        animation: bounce 1.6s infinite;
+      }
+
+      /* ==========================================================================
+   Meta Info Grid
+   ========================================================================== */
+      .meta-section {
+        padding: 80px var(--margin-mobile);
+        border-bottom: 1px solid var(--color-outline-variant);
+      }
+      @media (min-width: 768px) {
+        .meta-section {
+          padding-left: var(--margin-desktop);
+          padding-right: var(--margin-desktop);
+        }
+      }
+
+      .meta-grid {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      @media (min-width: 768px) {
+        .meta-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .meta-label {
+        font-family: var(--font-body);
+        color: var(--color-on-surface-variant);
+        margin: 0 0 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .meta-value {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 500;
+        color: #ffffff;
+        margin: 0;
+      }
+
+      .meta-value-body {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0;
+      }
+
+      /* ==========================================================================
+   Vision Section
+   ========================================================================== */
+      .vision-section {
+        padding: var(--section-gap) var(--margin-mobile);
+        overflow: hidden;
+      }
+      @media (min-width: 768px) {
+        .vision-section {
+          padding-left: var(--margin-desktop);
+          padding-right: var(--margin-desktop);
+        }
+      }
+
+      .vision-grid {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 80px;
+        align-items: center;
+      }
+      @media (min-width: 1024px) {
+        .vision-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .section-title {
+        font-family: var(--font-display);
+        font-size: 48px;
+        line-height: 56px;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 32px;
+      }
+
+      .body-text {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: var(--color-on-surface-variant);
+        margin: 0 0 24px;
+      }
+      .body-text-lg {
+        margin-bottom: 40px;
+      }
+
+      .body-text-plain {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: var(--color-on-surface-variant);
+        margin: 0;
+      }
+
+      .divider-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .divider-line {
+        width: 48px;
+        height: 1px;
+        background-color: var(--color-gold);
+      }
+      .divider-label {
+        font-family: var(--font-body);
+        font-style: italic;
+        color: var(--color-gold);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+      }
+
+      @media (min-width: 1024px) {
+        .vision-image-wrap {
+          padding-left: 40px;
+        }
+      }
+
+      .image-frame {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+      .image-frame img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        transition: transform 0.7s ease;
+      }
+      .image-frame:hover img {
+        transform: scale(1.05);
+      }
+      .image-frame::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgba(197, 160, 89, 0.2);
+        pointer-events: none;
+      }
+
+      /* ==========================================================================
+   Challenge & Strategy
+   ========================================================================== */
+      .challenge-section {
+        padding: var(--section-gap) var(--margin-mobile);
+        background-color: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+      @media (min-width: 768px) {
+        .challenge-section {
+          padding-left: var(--margin-desktop);
+          padding-right: var(--margin-desktop);
+        }
+      }
+
+      .challenge-wrap {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 160px;
+      }
+
+      .challenge-grid,
+      .strategy-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--gutter);
+      }
+      .challenge-grid {
+        align-items: start;
+      }
+      .strategy-grid {
+        align-items: center;
+      }
+
+      @media (min-width: 768px) {
+        .challenge-grid,
+        .strategy-grid {
+          grid-template-columns: repeat(12, 1fr);
+        }
+        .col-4 {
+          grid-column: span 4;
+        }
+        .col-6 {
+          grid-column: span 6;
+        }
+        .col-8 {
+          grid-column: span 8;
+        }
+      }
+
+      .challenge-heading {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 500;
+        border-left: 4px solid var(--color-gold);
+        padding-left: 24px;
+        color: #ffffff;
+        margin: 0;
+      }
+
+      .strategy-card {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 48px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+      .strategy-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 128px;
+        height: 128px;
+        background-color: rgba(197, 160, 89, 0.05);
+        border-bottom-left-radius: var(--radius-full);
+      }
+
+      .strategy-title {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 500;
+        color: #ffffff;
+        margin: 0 0 32px;
+        position: relative;
+      }
+
+      .card-text {
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--color-on-surface-variant);
+        margin: 0 0 24px;
+        position: relative;
+      }
+      .card-text-mb-lg {
+        margin-bottom: 32px;
+      }
+      .card-text strong {
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      /* ==========================================================================
+   Methodology CTA (upgraded)
+   ========================================================================== */
+      .methodology-cta {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 20px;
+        background: rgba(197, 160, 89, 0.04);
+        border: 1px solid rgba(197, 160, 89, 0.3);
+        border-radius: var(--radius-full);
+        padding: 8px 8px 8px 26px;
+        transition:
+          border-color 0.35s ease,
+          background-color 0.35s ease,
+          transform 0.3s ease,
+          box-shadow 0.35s ease;
+      }
+      .methodology-cta:hover {
+        border-color: var(--color-gold);
+        background: rgba(197, 160, 89, 0.09);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px -14px rgba(197, 160, 89, 0.55);
+      }
+      .methodology-cta:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+      .methodology-cta:focus-visible {
+        outline: 2px solid var(--accent-gold);
+        outline-offset: 4px;
+      }
+
+      .methodology-cta-label {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .methodology-cta-text {
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: #ffffff;
+        transition: color 0.3s ease;
+      }
+      .methodology-cta:hover .methodology-cta-text {
+        color: var(--accent-gold);
+      }
+
+      .methodology-cta-sub {
+        font-family: var(--font-body);
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        color: var(--color-on-surface-variant);
+        margin-top: 2px;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+      }
+      .methodology-cta:hover .methodology-cta-sub {
+        opacity: 1;
+      }
+
+      .methodology-cta-icon {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: var(--color-gold);
+        color: var(--color-background);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.3s ease;
+      }
+      .methodology-cta-icon .material-symbols-outlined {
+        font-size: 20px;
+      }
+      .methodology-cta:hover .methodology-cta-icon {
+        background-color: var(--accent-gold);
+        transform: rotate(45deg);
+      }
+
+      .link-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: none;
+        border: none;
+        color: var(--color-gold);
+        font-weight: 700;
+        font-family: var(--font-body);
+        font-size: 16px;
+        padding: 0;
+        position: relative;
+      }
+      .link-btn .icon {
+        transition: transform 0.2s ease;
+      }
+      .link-btn:hover .icon {
+        transform: translateX(4px);
+      }
+
+      .strategy-image {
+        height: 500px;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+      }
+      .strategy-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* ==========================================================================
+   Outcome
+   ========================================================================== */
+      .outcome-section {
+        padding: var(--section-gap) var(--margin-mobile);
+        text-align: center;
+      }
+      .outcome-wrap {
+        max-width: 768px;
+        margin: 0 auto;
+      }
+      .outcome-text {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: var(--color-on-surface-variant);
+        margin: 0;
+      }
+
+      /* ==========================================================================
+   Key Metrics
+   ========================================================================== */
+      .metrics-section {
+        padding: 0 var(--margin-mobile) var(--section-gap);
+      }
+      @media (min-width: 768px) {
+        .metrics-section {
+          padding-left: var(--margin-desktop);
+          padding-right: var(--margin-desktop);
+        }
+      }
+
+      .metrics-box {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        background-color: var(--color-gold);
+        color: var(--color-background);
+        padding: 64px;
+        border-radius: var(--radius-lg);
+      }
+      @media (min-width: 768px) {
+        .metrics-box {
+          padding: 96px;
+        }
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 64px;
+      }
+      @media (min-width: 768px) {
+        .metrics-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 32px;
+        }
+      }
+
+      .metric {
+        text-align: center;
+        border-top: 1px solid rgba(10, 10, 11, 0.2);
+        padding-top: 64px;
+      }
+      .metric:first-child {
+        border-top: none;
+        padding-top: 0;
+      }
+
+      @media (min-width: 768px) {
+        .metric {
+          border-top: none;
+          padding-top: 0;
+          border-left: 1px solid rgba(10, 10, 11, 0.2);
+          padding-left: 32px;
+        }
+        .metric:first-child {
+          border-left: none;
+          padding-left: 0;
+        }
+      }
+
+      .metric-number {
+        font-family: var(--font-display);
+        font-size: 48px;
+        line-height: 56px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .metric-label {
+        font-family: var(--font-body);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(10, 10, 11, 0.6);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* ==========================================================================
+   CTA
+   ========================================================================== */
+      .cta-section {
+        padding: 128px var(--margin-mobile);
+        text-align: center;
+      }
+
+      .cta-title {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 500;
+        color: #ffffff;
+        margin: 0 0 48px;
+      }
+
+      .cta-btn {
+        display: inline-block;
+        border: 1px solid var(--color-gold);
+        color: var(--color-gold);
+        padding: 20px 48px;
+        font-family: var(--font-body);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease,
+          transform 0.3s ease;
+      }
+      .cta-btn:hover {
+        background-color: var(--color-gold);
+        color: var(--color-background);
+        transform: translateY(-4px);
+      }
+      .cta-btn:active {
+        transform: translateY(0);
+      }
+
+      /* ==========================================================================
+   Footer (canonical — shared across every page, do not diverge)
+   ========================================================================== */
+      .site-footer {
+        background-color: #000000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 2;
+      }
+      .site-footer .footer-top {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 48px;
+        padding: 80px 24px;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-top {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 64px;
+          padding-left: 64px;
+          padding-right: 64px;
+        }
+      }
+      .site-footer .footer-brand {
+        margin-bottom: 0;
+        flex: 1 1 260px;
+        max-width: 340px;
+      }
+      .site-footer .footer-logo {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 24px;
+      }
+      .site-footer .footer-desc {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        max-width: 384px;
+        margin: 0;
+      }
+      .site-footer .footer-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        flex: 2 1 560px;
+      }
+      @media (min-width: 640px) {
+        .site-footer .footer-links {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .site-footer .footer-heading {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+      .site-footer .footer-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .site-footer .footer-link {
+        display: block;
+        color: #a1a1a1;
+        text-decoration: none;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        transition: color 0.2s ease;
+      }
+      .site-footer .footer-link:hover {
+        color: #c5a059;
+      }
+      .site-footer .footer-text {
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      .site-footer .footer-newsletter {
+        max-width: 280px;
+      }
+      .site-footer .newsletter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 8px;
+      }
+      .site-footer .newsletter-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        padding: 0 0 12px;
+        outline: none;
+        transition: border-color 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .site-footer .newsletter-input::placeholder {
+        color: #a1a1a1;
+      }
+      .site-footer .newsletter-input:focus {
+        border-bottom-color: #c5a059;
+      }
+      .site-footer .newsletter-submit {
+        align-self: flex-start;
+        background: none;
+        border: none;
+        border-bottom: 1px solid #c5a059;
+        color: #c5a059;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0 0 4px;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+      }
+      .site-footer .newsletter-submit:hover {
+        opacity: 0.75;
+      }
+      .site-footer .footer-bottom {
+        padding: 32px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-bottom {
+          padding-left: 64px;
+          padding-right: 64px;
+          text-align: left;
+        }
+      }
+      .site-footer .footer-copy {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        opacity: 0.6;
+        margin: 0;
+      }
+      .back-to-top-btn {
+        position: absolute;
+        bottom: 32px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        background: rgba(238, 193, 75, 0.08);
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #eec14b;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .back-to-top-btn:hover {
+        background: #eec14b;
+        color: #000000;
+      }
+      @media (min-width: 768px) {
+        .back-to-top-btn {
+          right: 64px;
+        }
+      }
+
+      /* ==========================================================================
+   Methodology Modal
+   ========================================================================== */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 100px;
+        padding-bottom: 24px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        background-color: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-sizing: border-box;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-content {
+        position: relative;
+        background-color: var(--color-primary-container);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 56px 56px 48px;
+        max-width: 640px;
+        max-height: 100%;
+        overflow-y: auto;
+        margin: 0 24px;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+      }
+      .modal-content.active {
+        transform: scale(1);
+      }
+      .modal-content::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--color-gold) 50%,
+          transparent
+        );
+        border-top-left-radius: var(--radius-lg);
+        border-top-right-radius: var(--radius-lg);
+      }
+      .modal-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .modal-content::-webkit-scrollbar-thumb {
+        background: rgba(197, 160, 89, 0.35);
+        border-radius: var(--radius-full);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          color 0.3s ease,
+          border-color 0.3s ease,
+          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .modal-close:hover {
+        color: var(--color-gold);
+        border-color: var(--color-gold);
+        transform: rotate(90deg);
+      }
+
+      .modal-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--color-gold);
+        margin: 0 0 16px;
+      }
+      .modal-eyebrow::before {
+        content: "";
+        width: 20px;
+        height: 1px;
+        background-color: var(--color-gold);
+      }
+
+      .modal-title {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 500;
+        color: #ffffff;
+        margin: 0 0 20px;
+      }
+
+      .modal-intro {
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 26px;
+        color: var(--color-on-surface-variant);
+        margin: 0 0 40px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .modal-text {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: var(--color-on-surface-variant);
+        margin: 0;
+      }
+
+      /* Methodology step timeline */
+      .modal-steps {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+      .modal-steps::before {
+        content: "";
+        position: absolute;
+        left: 19px;
+        top: 22px;
+        bottom: 22px;
+        width: 1px;
+        background: linear-gradient(
+          to bottom,
+          rgba(197, 160, 89, 0.5),
+          rgba(197, 160, 89, 0.08)
+        );
+      }
+
+      .modal-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        padding-bottom: 32px;
+      }
+      .modal-step:last-child {
+        padding-bottom: 0;
+      }
+
+      .modal-step-marker {
+        position: relative;
+        z-index: 2;
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(197, 160, 89, 0.4);
+        background-color: rgba(197, 160, 89, 0.07);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-gold);
+      }
+
+      .modal-step-body {
+        padding-top: 6px;
+      }
+      .modal-step-body h4 {
+        font-family: var(--font-display);
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: 500;
+        color: #ffffff;
+        margin: 0 0 8px;
+      }
+      .modal-step-body p {
+        font-family: var(--font-body);
+        font-size: 14px;
+        line-height: 23px;
+        color: var(--color-on-surface-variant);
+        margin: 0;
+      }
+      .modal-step-body strong {
+        color: var(--color-gold);
+        font-weight: 600;
+      }
+
+      /* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+      @media (prefers-reduced-motion: reduce) {
+        .reveal,
+        .scroll-indicator,
+        .cta-btn,
+        .image-frame img,
+        .link-btn .icon,
+        .methodology-cta,
+        .methodology-cta-icon,
+        .methodology-cta-text,
+        .methodology-cta-sub {
+          transition: none;
+          animation: none;
+        }
+        .methodology-cta:hover .methodology-cta-icon {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="custom-header-wrapper">
+      <nav class="nav-container">
+        <div class="logo-container">
+          <a href="index.html">
+            <img src="Images/logo.png" alt="Hathaway Logo" class="logo-img" />
+          </a>
+        </div>
+
+        <div class="nav-pill" id="main-nav-pill">
+          <a class="nav-link" href="index.html#home">Home</a>
+          <a class="nav-link" href="solutions.html">Our Solution</a>
+          <a class="nav-link active" href="portfolio.html">Our Works</a>
+          <a class="nav-link mobile-only-link" href="consultation.html"
+            >Consultation</a
+          >
+        </div>
+
+        <div class="nav-btn desktop-only-btn">
+          <a href="consultation.html">CONSULTATION</a>
+        </div>
+
+        <button
+          class="mobile-nav-toggle"
+          aria-label="Toggle navigation menu"
+          id="mobileMenuButton"
+        >
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-bg">
+          <img
+            src="Images from hathawaystrategic.com/bluebuckherosec.png"
+            alt="Blue Buck Development - High-end modern sustainable architecture"
+          />
+          <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+          <span class="eyebrow reveal active"></span>
+          <h1 class="hero-title reveal active" style="transition-delay: 200ms">
+            Blue Buck Development: A Paradigm of Strategic Architecture.
+          </h1>
+          <p class="hero-sub reveal active" style="transition-delay: 400ms"></p>
+        </div>
+        <div class="scroll-indicator">
+          <span class="material-symbols-outlined icon-4xl">expand_more</span>
+        </div>
+      </section>
+
+      <!-- Meta Info Grid -->
+      <section class="meta-section">
+        <div class="meta-grid">
+          <div class="reveal active">
+            <h4 class="meta-label">Client</h4>
+            <p class="meta-value">Private Equity Group</p>
+          </div>
+          <div class="reveal active" style="transition-delay: 100ms">
+            <h4 class="meta-label">Services</h4>
+            <p class="meta-value-body">
+              Strategic Planning, Architectural Design, Project Management
+            </p>
+          </div>
+          <div class="reveal active" style="transition-delay: 200ms">
+            <h4 class="meta-label">Location</h4>
+            <p class="meta-value">Pacific Northwest</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Intro: The Vision -->
+      <section class="vision-section">
+        <div class="vision-grid">
+          <div class="reveal active">
+            <h2 class="section-title">The Vision</h2>
+            <p class="body-text">
+              Blue Buck Development wasn't merely a residential project; it was
+              a manifesto. Hathaway Strategic was tasked with bridging the gap
+              between raw natural terrain and high-performance institutional
+              quality.
+            </p>
+            <p class="body-text body-text-lg">
+              The goal was to create a living ecosystem that respected its
+              Pacific Northwest roots while implementing global standards of
+              modern efficiency. We envisioned a space where 'Hidden
+              Architecture' would allow the surroundings to take center stage,
+              while the structures themselves operated with surgical precision.
+            </p>
+            <div class="divider-row">
+              <div class="divider-line"></div>
+              <span class="divider-label">Strategic Collaboration</span>
+            </div>
+          </div>
+          <div
+            class="vision-image-wrap reveal active"
+            style="transition-delay: 200ms"
+          >
+            <div class="image-frame">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlZLkmN7y_XEqdUCzXI3OwOuW1RjfEPQ6BPVNETvh7n3iA2EnOaiXc52rHqo1mdZXu-oib5nQvLveZfh7OGa79qF7gWTADd-UQNoqEwwVs3AxXNtqwrFnHEc7ywv6c1NeMvxiqFeB4pFsiQrPkslnG5ELE1JIlAsb4Ob5qfmyztC0n2us12lOgWzy6mqFXiw3ut0Pcx1og1EyaRIRoqghggP1-_Df5CYNY-Zz_Fc4Zy-ed6xHILzO3I-mgjK-mKXTkzMRWkcv23SAa"
+                alt="Strategic architectural planning session"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Challenge & Strategy -->
+      <section class="challenge-section">
+        <div class="challenge-wrap">
+          <!-- The Challenge -->
+          <div class="challenge-grid">
+            <div class="col-4 reveal active">
+              <h3 class="challenge-heading">The Challenge</h3>
+            </div>
+            <div class="col-8 reveal active" style="transition-delay: 100ms">
+              <p class="body-text-plain">
+                Integrating a 50-unit high-density development into an
+                ecologically sensitive watershed required more than standard
+                engineering. Environmental constraints dictated a minimal
+                footprint, while the market demanded expansive luxury. The
+                challenge lay in navigating the 'Paradox of Density'—how to
+                provide seclusion and space while maximizing site efficiency
+                without disrupting the local wildlife corridors.
+              </p>
+            </div>
+          </div>
+
+          <!-- The Strategy -->
+          <div class="strategy-grid">
+            <div class="col-6 reveal active">
+              <div class="strategy-card">
+                <h3 class="strategy-title">The Strategy</h3>
+                <p class="card-text">
+                  We implemented a proprietary 'Feedback Loop' methodology. By
+                  utilizing architectural data-modeling, we simulated weather
+                  patterns, solar gain, and pedestrian flow before a single
+                  shovel touched the earth.
+                </p>
+                <p class="card-text card-text-mb-lg">
+                  <strong>Hidden Architecture:</strong> Structure that
+                  disappears into the landscape. We utilized charred cedar,
+                  brushed steel, and Calacatta marble to create a tactile
+                  palette that mirrored the forest floor and mountain peaks.
+                </p>
+                <button class="methodology-cta" id="methodology-btn">
+                  <span class="methodology-cta-label">
+                    <span class="methodology-cta-text"
+                      >Explore Methodology</span
+                    >
+                    <span class="methodology-cta-sub"
+                      >See the full framework</span
+                    >
+                  </span>
+                  <span class="methodology-cta-icon">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div class="col-6 reveal active" style="transition-delay: 200ms">
+              <div class="strategy-image">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgMVPJ2nYMx60lD4lmUK6HTDlo0lS6JC0sYEugfIUAcSRQ0lZibw2jC_AaOYMXIoNA-x4rgWxVXWH6SKyfEnHrYoDa8GuhSLCdTs5qxHWxXD8s7n1cUbUEtbymu--8WIV8XPxRSSIStJ4tSd8b6Y0oAcW9hM1URo0YAEx2x5j0MdneKpIf3y9xxDhrUln88R0DPAS_3o8QOtVbnPU5kQKYzsB0f2drm5Ga9_M0ph3BFkc_-28ENMyFigf5_Z1wHInSS4Rn4oPfImiF"
+                  alt="Material textures used in Blue Buck - Charred wood, marble, and steel"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Outcome -->
+      <section class="outcome-section">
+        <div class="outcome-wrap">
+          <h3 class="section-title reveal active">The Outcome</h3>
+          <p class="outcome-text reveal active" style="transition-delay: 100ms">
+            The resulting development achieved immediate institutional
+            acceptance and set a new benchmark for regional sustainable
+            development. We observed a sigmoidal growth in asset valuation
+            within the first 12 months, proving that uncompromising design and
+            environmental stewardship are not mutually exclusive but symbiotic
+            drivers of value.
+          </p>
+        </div>
+      </section>
+
+      <!-- Key Metrics -->
+      <section class="metrics-section">
+        <div class="metrics-box">
+          <div class="metrics-grid">
+            <div class="metric reveal active">
+              <div class="metric-number">100%</div>
+              <div class="metric-label">Sustainable Materials</div>
+            </div>
+            <div class="metric reveal active" style="transition-delay: 100ms">
+              <div class="metric-number">24%</div>
+              <div class="metric-label">Efficiency Increase</div>
+            </div>
+            <div class="metric reveal active" style="transition-delay: 200ms">
+              <div class="metric-number">$250M</div>
+              <div class="metric-label">Project Valuation</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section">
+        <h2 class="cta-title">Looking for Strategic Architecture?</h2>
+        <a class="cta-btn" href="consultation.html">Start a Conversation</a>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq3t9mMe30qSs7kpJGVOvUSjW2NjEFiTuFdmK0-0sjuDbP9VX6n2cZ441AaAufz226F4gq5iI6BhOq1Fl8qFjskAlpjJYCJwQzLRjxPUTCyiNmRbOd9k6uxcuVn1aLi7F8Hwfh1yawq2aGaVA6q07K3eg5LZ2zKbWnuPfsbYW8Jje62_MOkxidwWPSsOWmQ4aVO0pOmrlVXg6D7Uap0u4wPh3awMYWuKGWYSab3eJwMpwsZYd7VBkZF-ZO5tAb19m3zgRT_B_moRS_"
+            alt="Hathaway Strategic Logo"
+            class="footer-logo"
+          />
+          <p class="footer-desc">
+            We are a dynamic digital agency specializing in social media
+            management, marketing, video editing, political campaign strategy,
+            and web design. With a passion for creativity and results, we help
+            businesses and campaigns grow their online presence, engage their
+            audience, and achieve their goals. Let us bring your vision to life!
+          </p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h5 class="footer-heading">Visit Us</h5>
+            <p class="footer-link footer-text">
+              2003 Old Hillsboro Rd<br />Franklin, TN 37064
+            </p>
+            <a class="footer-link" href="mailto:team@hathawaystrategic.com"
+              >team@hathawaystrategic.com</a
+            >
+          </div>
+          <div>
+            <h5 class="footer-heading">Quick Links</h5>
+            <ul class="footer-list">
+              <li><a class="footer-link" href="index.html#home">Home</a></li>
+              <li>
+                <a class="footer-link" href="portfolio.html">Our Works</a>
+              </li>
+              <li>
+                <a class="footer-link" href="solutions.html">Our Solution</a>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-newsletter">
+            <h5 class="footer-heading">Newsletter</h5>
+            <p class="footer-link footer-text">
+              Join our network for elite strategic insights.
+            </p>
+            <form class="newsletter-form">
+              <input
+                type="email"
+                placeholder="Email Address"
+                class="newsletter-input"
+                required
+              />
+              <button type="submit" class="newsletter-submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">
+          © 2024 Hathaway Strategic. All rights reserved.
+        </p>
+      </div>
+
+      <button id="back-to-top" class="back-to-top-btn" aria-label="Back to top">
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 15l-6-6-6 6"></path>
+        </svg>
+      </button>
+    </footer>
+
+    <!-- Methodology Modal -->
+    <div id="methodology-modal" class="modal-overlay">
+      <div class="modal-content" id="modal-content">
+        <button id="close-modal" class="modal-close">
+          <span class="material-symbols-outlined icon-3xl">close</span>
+        </button>
+        <span class="modal-eyebrow">Proprietary Framework</span>
+        <h3 class="modal-title">The Feedback Loop</h3>
+        <p class="modal-intro">
+          Our 'Feedback Loop' methodology integrates real-time environmental
+          data with strategic architectural goals, ensuring every design
+          decision is backed by performance metrics and ecological stewardship —
+          from the first model to the final finish.
+        </p>
+
+        <div class="modal-steps">
+          <div class="modal-step">
+            <div class="modal-step-marker">01</div>
+            <div class="modal-step-body">
+              <h4>Environmental Simulation</h4>
+              <p>
+                Weather patterns, solar gain, and pedestrian flow are modeled
+                against the site's actual terrain before a single shovel touches
+                the earth.
+              </p>
+            </div>
+          </div>
+          <div class="modal-step">
+            <div class="modal-step-marker">02</div>
+            <div class="modal-step-body">
+              <h4>Material Calibration</h4>
+              <p>
+                Charred cedar, brushed steel, and Calacatta marble are tested
+                against the landscape's own palette until the structure reads as
+                an extension of it.
+              </p>
+            </div>
+          </div>
+          <div class="modal-step">
+            <div class="modal-step-marker">03</div>
+            <div class="modal-step-body">
+              <h4>Iterative Feedback</h4>
+              <p>
+                Each simulated outcome loops back into the design, refining
+                density, siting, and form until seclusion and efficiency stop
+                competing.
+              </p>
+            </div>
+          </div>
+          <div class="modal-step">
+            <div class="modal-step-marker">04</div>
+            <div class="modal-step-body">
+              <h4>Field Validation</h4>
+              <p>
+                On-site measurement confirms the built result matches the model
+                — <strong>the loop only closes once reality agrees.</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ==========================================================================
+      // Reveal-on-scroll animation
+      // ==========================================================================
+      function reveal() {
+        var reveals = document.querySelectorAll(".reveal");
+        var windowHeight = window.innerHeight;
+
+        for (var i = 0; i < reveals.length; i++) {
+          var elementTop = reveals[i].getBoundingClientRect().top;
+          var revealPoint = 100;
+
+          if (elementTop < windowHeight - revealPoint) {
+            reveals[i].classList.add("active");
+          }
+        }
+      }
+
+      window.addEventListener("scroll", reveal);
+      window.addEventListener("load", reveal);
+
+      // ==========================================================================
+      // Methodology modal
+      // ==========================================================================
+      (function () {
+        var modal = document.getElementById("methodology-modal");
+        var modalContent = document.getElementById("modal-content");
+        var newsletterForm = document.querySelector(".newsletter-form");
+        if (newsletterForm) {
+          newsletterForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var input = newsletterForm.querySelector(".newsletter-input");
+            if (input) input.value = "";
+          });
+        }
+
+        var openBtn = document.getElementById("methodology-btn");
+        var closeBtn = document.getElementById("close-modal");
+
+        function openModal() {
+          modal.classList.add("active");
+          modalContent.classList.add("active");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+          modal.classList.remove("active");
+          modalContent.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+
+        if (openBtn) openBtn.addEventListener("click", openModal);
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+
+        if (modal) {
+          modal.addEventListener("click", function (e) {
+            if (e.target === modal) closeModal();
+          });
+        }
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closeModal();
+        });
+      })();
+      // Mobile Nav Toggle (matches index.html / portfolio.html behavior)
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggleButton = document.getElementById("mobileMenuButton");
+        const navPill = document.getElementById("main-nav-pill");
+
+        if (toggleButton && navPill) {
+          toggleButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleButton.classList.toggle("menu-is-open");
+            navPill.classList.toggle("menu-is-open");
+          });
+
+          // Close dropdown when clicking anywhere outside the menu box
+          document.addEventListener("click", (e) => {
+            if (
+              !navPill.contains(e.target) &&
+              !toggleButton.contains(e.target)
+            ) {
+              toggleButton.classList.remove("menu-is-open");
+              navPill.classList.remove("menu-is-open");
+            }
+          });
+        }
+      });
+    </script>
+    <script>
+      // Back-to-top button (canonical — shared across every page)
+      document.addEventListener("DOMContentLoaded", () => {
+        const backToTopBtn = document.getElementById("back-to-top");
+        if (backToTopBtn) {
+          backToTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agate Pools — Hathaway Strategic</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="Image/png" href="Images/iconweb.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      /* ==========================================================================
+   Tokens (from the original Tailwind theme config)
+   ========================================================================== */
+      :root {
+        --color-bg: #0b0e14;
+        --color-white: #ffffff;
+        --color-on-surface-variant: #8fa0b5;
+        --color-brushed-gold: #c5a059;
+        --color-inquiry-gold: #eec14b;
+        --color-surface-container: #12161d;
+        --color-primary-container: #1c1b1b;
+        --color-tertiary-fixed-dim: #ffb68e;
+        --color-tertiary-container: #331200;
+
+        --font-display: "Playfair Display", serif;
+        --font-body: "Inter", sans-serif;
+
+        --container-max: 1280px;
+        --section-gap: 160px;
+        --margin-desktop: 64px;
+        --margin-mobile: 24px;
+        --gutter: 32px;
+        --unit: 8px;
+
+        --radius-default: 0.25rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-full: 9999px;
+
+        --shadow-ambient: 0 20px 60px rgba(0, 0, 0, 0.55);
+      }
+
+      /* ==========================================================================
+   Reset / base
+   ========================================================================== */
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background-color: var(--color-bg);
+        color: var(--color-white);
+        font-family: var(--font-body);
+        overflow-x: hidden;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      ::selection {
+        background-color: var(--color-tertiary-fixed-dim);
+        color: var(--color-tertiary-container);
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      a {
+        color: inherit;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+
+      /* ==========================================================================
+   Reveal-on-scroll animation
+   ========================================================================== */
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ==========================================================================
+   Decorative ambient background (stand-in for the original fluid shader)
+   ========================================================================== */
+      .fluid-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .fluid-bg::before,
+      .fluid-bg::after {
+        content: "";
+        position: absolute;
+        width: 60vw;
+        height: 60vw;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.12;
+        animation: driftGlow 22s ease-in-out infinite;
+      }
+      .fluid-bg::before {
+        top: -10%;
+        left: -10%;
+        background: var(--color-brushed-gold);
+      }
+      .fluid-bg::after {
+        bottom: -15%;
+        right: -10%;
+        background: #3a485c;
+        animation-delay: -11s;
+      }
+      @keyframes driftGlow {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        50% {
+          transform: translate(6%, 4%) scale(1.1);
+        }
+      }
+
+      /* ==========================================================================
+   Layout helpers
+   ========================================================================== */
+      .container {
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding-left: var(--margin-mobile);
+        padding-right: var(--margin-mobile);
+      }
+      @media (min-width: 768px) {
+        .container {
+          padding-left: var(--margin-desktop);
+          padding-right: var(--margin-desktop);
+        }
+      }
+
+      /* ==========================================================================
+   Navbar
+   ========================================================================== */
+      .site-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background-color: rgba(11, 14, 20, 0.9);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.5s ease;
+      }
+
+      .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px var(--margin-desktop);
+        width: 100%;
+        max-width: var(--container-max);
+        margin: 0 auto;
+        height: 80px;
+        transition: height 0.3s ease;
+      }
+      @media (max-width: 767px) {
+        .nav-container {
+          padding-left: var(--margin-mobile);
+          padding-right: var(--margin-mobile);
+        }
+      }
+      .site-nav.scrolled .nav-container {
+        height: 64px;
+      }
+
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        cursor: pointer;
+      }
+      .logo-img {
+        height: 40px;
+        width: auto;
+        transition: transform 0.5s ease;
+      }
+      .logo-group:hover .logo-img {
+        transform: scale(1.05);
+      }
+
+      .nav-links {
+        display: none;
+        align-items: center;
+        gap: 4px;
+        background-color: rgba(26, 31, 41, 0.6);
+        padding: 6px 8px;
+        border-radius: var(--radius-full);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      @media (min-width: 768px) {
+        .nav-links {
+          display: flex;
+        }
+      }
+
+      .nav-link {
+        padding: 8px 24px;
+        color: var(--color-on-surface-variant);
+        text-decoration: none;
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        text-transform: uppercase;
+        transition: color 0.2s ease;
+      }
+      .nav-link:hover {
+        color: var(--color-brushed-gold);
+      }
+      .nav-link.active {
+        color: var(--color-brushed-gold);
+      }
+
+      .consultation-btn {
+        border: 1px solid var(--color-brushed-gold);
+        color: var(--color-brushed-gold);
+        background: transparent;
+        padding: 10px 32px;
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        font-weight: 600;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+      }
+      .consultation-btn:hover {
+        background-color: var(--color-brushed-gold);
+        color: #ffffff;
+      }
+      .consultation-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* ==========================================================================
+   Main / Hero
+   ========================================================================== */
+      .site-main {
+        position: relative;
+        z-index: 1;
+        padding-top: 80px;
+      }
+
+      .hero {
+        position: relative;
+        height: 90vh;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+      .hero-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to top,
+          #0b0e14 0%,
+          rgba(11, 14, 20, 0.4) 50%,
+          rgba(11, 14, 20, 0) 100%
+        );
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 10;
+        max-width: var(--container-max);
+        margin: 0 auto;
+        padding-left: var(--margin-desktop);
+        padding-right: var(--margin-desktop);
+        width: 100%;
+        padding-bottom: var(--section-gap);
+      }
+      @media (max-width: 767px) {
+        .hero-content {
+          padding-left: var(--margin-mobile);
+          padding-right: var(--margin-mobile);
+        }
+      }
+
+      .hero-text {
+        max-width: 896px;
+      }
+
+      .hero-title {
+        font-family: var(--font-display);
+        color: #ffffff;
+        margin: 0 0 32px;
+        font-size: 48px;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        font-weight: 700;
+      }
+      @media (min-width: 768px) {
+        .hero-title {
+          font-size: 72px;
+          letter-spacing: -0.02em;
+        }
+      }
+
+      .hero-desc {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: var(--color-on-surface-variant);
+        max-width: 672px;
+        margin: 0;
+      }
+
+      /* ==========================================================================
+   Shared section heading elements
+   ========================================================================== */
+      .eyebrow {
+        display: block;
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        color: var(--color-brushed-gold);
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-family: var(--font-display);
+        color: #ffffff;
+        margin: 0;
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 600;
+      }
+      @media (min-width: 768px) {
+        .section-title {
+          font-size: 48px;
+          line-height: 56px;
+        }
+      }
+
+      .gold-divider {
+        width: 64px;
+        height: 4px;
+        background-color: var(--color-brushed-gold);
+        margin-bottom: 48px;
+      }
+
+      /* ==========================================================================
+   Vision Section — "The Paradox of Depth"
+   ========================================================================== */
+      .vision-section {
+        position: relative;
+        padding: var(--section-gap) 0;
+        overflow: hidden;
+      }
+
+      .vision-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--gutter);
+        align-items: center;
+      }
+      @media (min-width: 768px) {
+        .vision-grid {
+          grid-template-columns: repeat(12, 1fr);
+        }
+        .vision-col-image {
+          grid-column: span 5;
+          position: relative;
+        }
+        .vision-col-text {
+          grid-column: 7 / span 6;
+        }
+      }
+
+      .image-frame {
+        overflow: hidden;
+        box-shadow: var(--shadow-ambient);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .image-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.7s ease;
+      }
+      .image-frame:hover img {
+        transform: scale(1.05);
+      }
+
+      .image-frame-16x9 {
+        aspect-ratio: 16 / 9;
+        margin-bottom: 48px;
+      }
+      .image-frame-21x9 {
+        aspect-ratio: 21 / 9;
+      }
+      .image-frame-square {
+        aspect-ratio: 1 / 1;
+      }
+
+      .corner-accent {
+        position: absolute;
+        top: -48px;
+        left: -48px;
+        width: 128px;
+        height: 128px;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        display: none;
+      }
+      @media (min-width: 768px) {
+        .corner-accent {
+          display: block;
+        }
+      }
+
+      .vision-title {
+        margin-bottom: 32px;
+      }
+
+      .body-copy {
+        font-family: var(--font-body);
+        font-size: 18px;
+        line-height: 32px;
+        color: var(--color-on-surface-variant);
+        margin: 0 0 32px;
+      }
+      .body-copy strong,
+      .body-copy .highlight {
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .body-copy.quote {
+        font-style: italic;
+        margin-bottom: 0;
+      }
+
+      /* ==========================================================================
+   Strategy Bento Grid
+   ========================================================================== */
+      .strategy-section {
+        padding: var(--section-gap) 0;
+      }
+
+      .strategy-header {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 64px;
+        gap: 32px;
+      }
+      @media (min-width: 768px) {
+        .strategy-header {
+          flex-direction: row;
+        }
+      }
+
+      .strategy-header-index {
+        display: none;
+        text-align: right;
+      }
+      @media (min-width: 768px) {
+        .strategy-header-index {
+          display: block;
+        }
+      }
+      .strategy-header-index span {
+        font-family: var(--font-display);
+        font-size: 48px;
+        line-height: 56px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.05);
+      }
+
+      .strategy-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      @media (min-width: 768px) {
+        .strategy-grid {
+          grid-template-columns: repeat(12, 1fr);
+        }
+        .strategy-card-primary {
+          grid-column: span 8;
+        }
+        .strategy-card-secondary {
+          grid-column: span 4;
+        }
+        .strategy-card-full {
+          grid-column: span 12;
+        }
+      }
+
+      .strategy-card {
+        background-color: rgba(18, 22, 29, 0.8);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        padding: 48px;
+        box-shadow: var(--shadow-ambient);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: border-color 0.5s ease;
+      }
+      .strategy-card:hover {
+        border-color: rgba(197, 160, 89, 0.5);
+      }
+
+      .card-inner {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
+        position: relative;
+        z-index: 10;
+      }
+
+      .card-icon {
+        font-size: 36px;
+        margin-bottom: 32px;
+        color: var(--color-brushed-gold);
+        display: inline-block;
+        transition: transform 0.5s ease;
+      }
+      .strategy-card:hover .card-icon {
+        transform: scale(1.1);
+      }
+
+      .card-title {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 500;
+        color: #ffffff;
+        margin: 0 0 24px;
+      }
+
+      .card-desc {
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--color-on-surface-variant);
+        max-width: 32rem;
+        margin: 0 0 32px;
+      }
+
+      .view-specs-btn {
+        background: none;
+        border: none;
+        border-bottom: 1px solid rgba(197, 160, 89, 0);
+        color: var(--color-brushed-gold);
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 0 0 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition:
+          gap 0.2s ease,
+          border-color 0.2s ease;
+        margin-bottom: 16px;
+      }
+      .view-specs-btn:hover {
+        border-color: var(--color-brushed-gold);
+        gap: 16px;
+      }
+      .view-specs-btn .material-symbols-outlined {
+        font-size: 16px;
+        transition: transform 0.2s ease;
+      }
+      .view-specs-btn:hover .material-symbols-outlined {
+        transform: translateX(4px);
+      }
+
+      .card-footer {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .card-footer-line {
+        height: 1px;
+        flex-grow: 1;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: background-color 0.5s ease;
+      }
+      .strategy-card:hover .card-footer-line {
+        background-color: rgba(197, 160, 89, 0.5);
+      }
+      .card-footer-label {
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        color: var(--color-on-surface-variant);
+      }
+
+      /* ==========================================================================
+   Lifestyle Section
+   ========================================================================== */
+      .lifestyle-section {
+        padding: var(--section-gap) 0;
+      }
+
+      .lifestyle-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--gutter);
+        align-items: center;
+      }
+      @media (min-width: 768px) {
+        .lifestyle-grid {
+          grid-template-columns: repeat(12, 1fr);
+        }
+        .lifestyle-col {
+          grid-column: span 6;
+        }
+      }
+
+      .lifestyle-title {
+        margin: 0 0 32px;
+      }
+
+      /* ==========================================================================
+   Outcome Metrics
+   ========================================================================== */
+      .outcome-section {
+        padding: var(--section-gap) 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .outcome-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 64px;
+      }
+      @media (min-width: 768px) {
+        .outcome-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .outcome-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 32px;
+      }
+      @media (min-width: 768px) {
+        .outcome-item-bordered {
+          border-left: 1px solid rgba(255, 255, 255, 0.1);
+          border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      .outcome-number {
+        font-family: var(--font-display);
+        font-size: 48px;
+        color: var(--color-brushed-gold);
+        margin-bottom: 16px;
+        letter-spacing: -0.02em;
+      }
+      @media (min-width: 768px) {
+        .outcome-number {
+          font-size: 80px;
+        }
+      }
+      .outcome-number.is-white {
+        color: #ffffff;
+      }
+
+      .outcome-icon {
+        font-size: 60px;
+        color: var(--color-brushed-gold);
+        margin-bottom: 24px;
+      }
+
+      .outcome-title {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 500;
+        color: #ffffff;
+        margin: 0 0 8px;
+      }
+
+      .outcome-desc {
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--color-on-surface-variant);
+        margin: 0;
+      }
+
+      /* ==========================================================================
+   Final CTA
+   ========================================================================== */
+      .cta-section {
+        position: relative;
+        padding: var(--section-gap) 0;
+        overflow: hidden;
+        background-color: rgba(18, 22, 29, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: #ffffff;
+      }
+
+      .cta-inner {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+      }
+
+      .cta-eyebrow {
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.4em;
+        font-weight: 600;
+        color: var(--color-brushed-gold);
+        text-transform: uppercase;
+        margin-bottom: 32px;
+        display: block;
+      }
+
+      .cta-title {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 600;
+        margin: 0 0 48px;
+        color: #ffffff;
+      }
+      @media (min-width: 768px) {
+        .cta-title {
+          font-size: 48px;
+          line-height: 1.15;
+        }
+      }
+
+      .cta-buttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+      }
+      @media (min-width: 768px) {
+        .cta-buttons {
+          flex-direction: row;
+        }
+      }
+
+      .cta-btn {
+        background-color: var(--color-brushed-gold);
+        color: #ffffff;
+        padding: 20px 48px;
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        font-weight: 600;
+        text-transform: uppercase;
+        border: none;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+        transition: all 0.3s ease;
+      }
+      .cta-btn:hover {
+        background-color: #ffffff;
+        color: #000000;
+      }
+      .cta-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* ==========================================================================
+   Footer
+   ========================================================================== */
+      .site-footer {
+        position: relative;
+        z-index: 1;
+        background-color: rgba(11, 14, 20, 0.9);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 96px 0 48px;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 64px;
+        margin-bottom: 96px;
+      }
+      @media (min-width: 768px) {
+        .footer-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .footer-brand {
+        max-width: 340px;
+      }
+
+      .footer-logo {
+        height: 40px;
+        margin-bottom: 32px;
+      }
+
+      .footer-desc {
+        color: var(--color-on-surface-variant);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 24px;
+        max-width: 384px;
+        margin: 0;
+      }
+
+      .footer-heading {
+        font-family: var(--font-body);
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0 0 24px;
+      }
+
+      .footer-text {
+        font-family: var(--font-body);
+        color: var(--color-on-surface-variant);
+        margin: 0 0 16px;
+      }
+
+      .footer-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .footer-link {
+        color: var(--color-on-surface-variant);
+        text-decoration: none;
+        font-family: var(--font-body);
+        transition: color 0.2s ease;
+      }
+      .footer-link:hover {
+        color: var(--color-brushed-gold);
+      }
+
+      .newsletter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .newsletter-input {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px 0;
+        color: #ffffff;
+        font-family: var(--font-body);
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+      .newsletter-input::placeholder {
+        color: rgba(143, 160, 181, 0.5);
+      }
+      .newsletter-input:focus {
+        border-bottom-color: var(--color-brushed-gold);
+      }
+
+      .newsletter-submit {
+        align-self: flex-start;
+        background: none;
+        border: none;
+        border-bottom: 1px solid var(--color-brushed-gold);
+        color: var(--color-brushed-gold);
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 0 0 4px;
+        margin-top: 16px;
+        transition: color 0.2s ease;
+      }
+      .newsletter-submit:hover {
+        color: #ffffff;
+      }
+
+      .footer-bottom {
+        padding-top: 48px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      @media (min-width: 768px) {
+        .footer-bottom {
+          flex-direction: row;
+        }
+      }
+      .footer-copy {
+        font-family: var(--font-body);
+        font-size: 16px;
+        color: rgba(143, 160, 181, 0.6);
+      }
+
+      /* ==========================================================================
+   Modals (Specs + Inquiry)
+   ========================================================================== */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background-color: rgba(11, 14, 20, 0.8);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
+      .modal-overlay.flex {
+        display: flex;
+      }
+
+      .modal-content {
+        position: relative;
+        width: 100%;
+        background-color: var(--color-surface-container);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        transform: scale(0.95);
+        opacity: 0;
+        transition:
+          transform 0.3s ease,
+          opacity 0.3s ease;
+      }
+      .modal-content.is-visible {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      #specsModal .modal-content {
+        max-width: 768px;
+      }
+      #inquiryModal .modal-content {
+        max-width: 576px;
+        background-color: var(--color-bg);
+        border-color: rgba(238, 193, 75, 0.3);
+        max-height: 85vh;
+        overflow-y: auto;
+        transition:
+          transform 0.5s ease,
+          opacity 0.5s ease;
+      }
+
+      .modal-accent-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: var(--color-brushed-gold);
+      }
+      #inquiryModal .modal-accent-line {
+        background-color: var(--color-inquiry-gold);
+        box-shadow: 0 0 15px rgba(238, 193, 75, 0.5);
+      }
+
+      .modal-glow {
+        position: absolute;
+        top: -96px;
+        right: -96px;
+        width: 256px;
+        height: 256px;
+        background-color: rgba(197, 160, 89, 0.05);
+        border-radius: 50%;
+        filter: blur(60px);
+      }
+      #inquiryModal .modal-glow {
+        background-color: rgba(238, 193, 75, 0.05);
+      }
+
+      .modal-body {
+        position: relative;
+        padding: 32px;
+      }
+      @media (min-width: 768px) {
+        .modal-body {
+          padding: 48px;
+        }
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 32px;
+        right: 32px;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.4);
+        transition: color 0.2s ease;
+      }
+      .modal-close:hover {
+        color: var(--color-brushed-gold);
+      }
+      #inquiryModal .modal-close:hover {
+        color: var(--color-inquiry-gold);
+      }
+
+      .modal-header {
+        margin-bottom: 48px;
+      }
+      .modal-header.centered {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .modal-eyebrow {
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        font-weight: 600;
+        color: var(--color-brushed-gold);
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        display: block;
+      }
+      #inquiryModal .modal-eyebrow {
+        color: var(--color-inquiry-gold);
+        letter-spacing: 0.4em;
+      }
+
+      .modal-title {
+        font-family: var(--font-display);
+        font-size: 32px;
+        line-height: 40px;
+        color: #ffffff;
+        margin: 0;
+      }
+      .modal-subtext {
+        font-family: var(--font-body);
+        color: var(--color-on-surface-variant);
+        margin-top: 16px;
+      }
+
+      .specs-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 40px 48px;
+      }
+      @media (min-width: 768px) {
+        .specs-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .spec-label {
+        font-family: var(--font-body);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+        display: block;
+        transition: color 0.2s ease;
+      }
+      .spec-group:hover .spec-label {
+        color: var(--color-brushed-gold);
+      }
+      .spec-value {
+        font-family: var(--font-body);
+        font-size: 18px;
+        color: #ffffff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 8px;
+        margin: 0;
+      }
+
+      .modal-footer {
+        margin-top: 64px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .modal-btn-outline {
+        border: 1px solid var(--color-brushed-gold);
+        color: var(--color-brushed-gold);
+        background: transparent;
+        padding: 12px 40px;
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        font-weight: 600;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+      }
+      .modal-btn-outline:hover {
+        background-color: var(--color-brushed-gold);
+        color: #ffffff;
+      }
+
+      .inquiry-form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .form-label {
+        font-family: var(--font-body);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-left: 4px;
+      }
+      .form-input-wrap {
+        position: relative;
+      }
+      .form-input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.2);
+        font-size: 20px;
+      }
+      .form-input {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 16px 16px 16px 48px;
+        color: #ffffff;
+        font-family: var(--font-body);
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+      .form-input::placeholder {
+        color: rgba(143, 160, 181, 0.2);
+      }
+      .form-input:focus {
+        border-color: var(--color-inquiry-gold);
+      }
+
+      .inquiry-submit {
+        width: 100%;
+        background-color: var(--color-inquiry-gold);
+        color: #000000;
+        padding: 20px;
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        font-weight: 600;
+        text-transform: uppercase;
+        border: none;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transition: all 0.5s ease;
+        margin-top: 24px;
+      }
+      .inquiry-submit:hover {
+        background-color: #ffffff;
+      }
+      .inquiry-submit:active {
+        transform: scale(0.98);
+      }
+
+      /* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+      @media (prefers-reduced-motion: reduce) {
+        .reveal,
+        .fluid-bg::before,
+        .fluid-bg::after,
+        .image-frame img,
+        .card-icon,
+        .view-specs-btn .material-symbols-outlined {
+          transition: none;
+          animation: none;
+        }
+      }
+
+      /* =========================================================
+     NAVBAR (canonical — shared across every page, do not diverge)
+     ========================================================= */
+      header.custom-header-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        z-index: 9999;
+        background: rgba(10, 14, 23, 0.85);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      header.custom-header-wrapper .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      header.custom-header-wrapper .logo-img {
+        height: 32px;
+        width: auto;
+      }
+
+      header.custom-header-wrapper .nav-pill {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 9999px;
+        padding: 10px 32px;
+      }
+
+      header.custom-header-wrapper .nav-link {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+
+      header.custom-header-wrapper .nav-link:hover,
+      header.custom-header-wrapper .nav-link.active {
+        color: #eec14b;
+      }
+
+      header.custom-header-wrapper .nav-btn {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #eec14b;
+        background: transparent;
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        padding: 10px 24px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      header.custom-header-wrapper .nav-btn:hover {
+        background: #eec14b;
+        color: #000;
+      }
+
+      header.custom-header-wrapper .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        z-index: 10000;
+      }
+      header.custom-header-wrapper .burger-bar {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #ffffff;
+        transition: all 0.3s ease-in-out;
+      }
+
+      /* Nav link shown only inside the mobile dropdown so Consultation
+         stays reachable once the desktop CTA button is hidden on mobile. */
+      header.custom-header-wrapper .mobile-only-link {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        header.custom-header-wrapper .desktop-only-btn {
+          display: none !important;
+        }
+        header.custom-header-wrapper .mobile-nav-toggle {
+          display: flex !important;
+        }
+        header.custom-header-wrapper .mobile-only-link {
+          display: block !important;
+        }
+        header.custom-header-wrapper .nav-pill {
+          position: absolute;
+          top: 85px;
+          right: 32px;
+          width: 180px;
+          height: auto;
+          background: #111622;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          backdrop-filter: blur(20px);
+        }
+        header.custom-header-wrapper .nav-pill.menu-is-open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        header.custom-header-wrapper .nav-pill .nav-link {
+          width: 100%;
+          padding: 14px 20px;
+          box-sizing: border-box;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          font-size: 11px;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link:last-child {
+          border-bottom: none;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+          background-color: #eec14b;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(2) {
+          opacity: 0;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+          background-color: #eec14b;
+        }
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* ==========================================================================
+   Footer (canonical — shared across every page, do not diverge)
+   ========================================================================== */
+      .site-footer {
+        background-color: #000000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 2;
+      }
+      .site-footer .footer-top {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 48px;
+        padding: 80px 24px;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-top {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 64px;
+          padding-left: 64px;
+          padding-right: 64px;
+        }
+      }
+      .site-footer .footer-brand {
+        margin-bottom: 0;
+        flex: 1 1 260px;
+        max-width: 340px;
+      }
+      .site-footer .footer-logo {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 24px;
+      }
+      .site-footer .footer-desc {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        max-width: 384px;
+        margin: 0;
+      }
+      .site-footer .footer-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        flex: 2 1 560px;
+      }
+      @media (min-width: 640px) {
+        .site-footer .footer-links {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .site-footer .footer-heading {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+      .site-footer .footer-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .site-footer .footer-link {
+        display: block;
+        color: #a1a1a1;
+        text-decoration: none;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        transition: color 0.2s ease;
+      }
+      .site-footer .footer-link:hover {
+        color: #c5a059;
+      }
+      .site-footer .footer-text {
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      .site-footer .footer-newsletter {
+        max-width: 280px;
+      }
+      .site-footer .newsletter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 8px;
+      }
+      .site-footer .newsletter-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        padding: 0 0 12px;
+        outline: none;
+        transition: border-color 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .site-footer .newsletter-input::placeholder {
+        color: #a1a1a1;
+      }
+      .site-footer .newsletter-input:focus {
+        border-bottom-color: #c5a059;
+      }
+      .site-footer .newsletter-submit {
+        align-self: flex-start;
+        background: none;
+        border: none;
+        border-bottom: 1px solid #c5a059;
+        color: #c5a059;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0 0 4px;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+      }
+      .site-footer .newsletter-submit:hover {
+        opacity: 0.75;
+      }
+      .site-footer .footer-bottom {
+        padding: 32px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-bottom {
+          padding-left: 64px;
+          padding-right: 64px;
+          text-align: left;
+        }
+      }
+      .site-footer .footer-copy {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        opacity: 0.6;
+        margin: 0;
+      }
+
+      /* =========================================================
+     NAVBAR (canonical — shared across every page, do not diverge)
+     ========================================================= */
+      header.custom-header-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        z-index: 9999;
+        background: rgba(10, 14, 23, 0.85);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      header.custom-header-wrapper .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      header.custom-header-wrapper .logo-img {
+        height: 32px;
+        width: auto;
+      }
+
+      header.custom-header-wrapper .nav-pill {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 9999px;
+        padding: 10px 32px;
+      }
+
+      header.custom-header-wrapper .nav-link {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+
+      header.custom-header-wrapper .nav-link:hover,
+      header.custom-header-wrapper .nav-link.active {
+        color: #eec14b;
+      }
+
+      header.custom-header-wrapper .nav-btn {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #eec14b;
+        background: transparent;
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        padding: 10px 24px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      header.custom-header-wrapper .nav-btn:hover {
+        background: #eec14b;
+        color: #000;
+      }
+
+      header.custom-header-wrapper .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        z-index: 10000;
+      }
+      header.custom-header-wrapper .burger-bar {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #ffffff;
+        transition: all 0.3s ease-in-out;
+      }
+
+      /* Nav link shown only inside the mobile dropdown so Consultation
+         stays reachable once the desktop CTA button is hidden on mobile. */
+      header.custom-header-wrapper .mobile-only-link {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        header.custom-header-wrapper .desktop-only-btn {
+          display: none !important;
+        }
+        header.custom-header-wrapper .mobile-nav-toggle {
+          display: flex !important;
+        }
+        header.custom-header-wrapper .mobile-only-link {
+          display: block !important;
+        }
+        header.custom-header-wrapper .nav-pill {
+          position: absolute;
+          top: 85px;
+          right: 32px;
+          width: 180px;
+          height: auto;
+          background: #111622;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          backdrop-filter: blur(20px);
+        }
+        header.custom-header-wrapper .nav-pill.menu-is-open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        header.custom-header-wrapper .nav-pill .nav-link {
+          width: 100%;
+          padding: 14px 20px;
+          box-sizing: border-box;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          font-size: 11px;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link:last-child {
+          border-bottom: none;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+          background-color: #eec14b;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(2) {
+          opacity: 0;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+          background-color: #eec14b;
+        }
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* ==========================================================================
+   Footer (canonical — shared across every page, do not diverge)
+   ========================================================================== */
+      .site-footer {
+        background-color: #000000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 2;
+      }
+      .site-footer .footer-top {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 48px;
+        padding: 80px 24px;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-top {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 64px;
+          padding-left: 64px;
+          padding-right: 64px;
+        }
+      }
+      .site-footer .footer-brand {
+        margin-bottom: 0;
+        flex: 1 1 260px;
+        max-width: 340px;
+      }
+      .site-footer .footer-logo {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 24px;
+      }
+      .site-footer .footer-desc {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        max-width: 384px;
+        margin: 0;
+      }
+      .site-footer .footer-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        flex: 2 1 560px;
+      }
+      @media (min-width: 640px) {
+        .site-footer .footer-links {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .site-footer .footer-heading {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+      .site-footer .footer-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .site-footer .footer-link {
+        display: block;
+        color: #a1a1a1;
+        text-decoration: none;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        transition: color 0.2s ease;
+      }
+      .site-footer .footer-link:hover {
+        color: #c5a059;
+      }
+      .site-footer .footer-text {
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      .site-footer .footer-newsletter {
+        max-width: 280px;
+      }
+      .site-footer .newsletter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 8px;
+      }
+      .site-footer .newsletter-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        padding: 0 0 12px;
+        outline: none;
+        transition: border-color 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .site-footer .newsletter-input::placeholder {
+        color: #a1a1a1;
+      }
+      .site-footer .newsletter-input:focus {
+        border-bottom-color: #c5a059;
+      }
+      .site-footer .newsletter-submit {
+        align-self: flex-start;
+        background: none;
+        border: none;
+        border-bottom: 1px solid #c5a059;
+        color: #c5a059;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0 0 4px;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+      }
+      .site-footer .newsletter-submit:hover {
+        opacity: 0.75;
+      }
+      .site-footer .footer-bottom {
+        padding: 32px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-bottom {
+          padding-left: 64px;
+          padding-right: 64px;
+          text-align: left;
+        }
+      }
+      .site-footer .footer-copy {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        opacity: 0.6;
+        margin: 0;
+      }
+      .back-to-top-btn {
+        position: absolute;
+        bottom: 32px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        background: rgba(238, 193, 75, 0.08);
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #eec14b;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .back-to-top-btn:hover {
+        background: #eec14b;
+        color: #000000;
+      }
+      @media (min-width: 768px) {
+        .back-to-top-btn {
+          right: 64px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="custom-header-wrapper">
+      <nav class="nav-container">
+        <div class="logo-container">
+          <a href="index.html">
+            <img src="Images/logo.png" alt="Hathaway Logo" class="logo-img" />
+          </a>
+        </div>
+
+        <div class="nav-pill" id="main-nav-pill">
+          <a class="nav-link" href="index.html#home">Home</a>
+          <a class="nav-link" href="solutions.html">Our Solution</a>
+          <a class="nav-link active" href="portfolio.html">Our Works</a>
+          <a class="nav-link mobile-only-link" href="consultation.html"
+            >Consultation</a
+          >
+        </div>
+
+        <a href="consultation.html" class="nav-btn desktop-only-btn"
+          >CONSULTATION</a
+        >
+
+        <button
+          class="mobile-nav-toggle"
+          aria-label="Toggle navigation menu"
+          id="mobileMenuButton"
+        >
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+        </button>
+      </nav>
+    </header>
+    <!-- Ambient decorative background (stand-in for the original fluid shader) -->
+    <div class="fluid-bg"></div>
+
+    <main class="site-main">
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-bg">
+          <img
+            alt="Agate Pools Correspondence"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-rwEwBI3OSV1pAxBz53eUISl1JRDIROU_FGQUbywpDRrDuasGGxDfNHH0K_jrH2gD7GrQsaypIPu6ivDxq3fHyoMXPIq-yR5yLpiY_4F27VvHWUDB4dV7LpbezrnHO4toI0ZwZLPTs5j9GGy7sZaIoc1iJVHa7wjHTSMnN_tBdEY8byDt1HLCewh_YnRkkmkiW5FhzZ1PdhEekr4QUBl3cR-chDunM_gtwqXOVgreyar078Tu2lVA8S7PeVjM3VSAxmDfS9q1Cshw"
+          />
+          <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title reveal active">
+              Agate Pools: A Masterclass in Submerged Luxury
+            </h1>
+            <p class="hero-desc reveal active" style="transition-delay: 200ms">
+              Redefining the residential oasis through geological precision and
+              architectural integration.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vision Section: Paradox of Depth -->
+      <section class="vision-section">
+        <div class="container">
+          <div class="vision-grid">
+            <div class="vision-col-image">
+              <div class="image-frame image-frame-16x9 reveal active">
+                <img
+                  alt="Retail Architecture"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV_7NEiYaxYbwQaGVUrzFNf2QXzaCc9uQjhDuF21pg71EEz_lY3-fsAXW3ckNVe2W330owptHMgw22qOEZRJfJYfSNndR22IxMiNOb8GIUwZiFyptPd3ABWYFGWrfJpzguw2fooJevfstF2PfQPYBt03KG8l4BiUpUuDwSUxz1JJkmvvbhlyz0PP94qUunzLn1S9HfHIQGXataURfVjFoCpLHltlguDz6GmZHqks9nCag7qESzSneEneLOPG1MrERjxzSLuyjZRBGB"
+                />
+              </div>
+              <div
+                class="corner-accent reveal active"
+                style="transition-delay: 300ms"
+              ></div>
+              <h2
+                class="section-title vision-title reveal active"
+                style="transition-delay: 100ms"
+              >
+                The Paradox of Depth
+              </h2>
+              <div
+                class="gold-divider reveal active"
+                style="transition-delay: 200ms"
+              ></div>
+            </div>
+            <div class="vision-col-text">
+              <div class="reveal active" style="transition-delay: 300ms">
+                <p class="body-copy">
+                  In the realm of elite residential design, the pool has long
+                  been a functional afterthought—a tile-lined rectangle of
+                  utility. Hathaway Strategic sought to invert this paradigm.
+                  Our vision for <span class="highlight">Agate Pools</span> was
+                  to bridge the gap between raw natural textures and modern
+                  luxury living.
+                </p>
+                <p class="body-copy quote">
+                  "We didn't just build a pool; we curated a geological event.
+                  By using semi-precious stone as the primary skin, we created
+                  an immersive environment that shifts with the angle of the
+                  sun, offering a serene, meditative experience of optical
+                  clarity."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Strategy Bento Grid -->
+      <section class="strategy-section">
+        <div class="container">
+          <div class="strategy-header">
+            <div class="reveal active">
+              <span class="eyebrow">Our Methodology</span>
+              <h3 class="section-title">Strategic Execution</h3>
+            </div>
+            <div
+              class="strategy-header-index reveal active"
+              style="transition-delay: 200ms"
+            >
+              <span>02</span>
+            </div>
+          </div>
+
+          <div class="strategy-grid">
+            <!-- Strategy Card 1 -->
+            <div class="strategy-card strategy-card-primary reveal active">
+              <div class="card-inner">
+                <div>
+                  <span
+                    class="material-symbols-outlined card-icon"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >landscape</span
+                  >
+                  <h4 class="card-title">Geological Integration</h4>
+                  <p class="card-desc">
+                    Utilizing book-matched semi-precious agate stone as the
+                    functional skin of the pool. Each slab was laser-mapped to
+                    ensure a seamless visual flow from the pool deck into the
+                    water's depths.
+                  </p>
+                  <button class="view-specs-btn" onclick="openModal()">
+                    VIEW SPECS
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  </button>
+                </div>
+                <div class="card-footer">
+                  <div class="card-footer-line"></div>
+                  <span class="card-footer-label">CORE PILLAR</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Strategy Card 2 -->
+            <div
+              class="strategy-card strategy-card-secondary reveal active"
+              style="transition-delay: 150ms"
+            >
+              <div class="card-inner">
+                <div>
+                  <span
+                    class="material-symbols-outlined card-icon"
+                    style="font-variation-settings: &quot;FILL&quot; 0"
+                    >filter_center_focus</span
+                  >
+                  <h4 class="card-title">Optical Clarity</h4>
+                  <p class="card-desc">
+                    Engineering a bespoke filtration system that achieves
+                    ultra-high turnover rates, maintaining the crystal-clear
+                    aesthetic necessary to showcase the intricate stone
+                    patterns.
+                  </p>
+                </div>
+                <div style="padding-top: 48px">
+                  <button class="view-specs-btn" onclick="openModal()">
+                    VIEW SPECS
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Secondary Visual -->
+            <div
+              class="image-frame image-frame-21x9 strategy-card-full reveal active"
+              style="transition-delay: 300ms"
+            >
+              <img
+                alt="Executive Stationery and Pool Detail"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAw-haANHhMFyJgTLEO23kH3m9_W0Z1isbbbeLGdhskN1aU4CYlWud31BrC2bYd6nOce8ykSyBG-1OjZ07LgpP3mgAtM6IVrVtWyqeAVc_aeoo5n4avj_RFEo8bFC9INNEoC1JMVNDXpXYUg98Eogd6MN3UR4WYKI0ou2ay41JqbwaYux4QHW3IBdxNj6ifNUNI2mgzVraaklhbV5_XB3oF42sLQoWOJwYkhkyrSIq1SQhh0Qn6jkyVvFb59uNk2kFvYZb-O5eig2K-"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lifestyle Experience Section -->
+      <section class="lifestyle-section">
+        <div class="container">
+          <div class="lifestyle-grid">
+            <div class="lifestyle-col reveal active">
+              <span class="eyebrow">The Experience</span>
+              <h3 class="section-title lifestyle-title">Lifestyle Amenities</h3>
+              <p class="body-copy" style="margin-bottom: 0">
+                Every touchpoint of the Agate Pools experience is curated to
+                reflect the geological theme, from custom-woven textiles to
+                bespoke poolside service elements.
+              </p>
+            </div>
+            <div
+              class="lifestyle-col reveal active"
+              style="transition-delay: 200ms"
+            >
+              <div class="image-frame image-frame-square">
+                <img
+                  alt="Branded Amenities"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaSRGY36_pXZmcY8dy6RkPHXCI374asttnQP1unZQlrtxqiSPwm5Oj3ytN7RnjNfEktS4Zz2HoYmOcg8T1vkjl0dYv1TBibq1tQb7NozpdRBtE46pPylzqi9NgmJrJ4R0QFq1cOQzvM5yn0YTnrTZ-9_s2b3MscrlTOMWdJgBCXDqEoyY2DJZ_8gEZKMZgV9OfPAZMEeyIAZDQBzdWGHZ797EE0AVMwEcO4ja4AC3UM5aEI31t_9j-rRuBP_QvbBj8CufZqSTkXXbR"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Outcome Metrics Section -->
+      <section class="outcome-section">
+        <div class="container">
+          <div class="outcome-grid">
+            <div class="outcome-item reveal active">
+              <span class="outcome-number">+$450k</span>
+              <h5 class="outcome-title">Valuation Uplift</h5>
+              <p class="outcome-desc">
+                Documented increase in property market value post-completion.
+              </p>
+            </div>
+            <div
+              class="outcome-item outcome-item-bordered reveal active"
+              style="transition-delay: 150ms"
+            >
+              <span
+                class="material-symbols-outlined outcome-icon"
+                style="font-variation-settings: &quot;FILL&quot; 1"
+                >workspace_premium</span
+              >
+              <h5 class="outcome-title">Award Winning</h5>
+              <p class="outcome-desc">
+                Global Architecture Award for Innovative Lighting Design.
+              </p>
+            </div>
+            <div
+              class="outcome-item reveal active"
+              style="transition-delay: 300ms"
+            >
+              <span class="outcome-number is-white">100%</span>
+              <h5 class="outcome-title">Sustainable</h5>
+              <p class="outcome-desc">
+                Ethically sourced semi-precious stone from certified quarries.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Final CTA Section -->
+      <section class="cta-section">
+        <div class="container cta-inner reveal active">
+          <span class="cta-eyebrow">Ready for the Next Level?</span>
+          <h2 class="cta-title">Let's define your masterclass.</h2>
+          <div class="cta-buttons">
+            <button class="cta-btn" onclick="openInquiryModal()">
+              Start Your Inquiry
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq3t9mMe30qSs7kpJGVOvUSjW2NjEFiTuFdmK0-0sjuDbP9VX6n2cZ441AaAufz226F4gq5iI6BhOq1Fl8qFjskAlpjJYCJwQzLRjxPUTCyiNmRbOd9k6uxcuVn1aLi7F8Hwfh1yawq2aGaVA6q07K3eg5LZ2zKbWnuPfsbYW8Jje62_MOkxidwWPSsOWmQ4aVO0pOmrlVXg6D7Uap0u4wPh3awMYWuKGWYSab3eJwMpwsZYd7VBkZF-ZO5tAb19m3zgRT_B_moRS_"
+            alt="Hathaway Strategic Logo"
+            class="footer-logo"
+          />
+          <p class="footer-desc">
+            We are a dynamic digital agency specializing in social media
+            management, marketing, video editing, political campaign strategy,
+            and web design. With a passion for creativity and results, we help
+            businesses and campaigns grow their online presence, engage their
+            audience, and achieve their goals. Let us bring your vision to life!
+          </p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h5 class="footer-heading">Visit Us</h5>
+            <p class="footer-link footer-text">
+              2003 Old Hillsboro Rd<br />Franklin, TN 37064
+            </p>
+            <a class="footer-link" href="mailto:team@hathawaystrategic.com"
+              >team@hathawaystrategic.com</a
+            >
+          </div>
+          <div>
+            <h5 class="footer-heading">Quick Links</h5>
+            <ul class="footer-list">
+              <li><a class="footer-link" href="index.html#home">Home</a></li>
+              <li>
+                <a class="footer-link" href="portfolio.html">Our Works</a>
+              </li>
+              <li>
+                <a class="footer-link" href="solutions.html">Our Solution</a>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-newsletter">
+            <h5 class="footer-heading">Newsletter</h5>
+            <p class="footer-link footer-text">
+              Join our network for elite strategic insights.
+            </p>
+            <form class="newsletter-form">
+              <input
+                type="email"
+                placeholder="Email Address"
+                class="newsletter-input"
+                required
+              />
+              <button type="submit" class="newsletter-submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">
+          © 2024 Hathaway Strategic. All rights reserved.
+        </p>
+      </div>
+
+      <button id="back-to-top" class="back-to-top-btn" aria-label="Back to top">
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 15l-6-6-6 6"></path>
+        </svg>
+      </button>
+    </footer>
+
+    <!-- Project Specifications Modal -->
+    <div class="modal-overlay" id="specsModal">
+      <div class="modal-content" id="specsModalContent">
+        <div class="modal-accent-line"></div>
+        <div class="modal-glow"></div>
+        <div class="modal-body">
+          <button class="modal-close" onclick="closeModal()">
+            <span class="material-symbols-outlined" style="font-size: 30px"
+              >close</span
+            >
+          </button>
+          <div class="modal-header">
+            <span class="modal-eyebrow">Technical Blueprint</span>
+            <h2 class="modal-title">Project Specifications</h2>
+          </div>
+          <div class="specs-grid">
+            <div class="spec-group">
+              <span class="spec-label">Dimensions</span>
+              <p class="spec-value">18m x 6m (Variable depth 1.2m - 2.8m)</p>
+            </div>
+            <div class="spec-group">
+              <span class="spec-label">Primary Material</span>
+              <p class="spec-value">Book-matched Blue Agate Stone</p>
+            </div>
+            <div class="spec-group">
+              <span class="spec-label">Filtration System</span>
+              <p class="spec-value">UV-Ozone Hybrid (99.9% pathogens)</p>
+            </div>
+            <div class="spec-group">
+              <span class="spec-label">Lighting Ecosystem</span>
+              <p class="spec-value">Programmable 12-channel LED</p>
+            </div>
+            <div class="spec-group">
+              <span class="spec-label">Heating Solution</span>
+              <p class="spec-value">Geothermal Heat Exchange</p>
+            </div>
+            <div class="spec-group">
+              <span class="spec-label">Architectural Finish</span>
+              <p class="spec-value">Laser-mapped Structural Steel</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="modal-btn-outline" onclick="closeModal()">
+              Close Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inquiry Modal -->
+    <div class="modal-overlay" id="inquiryModal">
+      <div class="modal-content" id="inquiryModalContent">
+        <div class="modal-accent-line"></div>
+        <div class="modal-glow"></div>
+        <div class="modal-body">
+          <button class="modal-close" onclick="closeInquiryModal()">
+            <span class="material-symbols-outlined" style="font-size: 30px"
+              >close</span
+            >
+          </button>
+          <div class="modal-header centered">
+            <span class="modal-eyebrow">Inquiry</span>
+            <h2 class="modal-title">Start Your Masterclass</h2>
+            <p class="modal-subtext">
+              Provide your details to receive a strategic brief.
+            </p>
+          </div>
+          <form
+            class="inquiry-form"
+            onsubmit="
+              event.preventDefault();
+              alert('Inquiry submitted successfully.');
+              closeInquiryModal();
+            "
+          >
+            <div class="form-field">
+              <label class="form-label">* Full Name</label>
+              <div class="form-input-wrap">
+                <span class="material-symbols-outlined form-input-icon"
+                  >person</span
+                >
+                <input
+                  class="form-input"
+                  placeholder="Enter your full name"
+                  required
+                  type="text"
+                />
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">* Email Address</label>
+              <div class="form-input-wrap">
+                <span class="material-symbols-outlined form-input-icon"
+                  >mail</span
+                >
+                <input
+                  class="form-input"
+                  placeholder="email@example.com"
+                  required
+                  type="email"
+                />
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">* Phone Number</label>
+              <div class="form-input-wrap">
+                <span class="material-symbols-outlined form-input-icon"
+                  >call</span
+                >
+                <input
+                  class="form-input"
+                  placeholder="+1 (555) 000-0000"
+                  required
+                  type="tel"
+                />
+              </div>
+            </div>
+            <button class="inquiry-submit" type="submit">Submit Inquiry</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ==========================================================================
+      // Specs Modal logic
+      // ==========================================================================
+      var modal = document.getElementById("specsModal");
+      var modalContent = document.getElementById("specsModalContent");
+
+      function openModal() {
+        modal.classList.add("flex");
+        setTimeout(function () {
+          modalContent.classList.add("is-visible");
+        }, 10);
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        modalContent.classList.remove("is-visible");
+        setTimeout(function () {
+          modal.classList.remove("flex");
+          document.body.style.overflow = "";
+        }, 300);
+      }
+
+      // ==========================================================================
+      // Inquiry Modal logic
+      // ==========================================================================
+      var inquiryModal = document.getElementById("inquiryModal");
+      var inquiryModalContent = document.getElementById("inquiryModalContent");
+
+      function openInquiryModal() {
+        inquiryModal.classList.add("flex");
+        setTimeout(function () {
+          inquiryModalContent.classList.add("is-visible");
+        }, 10);
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeInquiryModal() {
+        inquiryModalContent.classList.remove("is-visible");
+        setTimeout(function () {
+          inquiryModal.classList.remove("flex");
+          document.body.style.overflow = "";
+        }, 300);
+      }
+
+      // Close modals when clicking the dark backdrop
+      [modal, inquiryModal].forEach(function (overlay) {
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) {
+            if (overlay === modal) closeModal();
+            else closeInquiryModal();
+          }
+        });
+      });
+
+      // Close modals with Escape
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          closeModal();
+          closeInquiryModal();
+        }
+      });
+
+      // ==========================================================================
+      // Reveal animations on scroll
+      // ==========================================================================
+      var observerOptions = {
+        threshold: 0.15,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".reveal").forEach(function (el) {
+        observer.observe(el);
+      });
+    </script>
+    <script>
+      // Mobile Nav Toggle (canonical — shared across every page)
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggleButton = document.getElementById("mobileMenuButton");
+        const navPill = document.getElementById("main-nav-pill");
+
+        if (toggleButton && navPill) {
+          toggleButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleButton.classList.toggle("menu-is-open");
+            navPill.classList.toggle("menu-is-open");
+          });
+
+          navPill.querySelectorAll(".nav-link").forEach((link) => {
+            link.addEventListener("click", () => {
+              toggleButton.classList.remove("menu-is-open");
+              navPill.classList.remove("menu-is-open");
+            });
+          });
+
+          document.addEventListener("click", (e) => {
+            if (
+              !navPill.contains(e.target) &&
+              !toggleButton.contains(e.target)
+            ) {
+              toggleButton.classList.remove("menu-is-open");
+              navPill.classList.remove("menu-is-open");
+            }
+          });
+        }
+
+        const backToTopBtn = document.getElementById("back-to-top");
+        if (backToTopBtn) {
+          backToTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

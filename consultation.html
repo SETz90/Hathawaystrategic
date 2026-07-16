@@ -1,0 +1,1527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book a Consultation | Hathaway Strategic</title>
+    <link rel="icon" type="Image/png" href="Images/iconweb.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      /* =========================================================
+   DESIGN SYSTEM & VARIABLES
+   ========================================================= */
+      :root {
+        --bg-dark: #060e1a;
+        --bg-mid: #02060d;
+        --text-light: #ffffff;
+        --text-muted: #8fa0b5;
+        --accent-gold: #c59b27;
+        --accent-glow: rgba(197, 155, 39, 0.08);
+        --glass-bg: rgba(255, 255, 255, 0.02);
+        --glass-border: rgba(197, 155, 39, 0.15);
+        --font-serif: "Playfair Display", Georgia, serif;
+        --font-sans: "Inter", -apple-system, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100vw;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        font-family: var(--font-sans);
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100vw;
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+        position: relative;
+      }
+
+      /* =========================================================
+   AMBIENT GLOW
+   ========================================================= */
+      .ambient-glow {
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(
+          circle,
+          var(--accent-glow) 0%,
+          transparent 70%
+        );
+        z-index: 1;
+        pointer-events: none;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* =========================================================
+   HERO VIDEO BACKGROUND
+   ========================================================= */
+      .video-background-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+      }
+      .bg-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          rgba(6, 14, 26, 0.85) 0%,
+          rgba(6, 14, 26, 0.4) 50%,
+          var(--bg-dark) 100%
+        );
+        z-index: 1;
+      }
+
+      /* =========================================================
+   SOLUTIONS SHOWCASE
+   ========================================================= */
+      .solutions-showcase {
+        position: relative;
+        background-color: var(--bg-dark);
+        padding: 10rem 8%;
+        z-index: 5;
+        box-shadow: 0 -50px 100px rgba(6, 14, 26, 0.9);
+      }
+      .section-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .section-eyebrow {
+        display: inline-block;
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        color: var(--accent-gold);
+        margin-bottom: 1rem;
+      }
+      .solutions-showcase h2 {
+        font-family: var(--font-serif);
+        font-size: 3.5rem;
+        font-weight: 400;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.01em;
+      }
+      .solutions-showcase h2 span {
+        font-style: italic;
+        font-family: var(--font-serif);
+        background: linear-gradient(to right, #fff, var(--accent-gold));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .solutions-showcase p {
+        font-family: var(--font-sans);
+        font-size: 1.1rem;
+        color: #8fa0b5;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.8;
+      }
+      .solutions-showcase .subtitle-text {
+        margin-bottom: 5rem;
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .solutions-showcase {
+          padding: 6rem 5%;
+        }
+        .solutions-showcase h2 {
+          font-size: 2.25rem;
+        }
+      }
+
+      /* =========================================================
+   SECTION SHARED LABEL STYLE
+   ========================================================= */
+      .section-pretitle {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+        margin-bottom: 1.2rem;
+      }
+
+      .fade-up-trigger {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .fade-up-trigger.motion-active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .animate-reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUpClear 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes slideUpClear {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        padding: 1rem 2.2rem;
+        background: var(--glass-bg);
+        color: #fff;
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(5px);
+        text-decoration: none;
+        font-family: var(--font-sans);
+        font-weight: 800;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border-radius: 4px;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
+      }
+      .btn-primary:hover {
+        border-color: var(--accent-gold);
+        background: var(--accent-gold);
+        color: var(--bg-dark);
+        font-weight: 800;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(197, 155, 39, 0.2);
+      }
+
+      /* ===== CANONICAL NAV + FOOTER ===== */
+      /* =========================================================
+     NAVBAR (canonical — shared across every page, do not diverge)
+     ========================================================= */
+      header.custom-header-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        z-index: 9999;
+        background: rgba(10, 14, 23, 0.85);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      header.custom-header-wrapper .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        column-gap: 24px;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      header.custom-header-wrapper .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        justify-self: start;
+        min-width: 0;
+      }
+
+      header.custom-header-wrapper .logo-img {
+        height: 32px;
+        width: auto;
+        display: block;
+      }
+
+      header.custom-header-wrapper .nav-pill {
+        justify-self: center;
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 9999px;
+        padding: 10px 32px;
+      }
+
+      header.custom-header-wrapper .nav-link {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.3s;
+        white-space: nowrap;
+      }
+
+      header.custom-header-wrapper .nav-link:hover,
+      header.custom-header-wrapper .nav-link.active {
+        color: #eec14b;
+      }
+
+      header.custom-header-wrapper .nav-btn {
+        justify-self: end;
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #eec14b;
+        background: transparent;
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        padding: 10px 24px;
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: 0.3s;
+      }
+      header.custom-header-wrapper .nav-btn:hover {
+        background: #eec14b;
+        color: #000;
+      }
+
+      header.custom-header-wrapper .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px;
+        justify-self: end;
+        z-index: 10000;
+      }
+      header.custom-header-wrapper .burger-bar {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #ffffff;
+        border-radius: 2px;
+        transition: all 0.3s ease-in-out;
+      }
+
+      /* Nav link shown only inside the mobile dropdown so Consultation
+   stays reachable once the desktop CTA button is hidden on mobile. */
+      header.custom-header-wrapper .mobile-only-link {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        header.custom-header-wrapper .nav-container {
+          grid-template-columns: 1fr auto;
+        }
+        header.custom-header-wrapper .desktop-only-btn {
+          display: none !important;
+        }
+        header.custom-header-wrapper .mobile-nav-toggle {
+          display: flex !important;
+        }
+        header.custom-header-wrapper .mobile-only-link {
+          display: block !important;
+        }
+        header.custom-header-wrapper .nav-pill {
+          position: fixed;
+          top: 85px;
+          right: 20px;
+          width: 180px;
+          height: auto;
+          background: #111622;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transform: translateY(-10px);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          backdrop-filter: blur(20px);
+          z-index: 9998;
+        }
+        header.custom-header-wrapper .nav-pill.menu-is-open {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: translateY(0);
+        }
+        header.custom-header-wrapper .nav-pill .nav-link {
+          width: 100%;
+          padding: 14px 20px;
+          box-sizing: border-box;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          font-size: 11px;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link:last-child {
+          border-bottom: none;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+          background-color: #eec14b;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(2) {
+          opacity: 0;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+          background-color: #eec14b;
+        }
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* ==========================================================================
+   Footer (canonical — shared across every page, do not diverge)
+   ========================================================================== */
+      .site-footer {
+        background-color: #000000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 2;
+      }
+      .site-footer .footer-top {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 48px;
+        padding: 80px 24px;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-top {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 64px;
+          padding-left: 64px;
+          padding-right: 64px;
+        }
+      }
+      .site-footer .footer-brand {
+        margin-bottom: 0;
+        flex: 1 1 260px;
+        max-width: 340px;
+      }
+      .site-footer .footer-logo {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 24px;
+      }
+      .site-footer .footer-desc {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        max-width: 384px;
+        margin: 0;
+      }
+      .site-footer .footer-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        flex: 2 1 560px;
+      }
+      @media (min-width: 640px) {
+        .site-footer .footer-links {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .site-footer .footer-heading {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+      .site-footer .footer-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .site-footer .footer-link {
+        display: block;
+        color: #a1a1a1;
+        text-decoration: none;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        transition: color 0.2s ease;
+      }
+      .site-footer .footer-link:hover {
+        color: #c5a059;
+      }
+      .site-footer .footer-text {
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      .site-footer .footer-newsletter {
+        max-width: 280px;
+      }
+      .site-footer .newsletter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 8px;
+      }
+      .site-footer .newsletter-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        padding: 0 0 12px;
+        outline: none;
+        transition: border-color 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .site-footer .newsletter-input::placeholder {
+        color: #a1a1a1;
+      }
+      .site-footer .newsletter-input:focus {
+        border-bottom-color: #c5a059;
+      }
+      .site-footer .newsletter-submit {
+        align-self: flex-start;
+        background: none;
+        border: none;
+        border-bottom: 1px solid #c5a059;
+        color: #c5a059;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0 0 4px;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+      }
+      .site-footer .newsletter-submit:hover {
+        opacity: 0.75;
+      }
+      .site-footer .footer-bottom {
+        padding: 32px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-bottom {
+          padding-left: 64px;
+          padding-right: 64px;
+          text-align: left;
+        }
+      }
+      .site-footer .footer-copy {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        opacity: 0.6;
+        margin: 0;
+      }
+      .back-to-top-btn {
+        position: absolute;
+        bottom: 32px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        background: rgba(238, 193, 75, 0.08);
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #eec14b;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .back-to-top-btn:hover {
+        background: #eec14b;
+        color: #000000;
+      }
+      @media (min-width: 768px) {
+        .back-to-top-btn {
+          right: 64px;
+        }
+      }
+
+      /* =========================================================
+   CONSULTATION PAGE
+   ========================================================= */
+      .consult-hero {
+        position: relative;
+        min-height: 55vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11rem 8% 5rem;
+        text-align: center;
+        z-index: 2;
+        overflow: hidden;
+      }
+      .consult-hero::before {
+        content: "";
+        position: absolute;
+        top: -20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 900px;
+        height: 900px;
+        background: radial-gradient(
+          circle,
+          var(--accent-glow) 0%,
+          transparent 65%
+        );
+        pointer-events: none;
+        z-index: -1;
+      }
+      .consult-hero-inner {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .consult-hero h1 {
+        font-family: var(--font-serif);
+        font-size: 3.75rem;
+        line-height: 1.15;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: #fff;
+        margin-bottom: 1.5rem;
+      }
+      .consult-hero h1 span {
+        font-style: italic;
+        background: linear-gradient(to right, #fff, var(--accent-gold));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .consult-hero p {
+        font-family: var(--font-sans);
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        line-height: 1.8;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .consult-section {
+        position: relative;
+        background-color: var(--bg-dark);
+        padding: 2rem 8% 10rem;
+        z-index: 5;
+      }
+      .consult-layout {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.18fr 0.82fr;
+        gap: 5rem;
+        align-items: start;
+      }
+
+      /* --- Left column: process + direct contact --- */
+      .consult-info-eyebrow {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        color: var(--accent-gold);
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .consult-info h2 {
+        font-family: var(--font-serif);
+        font-size: 2.25rem;
+        font-weight: 400;
+        color: #fff;
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+      }
+      .consult-info > p {
+        font-family: var(--font-sans);
+        font-size: 0.98rem;
+        color: var(--text-muted);
+        line-height: 1.8;
+        margin-bottom: 3rem;
+      }
+
+      .consult-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .consult-step {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.75rem 0;
+        border-top: 1px solid var(--glass-border);
+      }
+      .consult-steps .consult-step:last-child {
+        padding-bottom: 0;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .consult-step-num {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: 1.5rem;
+        color: var(--accent-gold);
+        min-width: 2.5rem;
+      }
+      .consult-step-body h4 {
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.5rem;
+      }
+      .consult-step-body p {
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.75;
+      }
+
+      /* --- Form panel --- */
+      .consult-form-panel {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 3rem;
+        backdrop-filter: blur(10px);
+        position: relative;
+      }
+      .consult-form-panel h3 {
+        font-family: var(--font-serif);
+        font-size: 1.75rem;
+        font-weight: 400;
+        color: #fff;
+        margin-bottom: 0.5rem;
+      }
+      .consult-form-panel > p {
+        font-family: var(--font-sans);
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        margin-bottom: 2.5rem;
+        line-height: 1.7;
+      }
+
+      .consult-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem 1.25rem;
+      }
+      .consult-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .consult-field.full-width {
+        grid-column: 1 / -1;
+      }
+      .consult-field label {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+      }
+      .consult-field input,
+      .consult-field select,
+      .consult-field textarea {
+        font-family: var(--font-sans);
+        font-size: 0.92rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.9rem 1rem;
+        outline: none;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .consult-field input::placeholder,
+      .consult-field textarea::placeholder {
+        color: rgba(143, 160, 181, 0.6);
+      }
+      .consult-field input:focus,
+      .consult-field select:focus,
+      .consult-field textarea:focus {
+        border-color: var(--accent-gold);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .consult-field select option {
+        background: #0c1420;
+        color: #fff;
+      }
+      .consult-field textarea {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.6;
+      }
+
+      /* iOS Safari auto-zooms the page when a focused input's font-size is
+   under 16px. Bumping it to 16px on mobile stops that jarring zoom-in
+   when tapping into the form fields. */
+      @media (max-width: 768px) {
+        .consult-field input,
+        .consult-field select,
+        .consult-field textarea {
+          font-size: 16px;
+        }
+      }
+
+      .consult-field input:invalid.field-touched,
+      .consult-field textarea:invalid.field-touched {
+        border-color: #e5484d;
+        background: rgba(229, 72, 77, 0.06);
+      }
+      .consult-field-error {
+        display: none;
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        color: #ff8b8f;
+        margin-top: -0.2rem;
+      }
+      .consult-field-error.is-visible {
+        display: block;
+      }
+
+      .consult-submit-btn {
+        grid-column: 1 / -1;
+        justify-content: center;
+        width: 100%;
+        margin-top: 0.5rem;
+        border: none;
+      }
+
+      .consult-form-success {
+        display: none;
+        text-align: center;
+        padding: 2.5rem 0.5rem 1rem;
+      }
+      .consult-form-success.is-active {
+        display: block;
+      }
+      .consult-form.is-hidden {
+        display: none;
+      }
+      .consult-success-mark {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        background: rgba(238, 193, 75, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-gold);
+      }
+      .consult-form-success h3 {
+        font-family: var(--font-serif);
+        font-size: 1.6rem;
+        color: #fff;
+        margin-bottom: 0.75rem;
+      }
+      .consult-form-success p {
+        font-family: var(--font-sans);
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        line-height: 1.8;
+        max-width: 380px;
+        margin: 0 auto;
+      }
+      .consult-success-reset-btn {
+        margin-top: 2rem;
+        border: none;
+      }
+
+      /* --- Map --- */
+      .consult-map-section {
+        position: relative;
+        background-color: var(--bg-dark);
+        padding: 0 8% 8rem;
+        z-index: 5;
+      }
+      .consult-map-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .consult-map-frame {
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        overflow: hidden;
+        height: 420px;
+        filter: grayscale(1) invert(90%) contrast(90%);
+      }
+      .consult-map-frame iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
+
+      @media (max-width: 992px) {
+        .consult-layout {
+          grid-template-columns: 1fr;
+          gap: 3.5rem;
+        }
+      }
+      @media (max-width: 768px) {
+        .consult-hero {
+          padding: 9rem 5% 4rem;
+        }
+        .consult-hero h1 {
+          font-size: 2.5rem;
+        }
+        .consult-section {
+          padding: 1rem 5% 6rem;
+        }
+        .consult-form-panel {
+          padding: 2rem 1.5rem;
+        }
+        .consult-map-section {
+          padding: 0 5% 6rem;
+        }
+        .consult-map-frame {
+          height: 320px;
+        }
+      }
+      @media (max-width: 560px) {
+        .consult-form {
+          grid-template-columns: 1fr;
+        }
+        .consult-field.full-width {
+          grid-column: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient-glow" id="glow"></div>
+
+    <!-- Canonical Navbar -->
+    <header class="custom-header-wrapper">
+      <nav class="nav-container">
+        <div class="logo-container">
+          <a href="index.html">
+            <img src="Images/logo.png" alt="Hathaway Logo" class="logo-img" />
+          </a>
+        </div>
+
+        <div class="nav-pill" id="main-nav-pill">
+          <a class="nav-link" href="index.html#home">Home</a>
+          <a class="nav-link" href="solutions.html">Our Solution</a>
+          <a class="nav-link" href="portfolio.html">Our Works</a>
+          <a class="nav-link mobile-only-link" href="consultation.html"
+            >Consultation</a
+          >
+        </div>
+
+        <a href="consultation.html" class="nav-btn desktop-only-btn"
+          >CONSULTATION</a
+        >
+
+        <button
+          class="mobile-nav-toggle"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          aria-controls="main-nav-pill"
+          id="mobileMenuButton"
+        >
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ============================================================
+             CONSULTATION HERO
+             ============================================================ -->
+      <section class="consult-hero">
+        <div class="consult-hero-inner">
+          <span class="section-eyebrow animate-reveal"
+            >Start The Conversation</span
+          >
+          <h1 class="animate-reveal">
+            Let's Architect Your <span>Digital Prestige.</span>
+          </h1>
+          <p class="animate-reveal">
+            Tell us where your brand stands today and where you want it to go. A
+            member of our strategy team will follow up within one business day
+            to schedule your consultation.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+             CONSULTATION LAYOUT
+             ============================================================ -->
+      <section class="consult-section">
+        <div class="consult-layout">
+          <!-- LEFT: Consultation Form -->
+          <div class="consult-form-panel fade-up-trigger">
+            <h3>Request Your Consultation</h3>
+            <p>
+              Share a few details below and we'll be in touch to schedule a time
+              that works for you.
+            </p>
+
+            <form class="consult-form" id="consultForm" novalidate>
+              <div class="consult-field">
+                <label for="consultName">Full Name *</label>
+                <input type="text" id="consultName" name="name" required />
+                <span class="consult-field-error"
+                  >Please enter your full name.</span
+                >
+              </div>
+              <div class="consult-field">
+                <label for="consultEmail">Email Address *</label>
+                <input type="email" id="consultEmail" name="email" required />
+                <span class="consult-field-error"
+                  >Please enter a valid email address.</span
+                >
+              </div>
+              <div class="consult-field">
+                <label for="consultPhone">Phone Number</label>
+                <input type="tel" id="consultPhone" name="phone" />
+              </div>
+              <div class="consult-field">
+                <label for="consultCompany">Company Name</label>
+                <input type="text" id="consultCompany" name="company" />
+              </div>
+              <div class="consult-field">
+                <label for="consultType">Project Type</label>
+                <select id="consultType" name="projectType">
+                  <option value="" selected disabled>Select an option</option>
+                  <option value="Web Design">
+                    Web Design &amp; Development
+                  </option>
+                  <option value="Video Production">Video Production</option>
+                  <option value="Social Media">Social Media Management</option>
+                  <option value="Campaign Strategy">
+                    Political Campaign Strategy
+                  </option>
+                  <option value="Brand Marketing">Brand &amp; Marketing</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="consult-field">
+                <label for="consultBudget">Estimated Budget</label>
+                <select id="consultBudget" name="budget">
+                  <option value="" selected disabled>Select a range</option>
+                  <option value="Under $5,000">Under $5,000</option>
+                  <option value="$5,000 - $15,000">$5,000 – $15,000</option>
+                  <option value="$15,000 - $50,000">$15,000 – $50,000</option>
+                  <option value="$50,000+">$50,000+</option>
+                </select>
+              </div>
+              <div class="consult-field full-width">
+                <label for="consultMessage">Project Details *</label>
+                <textarea
+                  id="consultMessage"
+                  name="message"
+                  placeholder="Tell us about your brand, your goals, and what success looks like."
+                  required
+                ></textarea>
+                <span class="consult-field-error"
+                  >Please share a few project details.</span
+                >
+              </div>
+
+              <button type="submit" class="btn-primary consult-submit-btn">
+                Request Consultation
+              </button>
+            </form>
+
+            <div class="consult-form-success" id="consultSuccess">
+              <div class="consult-success-mark">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>
+              </div>
+              <h3>Request Received</h3>
+              <p>
+                Thank you for reaching out. A member of our strategy team will
+                follow up within one business day to schedule your consultation.
+              </p>
+              <button
+                type="button"
+                class="btn-primary consult-success-reset-btn"
+                id="consultResetBtn"
+              >
+                Submit Another Request
+              </button>
+            </div>
+          </div>
+          <!-- RIGHT: Process -->
+          <div class="consult-info fade-up-trigger">
+            <span class="consult-info-eyebrow">What Happens Next</span>
+            <h2>A Clear Path <br />From Brief to Build.</h2>
+            <p>
+              No lengthy sales cycles — just a direct line to the people who
+              will actually build your platform.
+            </p>
+
+            <div class="consult-steps">
+              <div class="consult-step">
+                <span class="consult-step-num">01</span>
+                <div class="consult-step-body">
+                  <h4>Discovery Call</h4>
+                  <p>
+                    We learn your brand, your audience, and the outcome you're
+                    chasing — no generic questionnaires.
+                  </p>
+                </div>
+              </div>
+              <div class="consult-step">
+                <span class="consult-step-num">02</span>
+                <div class="consult-step-body">
+                  <h4>Strategic Proposal</h4>
+                  <p>
+                    You'll receive a tailored scope, timeline, and investment —
+                    built around your goals, not a template.
+                  </p>
+                </div>
+              </div>
+              <div class="consult-step">
+                <span class="consult-step-num">03</span>
+                <div class="consult-step-body">
+                  <h4>Kickoff &amp; Build</h4>
+                  <p>
+                    Once aligned, our team begins production with regular
+                    check-ins until launch.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+             OFFICE MAP
+             ============================================================ -->
+      <section class="consult-map-section">
+        <div class="consult-map-inner fade-up-trigger">
+          <span class="consult-info-eyebrow">Find Us</span>
+          <h2
+            style="
+              font-family: var(--font-serif);
+              font-size: 2rem;
+              font-weight: 400;
+              color: #fff;
+              margin-bottom: 1.5rem;
+            "
+          >
+            Based in Nashville, TN.
+          </h2>
+          <div class="consult-map-frame">
+            <iframe
+              src="https://www.google.com/maps?q=Nashville,TN,USA&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Map showing Nashville, TN"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq3t9mMe30qSs7kpJGVOvUSjW2NjEFiTuFdmK0-0sjuDbP9VX6n2cZ441AaAufz226F4gq5iI6BhOq1Fl8qFjskAlpjJYCJwQzLRjxPUTCyiNmRbOd9k6uxcuVn1aLi7F8Hwfh1yawq2aGaVA6q07K3eg5LZ2zKbWnuPfsbYW8Jje62_MOkxidwWPSsOWmQ4aVO0pOmrlVXg6D7Uap0u4wPh3awMYWuKGWYSab3eJwMpwsZYd7VBkZF-ZO5tAb19m3zgRT_B_moRS_"
+            alt="Hathaway Strategic Logo"
+            class="footer-logo"
+          />
+          <p class="footer-desc">
+            We are a dynamic digital agency specializing in social media
+            management, marketing, video editing, political campaign strategy,
+            and web design. With a passion for creativity and results, we help
+            businesses and campaigns grow their online presence, engage their
+            audience, and achieve their goals. Let us bring your vision to life!
+          </p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h5 class="footer-heading">Visit Us</h5>
+            <p class="footer-link footer-text">
+              2003 Old Hillsboro Rd<br />Franklin, TN 37064
+            </p>
+            <a class="footer-link" href="mailto:team@hathawaystrategic.com"
+              >team@hathawaystrategic.com</a
+            >
+          </div>
+          <div>
+            <h5 class="footer-heading">Quick Links</h5>
+            <ul class="footer-list">
+              <li><a class="footer-link" href="index.html#home">Home</a></li>
+              <li>
+                <a class="footer-link" href="portfolio.html">Our Works</a>
+              </li>
+              <li>
+                <a class="footer-link" href="solutions.html">Our Solution</a>
+              </li>
+              <li>
+                <a class="footer-link" href="consultation.html">Consultation</a>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-newsletter">
+            <h5 class="footer-heading">Newsletter</h5>
+            <p class="footer-link footer-text">
+              Join our network for elite strategic insights.
+            </p>
+            <form class="newsletter-form">
+              <input
+                type="email"
+                placeholder="Email Address"
+                class="newsletter-input"
+                required
+              />
+              <button type="submit" class="newsletter-submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">
+          © 2024 Hathaway Strategic. All rights reserved.
+        </p>
+      </div>
+
+      <button id="back-to-top" class="back-to-top-btn" aria-label="Back to top">
+        <svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 15l-6-6-6 6"></path>
+        </svg>
+      </button>
+    </footer>
+
+    <script>
+      /* =============================================================
+   HATHAWAY STRATEGIC — main.js (consultation page)
+   ============================================================= */
+
+      /* =========================================================
+   MOUSE-TRACKING AMBIENT GLOW
+   ========================================================= */
+      document.addEventListener("DOMContentLoaded", () => {
+        const glowEffect = document.getElementById("glow");
+        let mouseXOffset = 0;
+        let mouseYOffset = 0;
+
+        window.addEventListener("mousemove", (e) => {
+          mouseXOffset = (e.clientX / window.innerWidth - 0.5) * 60;
+          mouseYOffset = (e.clientY / window.innerHeight - 0.5) * 60;
+          if (glowEffect) {
+            glowEffect.style.transform = `translate(${mouseXOffset}px, calc(${mouseYOffset}px + ${window.scrollY * 0.3}px))`;
+          }
+        });
+
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (glowEffect) {
+              glowEffect.style.transform = `translate(${mouseXOffset}px, calc(${mouseYOffset}px + ${window.scrollY * 0.3}px))`;
+            }
+          },
+          { passive: true },
+        );
+      });
+
+      /* =========================================================
+   SCROLL-REVEAL ANIMATIONS (.fade-up-trigger)
+   ========================================================= */
+      document.addEventListener("DOMContentLoaded", () => {
+        const items = document.querySelectorAll(".fade-up-trigger");
+
+        if ("IntersectionObserver" in window) {
+          const obs = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((e) => {
+                if (e.isIntersecting) {
+                  e.target.classList.add("motion-active");
+                  obs.unobserve(e.target);
+                }
+              });
+            },
+            { threshold: 0.12, rootMargin: "0px 0px -50px 0px" },
+          );
+          items.forEach((i) => obs.observe(i));
+        } else {
+          items.forEach((i) => i.classList.add("motion-active"));
+        }
+      });
+
+      /* =========================================================
+   NAVBAR SCROLL SPY — highlight "Consultation" on this page
+   ========================================================= */
+      document.addEventListener("DOMContentLoaded", () => {
+        const navLinks = document.querySelectorAll(".nav-link");
+        navLinks.forEach((link) => {
+          if (link.getAttribute("href").includes("consultation.html")) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
+          }
+        });
+        const desktopBtn = document.querySelector(".nav-btn.desktop-only-btn");
+        if (desktopBtn) desktopBtn.classList.add("active");
+      });
+
+      /* =========================================================
+   MOBILE NAV PILL TOGGLE (header injected markup)
+   ========================================================= */
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggleButton = document.getElementById("mobileMenuButton");
+        const navPill = document.getElementById("main-nav-pill");
+
+        if (toggleButton && navPill) {
+          const setOpen = (isOpen) => {
+            toggleButton.classList.toggle("menu-is-open", isOpen);
+            navPill.classList.toggle("menu-is-open", isOpen);
+            toggleButton.setAttribute("aria-expanded", String(isOpen));
+          };
+
+          toggleButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const willOpen = !navPill.classList.contains("menu-is-open");
+            setOpen(willOpen);
+          });
+
+          navPill.querySelectorAll(".nav-link").forEach((link) => {
+            link.addEventListener("click", () => setOpen(false));
+          });
+
+          document.addEventListener("click", (e) => {
+            if (
+              navPill.classList.contains("menu-is-open") &&
+              !navPill.contains(e.target) &&
+              !toggleButton.contains(e.target)
+            ) {
+              setOpen(false);
+            }
+          });
+
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") setOpen(false);
+          });
+
+          // Reset the mobile menu if the viewport grows back to desktop size
+          window.addEventListener(
+            "resize",
+            () => {
+              if (window.innerWidth > 768) setOpen(false);
+            },
+            { passive: true },
+          );
+        }
+      });
+
+      /* =========================================================
+   BACK-TO-TOP BUTTON
+   ========================================================= */
+      document.addEventListener("DOMContentLoaded", () => {
+        const backToTopBtn = document.getElementById("back-to-top");
+        if (backToTopBtn) {
+          backToTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        }
+      });
+
+      /* =========================================================
+   FOOTER NEWSLETTER FORM
+   ========================================================= */
+      document.addEventListener("DOMContentLoaded", () => {
+        const newsletterForm = document.querySelector(".newsletter-form");
+        if (newsletterForm) {
+          newsletterForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const input = newsletterForm.querySelector(".newsletter-input");
+            if (input) input.value = "";
+          });
+        }
+      });
+
+      /* =========================================================
+   CONSULTATION FORM (consultation.html)
+   ========================================================= */
+      document.addEventListener("DOMContentLoaded", () => {
+        const consultForm = document.getElementById("consultForm");
+        const consultSuccess = document.getElementById("consultSuccess");
+        const consultResetBtn = document.getElementById("consultResetBtn");
+
+        if (consultForm && consultSuccess) {
+          // Mark fields as "touched" once the user leaves them, so invalid
+          // styling only appears after interaction rather than on page load.
+          consultForm
+            .querySelectorAll("input[required], textarea[required]")
+            .forEach((field) => {
+              field.addEventListener("blur", () => {
+                field.classList.add("field-touched");
+                updateFieldError(field);
+              });
+              field.addEventListener("input", () => {
+                if (field.classList.contains("field-touched")) {
+                  updateFieldError(field);
+                }
+              });
+            });
+
+          function updateFieldError(field) {
+            const errorEl = field
+              .closest(".consult-field")
+              ?.querySelector(".consult-field-error");
+            if (!errorEl) return;
+            errorEl.classList.toggle("is-visible", !field.checkValidity());
+          }
+
+          consultForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            // Block submission until every required field is actually filled in.
+            if (!consultForm.checkValidity()) {
+              consultForm
+                .querySelectorAll("input[required], textarea[required]")
+                .forEach((field) => {
+                  field.classList.add("field-touched");
+                  updateFieldError(field);
+                });
+              consultForm.reportValidity();
+              return;
+            }
+
+            consultForm.classList.add("is-hidden");
+            consultSuccess.classList.add("is-active");
+            consultForm.reset();
+            consultForm.querySelectorAll(".field-touched").forEach((field) => {
+              field.classList.remove("field-touched");
+            });
+            consultForm
+              .querySelectorAll(".consult-field-error")
+              .forEach((el) => {
+                el.classList.remove("is-visible");
+              });
+          });
+        }
+
+        // "Submit Another Request" swaps the success panel back for a blank
+        // form, without a full page reload (keeps scroll position + nav state).
+        if (consultResetBtn && consultForm && consultSuccess) {
+          consultResetBtn.addEventListener("click", () => {
+            consultSuccess.classList.remove("is-active");
+            consultForm.classList.remove("is-hidden");
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
