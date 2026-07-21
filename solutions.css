@@ -270,3 +270,38 @@
     padding: 3rem 1.75rem;
   }
 }
+
+/* =========================================================
+   MOBILE EDGE-TO-EDGE CONTAINERS (phones only, <=640px)
+   ========================================================= */
+@media (max-width: 640px) {
+  /* --- Six Disciplines / pillar cards --- */
+  .solution-pillars {
+    padding: 5rem 0 6rem;
+  }
+  .solution-pillars .section-container > .section-eyebrow,
+  .solution-pillars .section-container > h2,
+  .solution-pillars .subtitle-text {
+    padding: 0 1.25rem;
+  }
+  .pillar-grid {
+    padding: 0;
+    gap: 1.25rem;
+  }
+  .pillar-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: 2rem 1.25rem;
+  }
+
+  /* --- Bottom CTA card --- */
+  .solution-cta {
+    padding: 5rem 0 6rem;
+  }
+  .solution-cta-card {
+    border-radius: 0;
+    max-width: 100%;
+    padding: 3rem 1.25rem;
+  }
+}

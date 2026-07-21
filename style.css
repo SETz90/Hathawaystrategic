@@ -2132,10 +2132,10 @@ body {
 .premium-modal-graphic {
   flex: 1.1;
   background: linear-gradient(135deg, #0a111c 0%, #05080f 100%);
-  padding: 3rem;
+  padding: 2.25rem 3rem 2.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   border-right: 1px solid rgba(255, 255, 255, 0.04);
   position: relative;
   overflow: hidden;
@@ -2150,22 +2150,56 @@ body {
     transparent 60%
   );
 }
-.graphic-live-badge {
-  align-self: flex-start;
+.graphic-top-row {
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.graphic-live-badge {
   font-size: 0.7rem;
   color: var(--accent-gold);
   border: 1px solid var(--accent-gold);
   padding: 2px 8px;
   letter-spacing: 1px;
-  margin-bottom: auto;
   font-weight: 600;
+  white-space: nowrap;
+}
+.graphic-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5fe08a;
+  box-shadow: 0 0 8px 2px rgba(95, 224, 138, 0.7);
+  animation: status-dot-pulse 2s ease-in-out infinite;
+}
+@keyframes status-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 .network-visual {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 160px;
+  margin: 0.75rem -0.5rem 0;
   pointer-events: none;
 }
 .network-visual::before {
@@ -2183,83 +2217,91 @@ body {
   );
   mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 85%);
 }
-.network-node {
+.network-svg {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-gold);
-  box-shadow: 0 0 12px 2px rgba(197, 155, 39, 0.7);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.net-path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+.net-path-backbone {
+  stroke-dasharray: 2 4;
+  opacity: 0.55;
+}
+.net-flow {
+  fill: none;
+  stroke: url(#flowGrad);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 16 100;
+  animation: net-flow-move 3s linear infinite;
+}
+.net-flow-d1 {
+  animation-delay: 0.7s;
+}
+.net-flow-d2 {
+  animation-delay: 1.4s;
+}
+.net-flow-d3 {
+  animation-delay: 2.1s;
+}
+@keyframes net-flow-move {
+  from {
+    stroke-dashoffset: 116;
+  }
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+.net-node {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: node-pulse 2.6s ease-in-out infinite;
 }
-.network-node.node-1 {
-  top: 34%;
-  left: 15%;
-  animation-delay: 0s;
+.net-node circle {
+  fill: #fff;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.45));
 }
-.network-node.node-2 {
-  top: 30%;
-  left: 68%;
-  background: #fff;
-  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+.net-node-primary circle {
+  fill: var(--accent-gold);
+  filter: drop-shadow(0 0 8px rgba(197, 155, 39, 0.85));
+}
+.net-node text {
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  fill: rgba(255, 255, 255, 0.5);
+  text-anchor: middle;
+}
+.net-node-d1 {
   animation-delay: 0.6s;
 }
-.network-node.node-3 {
-  top: 66%;
-  left: 24%;
-  background: #fff;
-  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+.net-node-d2 {
   animation-delay: 1.2s;
 }
-.network-node.node-4 {
-  top: 60%;
-  left: 78%;
+.net-node-d3 {
   animation-delay: 1.8s;
-}
-.network-line {
-  position: absolute;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(197, 155, 39, 0.55),
-    rgba(197, 155, 39, 0)
-  );
-  transform-origin: left center;
-  opacity: 0.6;
-}
-.network-line.line-1 {
-  top: 34%;
-  left: 15%;
-  width: 233px;
-  transform: rotate(-4deg);
-}
-.network-line.line-2 {
-  top: 30%;
-  left: 68%;
-  width: 130px;
-  transform: rotate(71deg);
-}
-.network-line.line-3 {
-  top: 34%;
-  left: 15%;
-  width: 140px;
-  transform: rotate(74deg);
-}
-.network-line.line-4 {
-  top: 66%;
-  left: 24%;
-  width: 239px;
-  transform: rotate(-6deg);
 }
 @keyframes node-pulse {
   0%,
   100% {
     transform: scale(1);
-    opacity: 0.85;
   }
   50% {
-    transform: scale(1.6);
-    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .net-flow,
+  .net-node,
+  .status-dot {
+    animation: none;
   }
 }
 .graphic-caption {
@@ -2300,11 +2342,12 @@ body {
 }
 .metrics-grid-mini {
   display: flex;
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 1.25rem 1.5rem;
   margin-bottom: 2.5rem;
 }
 .metric-item {
-  padding-left: 1.25rem;
+  padding-left: 1.1rem;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 .metric-item:first-child {
@@ -2313,9 +2356,10 @@ body {
 }
 .metric-item h5 {
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 500;
   margin-bottom: 0.1rem;
+  white-space: nowrap;
 }
 .metric-item p {
   font-size: 0.75rem;
@@ -2358,8 +2402,15 @@ body {
     flex-direction: column;
   }
   .premium-modal-graphic {
-    padding: 2.5rem 2rem;
-    min-height: 180px;
+    padding: 1.75rem 2rem 2rem;
+    min-height: 220px;
+  }
+  .network-visual {
+    min-height: 140px;
+  }
+  .metric-item:nth-child(3) {
+    padding-left: 0;
+    border-left: none;
   }
   .premium-modal-info {
     padding: 2.5rem 2rem;
@@ -3148,5 +3199,70 @@ main {
   .cookie-btn {
     flex: none;
     padding: 12px 32px;
+  }
+}
+
+/* =========================================================
+   MOBILE EDGE-TO-EDGE CONTAINERS (phones only, <=640px)
+   Cards/panels bleed to the true screen edges on mobile so
+   they stop looking like a squeezed, floating box. Internal
+   padding is kept (and tuned) so the text itself still has
+   breathing room — only the outer gutter/border-radius goes.
+   ========================================================= */
+@media (max-width: 640px) {
+  /* --- Solutions showcase (Ecosystem card + editorial cards) --- */
+  .solutions-showcase {
+    padding: 5rem 0 6rem;
+  }
+  .solutions-showcase .section-eyebrow,
+  .solutions-showcase > .section-container > h2,
+  .solutions-showcase .subtitle-text {
+    padding: 0 1.25rem;
+  }
+  .portfolio-grid,
+  .portfolio-grid.editorial-grid {
+    padding: 0 !important;
+  }
+  .portfolio-card,
+  .portfolio-card.feature-wide {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  .feature-wide .card-image-context,
+  .dynamic-ui-canvas {
+    padding: 1.5rem 1.25rem 0 !important;
+  }
+  .feature-wide .card-meta {
+    padding: 2.5rem 1.25rem !important;
+  }
+  .card-meta {
+    padding: 2rem 1.25rem;
+  }
+  .asymmetric-layout {
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding: 2rem 1.25rem !important;
+  }
+  .asset-panel-45 {
+    border-radius: 8px !important;
+  }
+
+  /* --- Content architecture / scrubber cards --- */
+  .scrubber-section {
+    padding: 4rem 0;
+  }
+  .scrubber-intro {
+    padding: 0 1.25rem;
+  }
+  .scrubber-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: 2rem 1.25rem;
+  }
+  .mobile-only-media {
+    border-radius: 0;
   }
 }

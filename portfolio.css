@@ -1420,3 +1420,35 @@ body {
     text-align: center;
   }
 }
+
+/* =========================================================
+   MOBILE EDGE-TO-EDGE CONTAINERS (phones only, <=640px)
+   Same fix as the main site: outer gutter removed so cards
+   bleed edge-to-edge, internal padding tuned to keep text
+   readable instead of squeezed.
+   ========================================================= */
+@media (max-width: 640px) {
+  /* --- Testimonial cards --- */
+  .testimonial-carousel {
+    padding: 0;
+  }
+  .testimonial-card {
+    border-radius: 0;
+    max-width: 100%;
+  }
+  .testimonial-content {
+    padding: 1.5rem 1.25rem 2rem;
+  }
+
+  /* --- CTA card ("Ready to Create Your Legacy?") --- */
+  .cta-section {
+    padding: 6rem 0;
+  }
+  .cta-inner {
+    padding: 0;
+  }
+  .cta-card {
+    border-radius: 0;
+    padding: 3rem 1.25rem;
+  }
+}
