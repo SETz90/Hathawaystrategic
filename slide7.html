@@ -190,9 +190,22 @@
         transition: 0.3s;
       }
 
+      header.custom-header-wrapper .nav-link {
+        position: relative;
+      }
       header.custom-header-wrapper .nav-link:hover,
       header.custom-header-wrapper .nav-link.active {
         color: #eec14b;
+      }
+      header.custom-header-wrapper .nav-link.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -8px;
+        height: 2px;
+        border-radius: 2px;
+        background: #eec14b;
       }
 
       header.custom-header-wrapper .nav-btn {
@@ -281,6 +294,14 @@
         }
         header.custom-header-wrapper .nav-pill .nav-link:last-child {
           border-bottom: none;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link.active {
+          background: rgba(238, 193, 75, 0.08);
+          border-left: 2px solid #eec14b;
+          padding-left: 18px;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link.active::after {
+          content: none;
         }
         header.custom-header-wrapper
           .mobile-nav-toggle.menu-is-open
@@ -440,7 +461,7 @@
         font-family: var(--font-display);
         color: #ffffff;
         margin: 0 0 32px;
-        font-size: 48px;
+        font-size: 36px;
         line-height: 56px;
         letter-spacing: -0.01em;
         font-weight: 700;
@@ -611,7 +632,7 @@
 
       .section-title {
         font-family: var(--font-display);
-        font-size: 40px;
+        font-size: 30px;
         line-height: 48px;
         font-weight: 600;
         color: #ffffff;
@@ -732,11 +753,14 @@
 
       .rf-seat-card {
         max-width: var(--container-max);
-        margin: 96px auto 0;
-        padding: 56px var(--margin-mobile);
+        margin: 64px calc(-1 * var(--margin-mobile)) 0;
+        padding: 40px 12px;
       }
       @media (min-width: 768px) {
         .rf-seat-card {
+          margin-top: 96px;
+          margin-left: auto;
+          margin-right: auto;
           padding-left: var(--margin-desktop);
           padding-right: var(--margin-desktop);
         }
@@ -745,7 +769,7 @@
         position: relative;
         max-width: 860px;
         margin: 0 auto;
-        padding: 56px 40px;
+        padding: 36px 20px;
         background: linear-gradient(
           160deg,
           rgba(197, 160, 89, 0.08),
@@ -754,6 +778,11 @@
         border: 1px solid rgba(197, 160, 89, 0.3);
         border-radius: var(--radius-lg);
         text-align: center;
+      }
+      @media (min-width: 768px) {
+        .rf-seat-inner {
+          padding: 56px 40px;
+        }
       }
       .rf-seal {
         width: 64px;
@@ -787,15 +816,16 @@
       .rf-quote {
         font-family: var(--font-display);
         font-weight: 500;
-        font-size: 26px;
-        line-height: 38px;
+        font-size: 19px;
+        line-height: 30px;
         color: #ffffff;
-        margin: 0 0 24px;
+        margin: 0 0 28px;
       }
       @media (min-width: 768px) {
         .rf-quote {
           font-size: 30px;
           line-height: 42px;
+          margin: 0 0 24px;
         }
       }
       .rf-quote-attr {
@@ -1140,15 +1170,17 @@
 
       .metrics-box {
         max-width: var(--container-max);
-        margin: 0 auto;
+        margin: 0 calc(-1 * var(--margin-mobile));
         background-color: var(--color-gold);
         color: var(--color-background);
-        padding: 64px;
-        border-radius: var(--radius-lg);
+        padding: 40px 20px;
+        border-radius: 0;
       }
       @media (min-width: 768px) {
         .metrics-box {
+          margin: 0 auto;
           padding: 96px;
+          border-radius: var(--radius-lg);
         }
       }
 
@@ -1188,7 +1220,7 @@
 
       .metric-number {
         font-family: var(--font-display);
-        font-size: 48px;
+        font-size: 36px;
         line-height: 56px;
         font-weight: 600;
         margin-bottom: 8px;
