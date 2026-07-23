@@ -1,0 +1,805 @@
+      /* =========================================================
+           GLOBAL VARIABLES & BASE
+           ========================================================= */
+      :root {
+        --bg-dark: #060e17;
+        --bg-deep: #02060d;
+        --text-light: #ffffff;
+        --text-muted: #8fa0b5;
+        --accent-gold: #eec14b;
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.06);
+        --font-serif: "Playfair Display", serif;
+        --font-sans: "Inter", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        font-family: var(--font-sans);
+        overflow-x: hidden;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* =========================================================
+     NAVBAR (canonical — shared across every page, do not diverge)
+     ========================================================= */
+      header.custom-header-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        z-index: 9999;
+        background: rgba(10, 14, 23, 0.85);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      header.custom-header-wrapper .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      header.custom-header-wrapper .logo-img {
+        height: 32px;
+        width: auto;
+      }
+
+      header.custom-header-wrapper .nav-pill {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 9999px;
+        padding: 10px 32px;
+      }
+
+      header.custom-header-wrapper .nav-link {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+
+      header.custom-header-wrapper .nav-link {
+        position: relative;
+      }
+      header.custom-header-wrapper .nav-link:hover,
+      header.custom-header-wrapper .nav-link.active {
+        color: #eec14b;
+      }
+      header.custom-header-wrapper .nav-link.active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -8px;
+        height: 2px;
+        border-radius: 2px;
+        background: #eec14b;
+      }
+
+      header.custom-header-wrapper .nav-btn {
+        font-family: "Inter", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #eec14b;
+        background: transparent;
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        padding: 10px 24px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      header.custom-header-wrapper .nav-btn:hover {
+        background: #eec14b;
+        color: #000;
+      }
+
+      header.custom-header-wrapper .mobile-nav-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        z-index: 10000;
+      }
+      header.custom-header-wrapper .burger-bar {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background-color: #ffffff;
+        transition: all 0.3s ease-in-out;
+      }
+
+      /* Nav link shown only inside the mobile dropdown so Consultation
+         stays reachable once the desktop CTA button is hidden on mobile. */
+      header.custom-header-wrapper .mobile-only-link {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        header.custom-header-wrapper .desktop-only-btn {
+          display: none !important;
+        }
+        header.custom-header-wrapper .mobile-nav-toggle {
+          display: flex !important;
+        }
+        header.custom-header-wrapper .mobile-only-link {
+          display: block !important;
+        }
+        header.custom-header-wrapper .nav-pill {
+          position: absolute;
+          top: 85px;
+          right: 32px;
+          width: 180px;
+          height: auto;
+          background: #111622;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          backdrop-filter: blur(20px);
+        }
+        header.custom-header-wrapper .nav-pill.menu-is-open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        header.custom-header-wrapper .nav-pill .nav-link {
+          width: 100%;
+          padding: 14px 20px;
+          box-sizing: border-box;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          font-size: 11px;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link:last-child {
+          border-bottom: none;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link.active {
+          background: rgba(238, 193, 75, 0.08);
+          border-left: 2px solid #eec14b;
+          padding-left: 18px;
+        }
+        header.custom-header-wrapper .nav-pill .nav-link.active::after {
+          content: none;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+          background-color: #eec14b;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(2) {
+          opacity: 0;
+        }
+        header.custom-header-wrapper
+          .mobile-nav-toggle.menu-is-open
+          .burger-bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+          background-color: #eec14b;
+        }
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* Defensive fix: fixed-position elements can escape a parent's
+   overflow-x clipping, which is what was pushing the mobile nav
+   toggle off-screen. Locking html+body width stops that. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
+      /* =========================================================
+           MOBILE NAV BREAKPOINT (matches index.html / portfolio.html)
+           ========================================================= */
+      @media (max-width: 768px) {
+        /* 1. Remove Consultation Button entirely */
+        .desktop-only-btn {
+          display: none !important;
+        }
+
+        /* 2. Put Mobile Toggle exactly where Consultation was */
+        .mobile-nav-toggle {
+          display: flex !important;
+        }
+
+        /* Keep Consultation reachable via the mobile dropdown link */
+        .mobile-only-link {
+          display: block !important;
+        }
+
+        /* 3. Turn Navigation Pill into a dropdown box */
+        .nav-pill {
+          position: absolute;
+          top: 85px;
+          right: 32px;
+          width: 180px;
+          height: auto;
+          background: #111622;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          backdrop-filter: blur(20px);
+        }
+
+        /* Opened Dropdown state triggered by JS */
+        .nav-pill.menu-is-open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .nav-pill .nav-link {
+          width: 100%;
+          padding: 14px 20px;
+          box-sizing: border-box;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          font-size: 11px;
+        }
+        .nav-pill .nav-link:last-child {
+          border-bottom: none;
+        }
+
+        /* Hamburger turns into an 'X' when open */
+        .mobile-nav-toggle.menu-is-open .burger-bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+          background-color: var(--accent-gold);
+        }
+        .mobile-nav-toggle.menu-is-open .burger-bar:nth-child(2) {
+          opacity: 0;
+        }
+        .mobile-nav-toggle.menu-is-open .burger-bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+          background-color: var(--accent-gold);
+        }
+      }
+
+      /* =========================================================
+           HERO SECTION — sized to match Layered-Intel-1536x739.jpg
+           ========================================================= */
+      .hero {
+        position: relative;
+        width: 1536px;
+        height: 739px; /* fixed to the exact source image dimensions, 1536x739 */
+        max-width: 100%;
+        margin: 0 auto;
+        display: flex;
+        align-items: flex-start;
+        padding-top: 160px; /* clears the fixed 80px navbar */
+        padding-bottom: 70px; /* balances the top padding now that Explore Journey has been removed */
+        overflow: hidden;
+        background-color: #000;
+      }
+
+      /* Hero Image Layer */
+      .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+      .hero-bg-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        display: block;
+      }
+
+      /* Dark overlay tuned for the actual (mostly light/white) source photo,
+         so white headline text stays readable wherever it sits */
+      .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* Strong, extended dark veil on the left where the copy lives, easing
+           out toward the right where the Layered Intel logo/mark sits in the photo */
+        background: linear-gradient(
+          to right,
+          rgba(2, 6, 13, 0.97) 0%,
+          rgba(2, 6, 13, 0.9) 35%,
+          rgba(2, 6, 13, 0.55) 60%,
+          rgba(2, 6, 13, 0.15) 100%
+        );
+        z-index: 2;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        padding: 0 8%;
+      }
+
+      .case-study-label {
+        color: var(--accent-gold);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        display: block;
+      }
+
+      .hero-content h1 {
+        font-family: var(--font-serif);
+        font-size: clamp(2.5rem, 5vw, 4.2rem);
+        color: #fff;
+        line-height: 1.1;
+        margin-bottom: 25px;
+        max-width: 850px;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+      }
+
+      .hero-content h1 span {
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      .hero-desc {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 580px;
+        margin-bottom: 40px;
+        line-height: 1.8;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Meta Data (Sector/Service) */
+      .hero-meta {
+        display: flex;
+        gap: 60px;
+        margin-bottom: 30px;
+      }
+
+      .meta-item span {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent-gold);
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+
+      .meta-item p {
+        font-size: 1.1rem;
+        color: #fff;
+        font-weight: 500;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Bottom fade — blends the hero smoothly into the Three Pillars
+         section below instead of ending on a hard edge. Also strengthens
+         contrast across the full width near the bottom, where the
+         left-to-right overlay above is at its lightest. */
+      .hero-bottom-fade {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 260px;
+        background: linear-gradient(
+          to bottom,
+          rgba(2, 6, 13, 0) 0%,
+          rgba(2, 6, 13, 0.75) 60%,
+          var(--bg-deep) 100%
+        );
+        z-index: 2;
+      }
+
+      /* =========================================================
+           ARCHITECTURE & CONTENT SECTIONS
+           ========================================================= */
+      .layered-architecture {
+        padding: 120px 8%;
+        background: var(--bg-deep);
+      }
+      .section-header {
+        text-align: center;
+        margin-bottom: 80px;
+      }
+      .section-header h2 {
+        font-family: var(--font-serif);
+        font-size: 3rem;
+        margin-top: 10px;
+      }
+
+      .stack-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .stack-layer {
+        display: flex;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        padding: 40px;
+        border-radius: 4px;
+        gap: 40px;
+        align-items: center;
+        transition: 0.4s;
+      }
+      .stack-layer:hover {
+        border-color: var(--accent-gold);
+        transform: translateX(10px);
+      }
+      .layer-num {
+        font-family: var(--font-serif);
+        font-size: 3.5rem;
+        color: var(--accent-gold);
+        font-weight: 800;
+      }
+      .layer-content h3 {
+        font-size: 1.6rem;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+      .layer-content p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      /* =========================================================
+           RESULTS STRIP
+           ========================================================= */
+      .results-strip {
+        padding: 0 8% 140px;
+        background: var(--bg-deep);
+      }
+      .results-grid {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .result-item {
+        text-align: center;
+        padding: 44px 24px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 4px;
+        transition: 0.4s;
+      }
+      .result-item:hover {
+        border-color: var(--accent-gold);
+        transform: translateY(-8px);
+      }
+      .result-number {
+        font-family: var(--font-serif);
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--accent-gold);
+        margin-bottom: 14px;
+        line-height: 1;
+      }
+      .result-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      /* =========================================================
+           TESTIMONIAL
+           ========================================================= */
+      .testimonial-section {
+        padding: 100px 8%;
+        background: var(--bg-dark);
+        border-top: 1px solid var(--glass-border);
+        border-bottom: 1px solid var(--glass-border);
+        text-align: center;
+      }
+      .testimonial-wrap {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .quote-mark {
+        display: block;
+        font-family: var(--font-serif);
+        font-size: 5rem;
+        line-height: 1;
+        color: rgba(238, 193, 75, 0.18);
+        margin-bottom: -10px;
+      }
+      .testimonial-quote {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+        line-height: 1.6;
+        color: #fff;
+        margin-bottom: 32px;
+      }
+      .testimonial-avatar {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        display: block;
+        object-fit: cover;
+        margin: 0 auto 18px;
+      }
+      .attribution-name {
+        color: var(--accent-gold);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+      .attribution-role {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 6px;
+      }
+
+      /* =========================================================
+           FOOTER
+           ========================================================= */
+      /* ==========================================================================
+   Footer (canonical — shared across every page, do not diverge)
+   ========================================================================== */
+      .site-footer {
+        background-color: #000000;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 2;
+      }
+      .site-footer .footer-top {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 48px;
+        padding: 80px 24px;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-top {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 64px;
+          padding-left: 64px;
+          padding-right: 64px;
+        }
+      }
+      .site-footer .footer-brand {
+        margin-bottom: 0;
+        flex: 1 1 260px;
+        max-width: 340px;
+      }
+      .site-footer .footer-logo {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 24px;
+      }
+      .site-footer .footer-desc {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        max-width: 384px;
+        margin: 0;
+      }
+      .site-footer .footer-links {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        flex: 2 1 560px;
+      }
+      @media (min-width: 640px) {
+        .site-footer .footer-links {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .site-footer .footer-heading {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+      }
+      .site-footer .footer-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .site-footer .footer-link {
+        display: block;
+        color: #a1a1a1;
+        text-decoration: none;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        transition: color 0.2s ease;
+      }
+      .site-footer .footer-link:hover {
+        color: #c5a059;
+      }
+      .site-footer .footer-text {
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      .site-footer .footer-newsletter {
+        max-width: 280px;
+      }
+      .site-footer .newsletter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 8px;
+      }
+      .site-footer .newsletter-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-family: "Inter", sans-serif;
+        font-size: 16px;
+        padding: 0 0 12px;
+        outline: none;
+        transition: border-color 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .site-footer .newsletter-input::placeholder {
+        color: #a1a1a1;
+      }
+      .site-footer .newsletter-input:focus {
+        border-bottom-color: #c5a059;
+      }
+      .site-footer .newsletter-submit {
+        align-self: flex-start;
+        background: none;
+        border: none;
+        border-bottom: 1px solid #c5a059;
+        color: #c5a059;
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 0 0 4px;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+      }
+      .site-footer .newsletter-submit:hover {
+        opacity: 0.75;
+      }
+      .site-footer .footer-bottom {
+        padding: 32px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        box-sizing: border-box;
+      }
+      @media (min-width: 768px) {
+        .site-footer .footer-bottom {
+          padding-left: 64px;
+          padding-right: 64px;
+          text-align: left;
+        }
+      }
+      .site-footer .footer-copy {
+        color: #a1a1a1;
+        font-family: "Inter", sans-serif;
+        font-size: 14px;
+        opacity: 0.6;
+        margin: 0;
+      }
+      .back-to-top-btn {
+        position: absolute;
+        bottom: 32px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        background: rgba(238, 193, 75, 0.08);
+        border: 1px solid rgba(238, 193, 75, 0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #eec14b;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .back-to-top-btn:hover {
+        background: #eec14b;
+        color: #000000;
+      }
+      @media (min-width: 768px) {
+        .back-to-top-btn {
+          right: 64px;
+        }
+      }
