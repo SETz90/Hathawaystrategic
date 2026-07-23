@@ -224,44 +224,35 @@
       <section class="laptop-showcase-section" id="showcase">
         <div class="showcase-stack">
           <div class="section-container showcase-heading">
-            <span class="section-eyebrow animate-reveal">See It Live</span>
+            <span class="section-eyebrow animate-reveal">Crafted For You</span>
             <h2 class="animate-reveal">Your Site, <span>In Motion.</span></h2>
             <p class="animate-reveal subtitle-text">
-              A live, interactive preview of the exact platform we build —
-              explore it in real time, right from this window.
+              A glimpse of the polished, high-fidelity platforms we build for
+              our clients.
             </p>
           </div>
           <div class="laptop-interactive-column">
-            <!-- Disconnected from cards; targets the unique laptop modal instead -->
-            <div
-              class="laptop-2d-hardware-wrapper dynamic-modal-trigger"
-              data-modal-target="laptop-exclusive-modal"
-              title="Click to expand live workspace"
-            >
+            <div class="laptop-2d-hardware-wrapper">
               <!-- Laptop Screen Component -->
               <div class="laptop-2d-screen-chassis">
                 <div class="laptop-2d-inner-bezel">
                   <div class="laptop-2d-webcam"></div>
                   <div class="laptop-2d-display-panel">
-                    <!-- Live, self-referencing preview of the real homepage -->
+                    <!-- Static screenshot of the real homepage — no live
+                         iframe, no duplicate page load, zero extra cost
+                         when this section scrolls into view. -->
                     <div class="laptop-screen-content-replicated">
-                      <div class="laptop-preview-frame-wrap">
-                        <iframe
-                          class="laptop-live-preview-iframe"
-                          title="Live preview of the Hathaway Strategic homepage"
-                          scrolling="no"
-                          loading="lazy"
-                          tabindex="-1"
-                        ></iframe>
-                      </div>
+                      <img
+                        class="laptop-preview-image"
+                        src="https://res.cloudinary.com/gmriwzco/image/upload/v1784772299/Screenshot_2026-07-23_100426_beao1j.png"
+                        alt="Preview of the Hathaway Strategic homepage"
+                        loading="lazy"
+                        decoding="async"
+                      />
                       <div class="mini-bg-overlay"></div>
                     </div>
 
                     <div class="screen-glass-glare-overlay"></div>
-                    <div class="screen-click-prompt">
-                      <span class="prompt-icon">⤢</span>
-                      <span>Expand Preview Workspace</span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -640,132 +631,6 @@
         </div>
       </section>
     </main>
-
-    <!-- ============================================================
-     MODAL: EXCLUSIVE FOR THE LAPTOP SHOWCASE
-     (Sibling of <main>, not a descendant — main has its own z-index
-     stacking context, which previously trapped this modal beneath
-     the fixed header regardless of its own z-index.)
-     ============================================================ -->
-    <div
-      class="custom-premium-modal"
-      id="laptop-exclusive-modal"
-      aria-hidden="true"
-    >
-      <div class="premium-modal-overlay" data-close-modal></div>
-      <div class="premium-modal-window">
-        <button
-          class="premium-modal-close"
-          data-close-modal
-          aria-label="Close interactive window"
-        >
-          &times;
-        </button>
-        <div class="premium-modal-wrapper">
-          <div class="premium-modal-graphic">
-            <div class="graphic-top-row">
-              <div class="graphic-live-badge">LIVE ENVIRONMENT PREVIEW</div>
-              <div class="graphic-status-pill">
-                <span class="status-dot" aria-hidden="true"></span>
-                All Nodes Operational
-              </div>
-            </div>
-
-            <!-- Global node network: real connecting paths + animated
-                 data-flow, replacing the old rotated-div lines -->
-            <div class="network-visual" aria-hidden="true">
-              <svg
-                class="network-svg"
-                viewBox="0 0 320 210"
-                preserveAspectRatio="xMidYMid meet"
-              >
-                <defs>
-                  <linearGradient id="flowGrad" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stop-color="#c5a059" stop-opacity="0" />
-                    <stop offset="50%" stop-color="#eec14b" stop-opacity="1" />
-                    <stop offset="100%" stop-color="#c5a059" stop-opacity="0" />
-                  </linearGradient>
-                </defs>
-
-                <path class="net-path" d="M48,66 L228,42" />
-                <path class="net-path" d="M228,42 L262,148" />
-                <path class="net-path" d="M262,148 L74,172" />
-                <path class="net-path" d="M74,172 L48,66" />
-                <path class="net-path net-path-backbone" d="M48,66 L262,148" />
-
-                <path class="net-flow" pathLength="100" d="M48,66 L228,42" />
-                <path
-                  class="net-flow net-flow-d1"
-                  pathLength="100"
-                  d="M228,42 L262,148"
-                />
-                <path
-                  class="net-flow net-flow-d2"
-                  pathLength="100"
-                  d="M262,148 L74,172"
-                />
-                <path
-                  class="net-flow net-flow-d3"
-                  pathLength="100"
-                  d="M74,172 L48,66"
-                />
-
-                <g class="net-node net-node-primary">
-                  <circle cx="48" cy="66" r="4.5" />
-                  <text x="48" y="54">NYC</text>
-                </g>
-                <g class="net-node net-node-d1">
-                  <circle cx="228" cy="42" r="4" />
-                  <text x="228" y="30">FRA</text>
-                </g>
-                <g class="net-node net-node-d2">
-                  <circle cx="262" cy="148" r="4" />
-                  <text x="262" y="166">SIN</text>
-                </g>
-                <g class="net-node net-node-d3">
-                  <circle cx="74" cy="172" r="4" />
-                  <text x="74" y="190">SYD</text>
-                </g>
-              </svg>
-            </div>
-
-            <p class="graphic-caption">
-              Real-time infrastructure monitoring across our global node
-              network.
-            </p>
-          </div>
-          <div class="premium-modal-info">
-            <span class="info-tag">CORE INFRASTRUCTURE</span>
-            <h2>Next-Gen Architecture Metrics</h2>
-            <p>
-              This workspace demonstrates our decoupled systems framework
-              engineered to host lightning-fast, highly encrypted client asset
-              applications seamlessly across global nodes.
-            </p>
-            <div class="metrics-grid-mini">
-              <div class="metric-item">
-                <h5>99.9%</h5>
-                <p>Uptime Node SLA</p>
-              </div>
-              <div class="metric-item">
-                <h5>&lt; 40ms</h5>
-                <p>TTFB Performance</p>
-              </div>
-              <div class="metric-item">
-                <h5>AES-256</h5>
-                <p>Data Encryption</p>
-              </div>
-            </div>
-            <a
-              href="#contact"
-              class="btn-primary dynamic-modal-cta"
-              data-close-modal
-              >Book a Consultation</a
-            >
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- ============================================================
          MODAL: CASE STUDY 01 (BRAND PLATFORM)

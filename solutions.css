@@ -44,9 +44,20 @@
   transform: translateY(-2px);
 }
 
-/* ---- Hero variant: no video, just the ambient glow behind it ---- */
+/* ---- Hero variant: no video, just the ambient glow behind it ----
+   The shared .hero rule (style.css) is built for the homepage's full-
+   bleed video hero: min-height:100vh + vertically centered content +
+   an extra 5rem top margin on .hero-container. With no video here and
+   much shorter text, that combination left a huge empty gap above and
+   below the heading. Sized to content instead, with sensible padding. */
 .solution-hero {
-  min-height: 85vh;
+  min-height: auto;
+  align-items: flex-start;
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+}
+.solution-hero .hero-container {
+  margin-top: 0;
 }
 .solution-hero-actions {
   gap: 1.25rem;

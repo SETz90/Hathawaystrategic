@@ -6,12 +6,33 @@
    ============================================================= */
 
 /* =========================================================
+   EMBEDDED-PREVIEW DETECTION
+   - True only when this page is running INSIDE the laptop
+     showcase's mini iframe (i.e. we are the tiny decorative
+     copy, not the real page the visitor is looking at).
+   - The embedded copy is scaled down to a few hundred pixels
+     and never interacted with directly, so there's no reason
+     for it to run continuous animation loops, timers, or
+     autoplaying video a second time in parallel with the real
+     page. Every feature below that runs on a scroll/mousemove
+     listener or a setInterval checks this flag first.
+   ========================================================= */
+const IS_EMBEDDED_PREVIEW = window.self !== window.top;
+
+/* =========================================================
    FEATURE 1: MOUSE-TRACKING AMBIENT GLOW + SCROLL PARALLAX
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
   const glowEffect = document.getElementById("glow");
   const heroContent = document.querySelector(".hero-container");
   const bgVideo = document.querySelector(".bg-video");
+
+  // The embedded mini-preview never needs the hero video decoding and
+  // playing a second time in the background — pause it immediately.
+  if (IS_EMBEDDED_PREVIEW) {
+    if (bgVideo) bgVideo.pause();
+    return;
+  }
 
   let mouseXOffset = 0;
   let mouseYOffset = 0;
@@ -113,25 +134,29 @@ document.addEventListener("DOMContentLoaded", () => {
     items.forEach((i) => i.classList.add("motion-active"));
   }
 
-  /* Parallax on editorial-grid images */
-  const parallaxContainers = document.querySelectorAll(".asymmetric-layout");
-  window.addEventListener(
-    "scroll",
-    () => {
-      const vh = window.innerHeight;
-      parallaxContainers.forEach((c) => {
-        const box = c.getBoundingClientRect();
-        if (box.top <= vh && box.top + box.height >= 0) {
-          const img = c.querySelector(".parallax-img");
-          if (img) {
-            const delta = (box.top / vh) * 100;
-            img.style.transform = `translateY(${delta * 0.3 - 15}px)`;
+  /* Parallax on editorial-grid images (skipped in the embedded mini-preview —
+     purely decorative motion no one can see at that scale, not worth a
+     second continuous scroll listener running behind the real page) */
+  if (!IS_EMBEDDED_PREVIEW) {
+    const parallaxContainers = document.querySelectorAll(".asymmetric-layout");
+    window.addEventListener(
+      "scroll",
+      () => {
+        const vh = window.innerHeight;
+        parallaxContainers.forEach((c) => {
+          const box = c.getBoundingClientRect();
+          if (box.top <= vh && box.top + box.height >= 0) {
+            const img = c.querySelector(".parallax-img");
+            if (img) {
+              const delta = (box.top / vh) * 100;
+              img.style.transform = `translateY(${delta * 0.3 - 15}px)`;
+            }
           }
-        }
-      });
-    },
-    { passive: true },
-  );
+        });
+      },
+      { passive: true },
+    );
+  }
 });
 
 /* =========================================================
@@ -143,7 +168,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediaColumn = document.querySelector(".scrubber-media-column");
   const splitContainer = document.querySelector(".scrubber-content-split");
 
-  if (window.innerWidth > 992 && cards.length && slides.length) {
+  if (
+    !IS_EMBEDDED_PREVIEW &&
+    window.innerWidth > 992 &&
+    cards.length &&
+    slides.length
+  ) {
     // Track the active index ourselves so followActiveCard can be called on
     // every scroll tick without needing a card element passed in.
     let activeIndex = Array.from(cards).findIndex((c) =>
@@ -365,6 +395,10 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   const startAuto = () => {
+    // Skipped in the embedded mini-preview: an infinite setInterval running
+    // a second, invisible copy of this carousel forever in the background
+    // is pure wasted CPU on a screen too small to read the slides anyway.
+    if (IS_EMBEDDED_PREVIEW) return;
     autoTimer = setInterval(() => {
       goTo(current + 1);
     }, 4500);
@@ -382,101 +416,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* =================================================================
-   FEATURE 8b: LIVE LAPTOP PREVIEW IFRAME
-   - Loads the real homepage inside the laptop screen
-   - Guards against infinite self-nesting when this page is itself
-     rendered inside that preview iframe
-   - Scales the 1440x900 "virtual desktop" down to fit the screen
+   NOTE: The laptop showcase used to embed a live <iframe> copy of the
+   whole homepage plus a click-to-expand popup modal. Both were removed —
+   the section is now a static decorative mockup (see index.html), so
+   there's no iframe load, no modal controller, and nothing extra runs
+   when this section scrolls into view.
    ================================================================= */
-document.addEventListener("DOMContentLoaded", () => {
-  const previewIframe = document.querySelector(".laptop-live-preview-iframe");
-  if (!previewIframe) return;
-
-  // Only load the live preview at the top level. If this script is
-  // running because we ARE the preview (embedded inside another
-  // instance of this same page), skip loading another nested copy.
-  if (window.self === window.top) {
-    previewIframe.src = "index.html";
-  } else {
-    previewIframe.remove();
-    return;
-  }
-
-  function sizeLivePreview() {
-    const wrap = document.querySelector(".laptop-preview-frame-wrap");
-    if (!wrap || !previewIframe.isConnected) return;
-    // offsetWidth is a pure layout measurement and is NOT affected by the
-    // CSS transform (scale/translateY/rotateX) applied to the ancestor
-    // .laptop-2d-hardware-wrapper during its scroll-reveal animation.
-    // getBoundingClientRect() WAS affected by that transform, so measuring
-    // early (before the reveal animation settled) baked the wrong ratio
-    // into the iframe and it stuck until something (like a browser zoom)
-    // forced a fresh resize event.
-    const wrapWidth = wrap.offsetWidth;
-    if (!wrapWidth) return;
-    const scale = wrapWidth / 1440;
-    previewIframe.style.transform = `scale(${scale})`;
-  }
-
-  // Recalculate at every point layout could have shifted: right away,
-  // once webfonts finish (can change intrinsic sizes), once everything
-  // (video/images) has fully loaded, and once more shortly after via
-  // rAF to catch any last-frame layout settling.
-  sizeLivePreview();
-
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(sizeLivePreview);
-  }
-
-  window.addEventListener("load", () => {
-    sizeLivePreview();
-    requestAnimationFrame(() => requestAnimationFrame(sizeLivePreview));
-  });
-
-  previewIframe.addEventListener("load", sizeLivePreview);
-  window.addEventListener("resize", sizeLivePreview);
-
-  if ("ResizeObserver" in window) {
-    const wrap = document.querySelector(".laptop-preview-frame-wrap");
-    if (wrap) new ResizeObserver(sizeLivePreview).observe(wrap);
-  }
-});
-/* =================================================================
-   UNIFIED DYNAMIC MODAL CONTROLLER 
-   - Handles standard portfolio cards and the unique laptop modal completely independently
-   ================================================================= */
-document.addEventListener("DOMContentLoaded", () => {
-  const modalTriggers = document.querySelectorAll(".dynamic-modal-trigger");
-
-  modalTriggers.forEach((trigger) => {
-    trigger.addEventListener("click", (e) => {
-      e.preventDefault();
-      const modalId = trigger.getAttribute("data-modal-target");
-      const targetModal = document.getElementById(modalId);
-
-      if (targetModal) {
-        targetModal.classList.add("modal-visible");
-        targetModal.setAttribute("aria-hidden", "false");
-        document.body.style.overflow = "hidden"; // Lock background scroll
-      }
-    });
-  });
-
-  // Global closing wireup for all modal instances
-  const closeButtons = document.querySelectorAll("[data-close-modal]");
-  closeButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const activeModal = document.querySelector(
-        ".custom-premium-modal.modal-visible",
-      );
-      if (activeModal) {
-        activeModal.classList.remove("modal-visible");
-        activeModal.setAttribute("aria-hidden", "true");
-        document.body.style.overflow = "";
-      }
-    });
-  });
-});
 
 /* =================================================================
    PATCHED CINEMATIC SLIDER: TRUE INFINITE SEAMLESS LOOP ENGINE

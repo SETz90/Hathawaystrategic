@@ -1770,7 +1770,6 @@ body {
   width: 100%;
   max-width: 1200px;
   position: relative;
-  cursor: pointer;
   background: none !important;
   border: none !important;
   padding: 0 !important;
@@ -1785,9 +1784,6 @@ body {
 }
 .laptop-2d-hardware-wrapper:hover .screen-glass-glare-overlay {
   opacity: 0.08;
-}
-.laptop-2d-hardware-wrapper:hover .screen-click-prompt {
-  opacity: 1;
 }
 
 /* ---- 2D Screen Display Architecture (Macbook Premium Style) ---- */
@@ -1848,34 +1844,6 @@ body {
   pointer-events: none;
   z-index: 3;
   transition: opacity 0.4s ease;
-}
-
-/* Prompt overlay showing modal feature capability */
-.screen-click-prompt {
-  position: absolute;
-  inset: 0;
-  background: rgba(4, 9, 19, 0.75);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  opacity: 0;
-  z-index: 4;
-  transition: opacity 0.3s ease;
-}
-.prompt-icon {
-  font-size: 1.5rem;
-  color: var(--accent-gold);
-}
-.screen-click-prompt span:last-child {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 600;
-  color: #fff;
 }
 
 /* ---- 2D Anodized Base Architecture ---- */
@@ -2027,32 +1995,25 @@ body {
   }
 }
 /* =================================================================
-   LAPTOP PREVIEW REPLICATION (image_bee731.jpg emulation)
+   LAPTOP SCREEN — STATIC HOMEPAGE SCREENSHOT
+   Replaces the old live <iframe> copy of the homepage. A plain <img>,
+   no network round-trip beyond one lightweight JPG, no duplicate page
+   render — costs nothing extra when this section scrolls into view.
    ================================================================= */
 .laptop-screen-content-replicated {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #060b13 0%, #0c1524 100%);
   position: relative;
   box-sizing: border-box;
+  overflow: hidden;
   user-select: none;
 }
-.laptop-preview-frame-wrap {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-.laptop-live-preview-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1440px;
-  height: 900px;
-  border: 0;
-  pointer-events: none;
-  transform-origin: top left;
-  transform: scale(0.34); /* recalculated precisely via JS on load/resize */
-  background: #060b13;
+.laptop-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
 }
 .mini-bg-overlay {
   position: absolute;
