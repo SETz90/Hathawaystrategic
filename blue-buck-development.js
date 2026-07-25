@@ -1,3 +1,12 @@
+// Navbar highlight: always mark "Our Works" as the active link on this
+// page, regardless of what's hardcoded in the HTML. Runs on every load so
+// the navbar can never be left showing the wrong (or no) link active.
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.classList.toggle("active", link.getAttribute("href") === "portfolio.html");
+  });
+});
+
       // ==========================================================================
       // Reveal-on-scroll animation
       // ==========================================================================
