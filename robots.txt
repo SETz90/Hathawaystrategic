@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Internal duplicates of the case-study pages used for slide/export
+# purposes — not meant to be indexed as separate pages.
+Disallow: /slide1.html
+Disallow: /slide2.html
+Disallow: /slide3.html
+Disallow: /slide4.html
+Disallow: /slide5.html
+Disallow: /slide6.html
+Disallow: /slide7.html
+Disallow: /slide8.html
+Disallow: /slide9.html
+
+Sitemap: https://hathawaystrategic.com/sitemap.xml

@@ -80,6 +80,7 @@
     <link rel="stylesheet" href="style.css?v=1784946336" />
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="ambient-glow" id="glow"></div>
 
     <!-- Premium Exact Match Navbar with Seamless Mobile Toggle Swap -->
@@ -125,7 +126,7 @@
       </nav>
     </header>
 
-    <main>
+    <main id="main-content">
       <!-- ============================================================
              HERO SECTION
              ============================================================ -->
@@ -748,7 +749,13 @@
     <!-- ============================================================
          MODAL: CASE STUDY 01 (BRAND PLATFORM)
          ============================================================ -->
-    <div id="case-study-modal" class="modal-overlay">
+    <div
+      id="case-study-modal"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle1"
+    >
       <div class="modal-window">
         <button
           class="modal-close-btn"
@@ -760,7 +767,7 @@
         <div class="modal-body-layout">
           <div class="modal-content-column">
             <span class="modal-eyebrow">CASE STUDY</span>
-            <h2>A Full-Site Brand Platform Rebuild</h2>
+            <h2 id="modalTitle1">A Full-Site Brand Platform Rebuild</h2>
             <p class="modal-description">
               A look at how we rebuilt a client's entire site and brand presence
               — pairing clean, premium design with the reporting to track what
@@ -817,7 +824,13 @@
     <!-- ============================================================
          MODAL: CASE STUDY 02 (VIDEO PRODUCTION)
          ============================================================ -->
-    <div id="modal-case-study-02" class="modal-overlay">
+    <div
+      id="modal-case-study-02"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle2"
+    >
       <div class="modal-window">
         <button class="modal-close-btn" aria-label="Close Modal">
           &times;
@@ -825,7 +838,9 @@
         <div class="modal-layout-split">
           <div class="modal-narrative-column">
             <span class="modal-pretitle">CONTENT PRODUCTION</span>
-            <h2>Captivate Audiences via High-Fidelity Video Production</h2>
+            <h2 id="modalTitle2">
+              Captivate Audiences via High-Fidelity Video Production
+            </h2>
             <div class="modal-meta-pill-box">
               <span class="meta-pill">Short-Form</span>
               <span class="meta-pill">Cinematic Assets</span>
@@ -883,7 +898,13 @@
     <!-- ============================================================
          MODAL: CASE STUDY 03 (ANALYTICS)
          ============================================================ -->
-    <div id="modal-case-study-03" class="modal-overlay">
+    <div
+      id="modal-case-study-03"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle3"
+    >
       <div class="modal-window">
         <button class="modal-close-btn" aria-label="Close Modal">
           &times;
@@ -891,7 +912,9 @@
         <div class="modal-layout-split">
           <div class="modal-narrative-column">
             <span class="modal-pretitle">BUSINESS INTELLIGENCE</span>
-            <h2>Real-Time Analytics &amp; Performance Optimization</h2>
+            <h2 id="modalTitle3">
+              Real-Time Analytics &amp; Performance Optimization
+            </h2>
             <div class="modal-meta-pill-box">
               <span class="meta-pill">Data Infrastructure</span>
               <span class="meta-pill">Predictive Modeling</span>
@@ -952,7 +975,13 @@
            thumbnail to swap the featured project in place —
            no page navigation required to browse.
          ============================================================ -->
-    <div id="modal-laptop-preview" class="modal-overlay">
+    <div
+      id="modal-laptop-preview"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="laptopModalTitle"
+    >
       <div class="modal-window">
         <button class="modal-close-btn" aria-label="Close Modal">
           &times;

@@ -20,6 +20,27 @@
   padding: 0;
 }
 
+/* Skip link — hidden until keyboard-focused, so sighted mouse users never
+   see it but keyboard/screen-reader users can jump past the nav. */
+.skip-link {
+  position: fixed;
+  top: -60px;
+  left: 1rem;
+  z-index: 10000;
+  background: var(--accent-gold);
+  color: var(--bg-dark);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;

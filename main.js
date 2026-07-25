@@ -99,16 +99,50 @@ document.addEventListener("DOMContentLoaded", () => {
     ".view-case-study-trigger, .card-link",
   );
   const modals = document.querySelectorAll(".modal-overlay");
+  let lastFocusedTrigger = null;
 
-  const openModal = (m) => {
+  const getFocusable = (container) =>
+    Array.from(
+      container.querySelectorAll(
+        'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => el.offsetParent !== null);
+
+  const openModal = (m, trigger) => {
+    lastFocusedTrigger = trigger || document.activeElement;
     m.classList.add("is-active");
     document.body.style.overflow = "hidden";
+    const focusable = getFocusable(m);
+    (focusable[0] || m).focus();
   };
   const closeModal = (m) => {
     m.classList.remove("is-active");
     if (!Array.from(modals).some((x) => x.classList.contains("is-active")))
       document.body.style.overflow = "";
+    if (lastFocusedTrigger && typeof lastFocusedTrigger.focus === "function") {
+      lastFocusedTrigger.focus();
+    }
+    lastFocusedTrigger = null;
   };
+
+  // Trap Tab/Shift+Tab inside whichever modal is currently open so
+  // keyboard focus can't silently escape behind the overlay.
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const active = document.querySelector(".modal-overlay.is-active");
+    if (!active) return;
+    const focusable = getFocusable(active);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
 
   triggers.forEach((trigger) => {
     trigger.addEventListener("click", (e) => {
@@ -117,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const modal = document.getElementById(id);
       if (modal) {
         e.preventDefault();
-        openModal(modal);
+        openModal(modal, trigger);
       }
     });
   });
