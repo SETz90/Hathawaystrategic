@@ -5,14 +5,25 @@
 // Navbar highlight: always mark "Our Works" as the active link on this page.
 // This runs on every load so the navbar can't be left showing the wrong
 // link active, regardless of what's hardcoded in the HTML.
+//
+// IMPORTANT: hosts like Netlify rewrite hrefs (e.g. "portfolio.html" becomes
+// "/portfolio") via "Pretty URLs" post-processing, so we can't compare hrefs
+// with a strict === match — that only ever matched on localhost. Instead we
+// strip any query/hash, slashes, and .html/.htm extension before comparing,
+// so this works the same whether the href is "portfolio.html", "/portfolio",
+// "portfolio", or "/portfolio/".
+const isLinkTo = (href, pageKey) => {
+  const clean = (href || "").split(/[?#]/)[0].replace(/^\/+|\/+$/g, "");
+  const base = clean.split("/").pop() || "";
+  return base.replace(/\.html?$/i, "").toLowerCase() === pageKey;
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-  const navLinks = document.querySelectorAll(".nav-link");
-  navLinks.forEach((link) => {
-    if (link.getAttribute("href") === "portfolio.html") {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.classList.toggle(
+      "active",
+      isLinkTo(link.getAttribute("href"), "portfolio"),
+    );
   });
 });
 

@@ -1393,13 +1393,24 @@
    NAVBAR SCROLL SPY — highlight "Consultation" on this page
    ========================================================= */
       document.addEventListener("DOMContentLoaded", () => {
+        // Hosts like Netlify rewrite hrefs (e.g. "consultation.html" becomes
+        // "/consultation") via "Pretty URLs" post-processing, so a raw
+        // .includes("consultation.html") check only ever worked on
+        // localhost. Strip query/hash, slashes, and the .html/.htm
+        // extension before comparing so this works everywhere.
+        const isLinkTo = (href, pageKey) => {
+          const clean = (href || "")
+            .split(/[?#]/)[0]
+            .replace(/^\/+|\/+$/g, "");
+          const base = clean.split("/").pop() || "";
+          return base.replace(/\.html?$/i, "").toLowerCase() === pageKey;
+        };
         const navLinks = document.querySelectorAll(".nav-link");
         navLinks.forEach((link) => {
-          if (link.getAttribute("href").includes("consultation.html")) {
-            link.classList.add("active");
-          } else {
-            link.classList.remove("active");
-          }
+          link.classList.toggle(
+            "active",
+            isLinkTo(link.getAttribute("href"), "consultation"),
+          );
         });
         const desktopBtn = document.querySelector(".nav-btn.desktop-only-btn");
         if (desktopBtn) desktopBtn.classList.add("active");

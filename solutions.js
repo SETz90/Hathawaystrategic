@@ -4,14 +4,23 @@
 
 // Navbar highlight: always mark "Our Solution" as the active link on this
 // page, regardless of what's hardcoded in the HTML.
+//
+// IMPORTANT: hosts like Netlify rewrite hrefs (e.g. "solutions.html" becomes
+// "/solutions") via "Pretty URLs" post-processing, so a strict === match on
+// href only ever worked on localhost. We strip query/hash, slashes, and the
+// .html/.htm extension before comparing so this works everywhere.
+const isLinkTo = (href, pageKey) => {
+  const clean = (href || "").split(/[?#]/)[0].replace(/^\/+|\/+$/g, "");
+  const base = clean.split("/").pop() || "";
+  return base.replace(/\.html?$/i, "").toLowerCase() === pageKey;
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-  const navLinks = document.querySelectorAll(".nav-link");
-  navLinks.forEach((link) => {
-    if (link.getAttribute("href") === "solutions.html") {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.classList.toggle(
+      "active",
+      isLinkTo(link.getAttribute("href"), "solutions"),
+    );
   });
 });
 
