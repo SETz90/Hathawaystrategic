@@ -830,6 +830,50 @@ body {
   padding: 3rem;
   box-sizing: border-box;
 }
+
+/* Live-portfolio modal (laptop showcase click-through) */
+.laptop-modal-thumb-row {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.5rem 0 2rem 0;
+  flex-wrap: wrap;
+}
+.laptop-modal-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+.laptop-modal-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.laptop-modal-thumb:hover {
+  transform: translateY(-2px);
+}
+.laptop-modal-thumb.active {
+  border-color: var(--accent-gold);
+}
+.laptop-modal-image-column {
+  padding: 0 !important;
+  overflow: hidden;
+}
+.laptop-modal-featured-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .modal-video-wrapper {
   width: 100%;
   height: 100%;
@@ -1376,6 +1420,52 @@ body {
     flex-direction: column;
     gap: 0.75rem;
   }
+
+  /* ---- Accordion behavior: only the active card shows its
+     image, description, and sub-topic detail. The rest collapse
+     down to just the step label + heading so all six fit on
+     screen without a long forced scroll. ---- */
+  .scrubber-card {
+    position: relative;
+    padding: 1.5rem 3rem 1.5rem 1.75rem;
+  }
+  .scrubber-card.active {
+    padding: 1.75rem;
+  }
+  .scrubber-card h3 {
+    font-size: 1.15rem;
+    margin: 0.35rem 0 0 0;
+  }
+  .scrubber-card.active h3 {
+    margin: 0.5rem 0 0.75rem 0;
+  }
+  .scrubber-card::after {
+    content: "+";
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-family: var(--font-sans);
+    font-size: 1.3rem;
+    line-height: 1;
+    color: var(--accent-gold);
+  }
+  .scrubber-card.active::after {
+    content: "\2212";
+  }
+  .scrubber-card .mobile-only-media,
+  .scrubber-card .card-main-desc,
+  .scrubber-card .sub-topic-grid {
+    display: none;
+  }
+  .scrubber-card.active .mobile-only-media {
+    display: block;
+  }
+  .scrubber-card.active .card-main-desc {
+    display: block;
+  }
+  .scrubber-card.active .sub-topic-grid {
+    display: flex;
+  }
 }
 
 /* =========================================================
@@ -1775,6 +1865,16 @@ body {
   padding: 0 !important;
 }
 
+/* Button reset — the wrapper is a real <button> now so it's keyboard
+   and screen-reader accessible, not just a div with a click listener. */
+.laptop-click-trigger {
+  display: block;
+  cursor: pointer;
+  font: inherit;
+  text-align: inherit;
+  color: inherit;
+}
+
 /* Hover Micro-reactions */
 .laptop-2d-hardware-wrapper:hover .laptop-2d-screen-chassis {
   transform: translateY(-4px);
@@ -1784,6 +1884,33 @@ body {
 }
 .laptop-2d-hardware-wrapper:hover .screen-glass-glare-overlay {
   opacity: 0.08;
+}
+.laptop-click-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 13, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 4;
+  pointer-events: none;
+}
+.laptop-click-hint span {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  background: rgba(197, 155, 39, 0.2);
+}
+.laptop-2d-hardware-wrapper:hover .laptop-click-hint,
+.laptop-2d-hardware-wrapper:focus-visible .laptop-click-hint {
+  opacity: 1;
 }
 
 /* ---- 2D Screen Display Architecture (Macbook Premium Style) ---- */

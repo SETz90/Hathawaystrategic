@@ -6,7 +6,7 @@
     <title>Hathaway Strategic | Custom Digital Solutions</title>
     <meta
       name="description"
-      content="Hathaway Strategic designs and engineers bespoke websites, branding, and digital ecosystems for forward-thinking brands, pairing premium design with analytical clarity."
+      content="Hathaway Strategic designs and builds bespoke websites, branding, and content systems for forward-thinking brands, pairing premium design with the analytics to prove it converts."
     />
     <link rel="canonical" href="https://hathawaystrategic.com/" />
 
@@ -19,7 +19,7 @@
     />
     <meta
       property="og:description"
-      content="Hathaway Strategic designs and engineers bespoke websites, branding, and digital ecosystems for forward-thinking brands, pairing premium design with analytical clarity."
+      content="Hathaway Strategic designs and builds bespoke websites, branding, and content systems for forward-thinking brands, pairing premium design with the analytics to prove it converts."
     />
     <meta property="og:url" content="https://hathawaystrategic.com/" />
     <meta
@@ -35,7 +35,7 @@
     />
     <meta
       name="twitter:description"
-      content="Hathaway Strategic designs and engineers bespoke websites, branding, and digital ecosystems for forward-thinking brands, pairing premium design with analytical clarity."
+      content="Hathaway Strategic designs and builds bespoke websites, branding, and content systems for forward-thinking brands, pairing premium design with the analytics to prove it converts."
     />
     <meta
       name="twitter:image"
@@ -50,7 +50,7 @@
         "name": "Hathaway Strategic",
         "url": "https://hathawaystrategic.com/",
         "logo": "https://res.cloudinary.com/gmriwzco/image/upload/f_auto,q_auto/logo_gepp36",
-        "description": "Hathaway Strategic designs and engineers bespoke websites, branding, and digital ecosystems for forward-thinking brands.",
+        "description": "Hathaway Strategic designs and builds bespoke websites, branding, and content systems for forward-thinking brands.",
         "sameAs": []
       }
     </script>
@@ -132,7 +132,16 @@
       <section class="hero" id="home">
         <div class="video-background-container">
           <div class="video-overlay"></div>
-          <video autoplay loop muted playsinline class="bg-video">
+          <video
+            autoplay
+            loop
+            muted
+            playsinline
+            preload="auto"
+            poster="Video/hero-poster.jpg"
+            class="bg-video"
+            id="heroBgVideo"
+          >
             <source src="Video/background-video.mp4" type="video/mp4" />
           </video>
         </div>
@@ -145,9 +154,9 @@
               Shaping the Future of <span>Digital Prestige.</span>
             </h1>
             <p class="animate-reveal">
-              We engineer bespoke online ecosystems for forward-thinking brands.
-              By fusing high-end narrative storytelling with analytical clarity,
-              we transform how the world interacts with your enterprise vision.
+              We design and build websites, video, and brand systems that turn
+              attention into revenue — pairing premium design with the data
+              discipline to prove it's working.
             </p>
             <div class="hero-actions animate-reveal">
               <a href="#solutions" class="btn-primary">Elevate Your Presence</a>
@@ -161,15 +170,13 @@
              ============================================================ -->
       <section class="solutions-showcase" id="solutions">
         <div class="section-container">
-          <span class="section-eyebrow animate-reveal"
-            >Selected Manifestos</span
-          >
+          <span class="section-eyebrow animate-reveal">Selected Work</span>
           <h2 class="animate-reveal">
-            Architecting Digital <span>Prestige.</span>
+            Built to Win <span>Attention and Trust.</span>
           </h2>
           <p class="animate-reveal subtitle-text">
-            We craft tailored digital ecosystems that elevate commercial
-            influence and refine brand authority.
+            Websites, video, and reporting designed to turn your reputation into
+            revenue.
           </p>
 
           <!-- FIRST ROW: Feature Wide Card -->
@@ -188,7 +195,7 @@
                         width="1000"
                         height="667"
                         src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80"
-                        alt="Hathaway Analytics Interface Ecosystem"
+                        alt="Hathaway Analytics Interface"
                         class="ui-base-graphic"
                       />
                     </div>
@@ -197,10 +204,10 @@
                 </div>
                 <div class="card-meta">
                   <span class="card-index">BRAND PLATFORM</span>
-                  <h3>The Hathaway Ecosystem Strategy</h3>
+                  <h3>Full-Site Brand Platforms</h3>
                   <p>
-                    A multi-channel digital nexus engineered for high-net-worth
-                    commercial narrative activation.
+                    A complete site and brand system, engineered to turn
+                    visitors into high-value clients.
                   </p>
                   <a href="#" class="card-link" data-target="case-study-modal">
                     View Case Study <span class="arrow">→</span>
@@ -295,7 +302,12 @@
             </p>
           </div>
           <div class="laptop-interactive-column">
-            <div class="laptop-2d-hardware-wrapper">
+            <button
+              type="button"
+              class="laptop-2d-hardware-wrapper view-case-study-trigger laptop-click-trigger"
+              data-target="modal-laptop-preview"
+              aria-label="View live portfolio examples"
+            >
               <!-- Laptop Screen Component -->
               <div class="laptop-2d-screen-chassis">
                 <div class="laptop-2d-inner-bezel">
@@ -303,7 +315,8 @@
                   <div class="laptop-2d-display-panel">
                     <!-- Static screenshot of the real homepage — no live
                          iframe, no duplicate page load, zero extra cost
-                         when this section scrolls into view. -->
+                         when this section scrolls into view. Clicking it
+                         opens an interactive modal to browse real projects. -->
                     <div class="laptop-screen-content-replicated">
                       <img
                         width="1200"
@@ -318,6 +331,9 @@
                     </div>
 
                     <div class="screen-glass-glare-overlay"></div>
+                    <div class="laptop-click-hint">
+                      <span>Explore Live Projects →</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -326,7 +342,7 @@
               <div class="laptop-2d-aluminum-base">
                 <div class="laptop-2d-notch"></div>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </section>
@@ -338,13 +354,11 @@
         <div class="scrubber-container">
           <div class="scrubber-intro">
             <span class="section-pretitle">OUR CORE EXPERTISE</span>
-            <h2>Architecting Digital <span>Supremacy.</span></h2>
+            <h2>Six Disciplines Behind <span>Your Growth.</span></h2>
             <p>
-              Our team collaborates closely with you, brainstorming and
-              developing concepts that really resonate and engage people.
-              Through an iterative process, we refine and produce engaging
-              content that reflects your brand and provide valuable impact to
-              your community.
+              From the first strategy call to the numbers on your dashboard,
+              each discipline below is built to do one job: turn attention into
+              revenue.
             </p>
           </div>
 
@@ -449,10 +463,10 @@
                       width="800"
                       height="600"
                       src="https://res.cloudinary.com/gmriwzco/image/upload/v1784200577/stack4_kquvpx.jpg"
-                      alt="Ecosystem Automation"
+                      alt="Content Automation"
                     />
                   </div>
-                  <span class="card-step-num">ECOSYSTEM AUTOMATION</span>
+                  <span class="card-step-num">CONTENT AUTOMATION</span>
                   <h3>Programmatic Content Engines</h3>
                   <p class="card-main-desc">
                     We build autonomous media distribution engines that
@@ -571,7 +585,7 @@
                     width="800"
                     height="600"
                     src="https://res.cloudinary.com/gmriwzco/image/upload/v1784200577/stack4_kquvpx.jpg"
-                    alt="Ecosystem Automation"
+                    alt="Content Automation"
                   />
                 </div>
                 <div class="media-canvas-slide">
@@ -746,32 +760,29 @@
         <div class="modal-body-layout">
           <div class="modal-content-column">
             <span class="modal-eyebrow">CASE STUDY</span>
-            <h2>The Hathaway Ecosystem Transformation</h2>
+            <h2>A Full-Site Brand Platform Rebuild</h2>
             <p class="modal-description">
-              An in-depth look at how we architected a high-net-worth
-              multi-channel digital nexus, fusing clean minimalism with data
-              integrity.
+              A look at how we rebuilt a client's entire site and brand presence
+              — pairing clean, premium design with the reporting to track what
+              it earned them.
             </p>
             <ul class="modal-insights-list">
               <li>
-                <strong>Aesthetic Cleanliness:</strong> Engineered a bespoke
-                premium dark UI with glassmorphism panels to match ultra-luxury
-                consumer behavior expectations.
+                <strong>Premium Design:</strong> A custom dark-UI site built to
+                match how their high-net-worth clients expect a brand to look
+                and feel.
               </li>
               <li>
-                <strong>Infrastructure Speed:</strong> Optimized rendering asset
-                delivery layers, achieving an average page load velocity
-                reduction under 0.8 seconds globally.
+                <strong>Faster Load Times:</strong> Rebuilt asset delivery cut
+                average page load time to under 0.8 seconds.
               </li>
               <li>
-                <strong>Conversion Matrix:</strong> Set up a live data-tracking
-                engine to streamline marketing operations and improve user
-                engagement.
+                <strong>Clear Attribution:</strong> Live tracking shows the team
+                exactly which pages and campaigns bring in leads.
               </li>
               <li>
-                <strong>Secure Scalability:</strong> Implemented private
-                endpoint architecture to maintain data isolation for
-                high-net-worth corporate entities.
+                <strong>Secure by Design:</strong> Client data is isolated on
+                private endpoints, built to the standard their industry expects.
               </li>
             </ul>
             <div class="modal-action-row">
@@ -930,6 +941,111 @@
                 />
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL: LIVE PORTFOLIO CLICK-THROUGH (laptop showcase)
+         - Tap the laptop preview to open this, then tap any
+           thumbnail to swap the featured project in place —
+           no page navigation required to browse.
+         ============================================================ -->
+    <div id="modal-laptop-preview" class="modal-overlay">
+      <div class="modal-window">
+        <button class="modal-close-btn" aria-label="Close Modal">
+          &times;
+        </button>
+        <div class="modal-body-layout">
+          <div class="modal-content-column">
+            <span class="modal-eyebrow">LIVE PORTFOLIO</span>
+            <h2 id="laptopModalTitle">Roland Frasier</h2>
+            <p class="modal-description" id="laptopModalDesc">
+              Roland Frasier is a seasoned serial entrepreneur and business
+              strategist with a track record of founding, scaling, and exiting
+              over two dozen companies.
+            </p>
+
+            <div class="laptop-modal-thumb-row" role="tablist">
+              <button
+                type="button"
+                class="laptop-modal-thumb active"
+                data-title="Roland Frasier"
+                data-tag="Social Strategy"
+                data-desc="Roland Frasier is a seasoned serial entrepreneur and business strategist with a track record of founding, scaling, and exiting over two dozen companies."
+                data-img="https://res.cloudinary.com/gmriwzco/image/upload/v1784275536/Roland-Frasier-4.png_c6cbjq.jpg"
+                data-href="roland-frasier.html"
+              >
+                <img
+                  src="https://res.cloudinary.com/gmriwzco/image/upload/v1784275536/Roland-Frasier-4.png_c6cbjq.jpg"
+                  alt="Roland Frasier project thumbnail"
+                  loading="lazy"
+                />
+              </button>
+              <button
+                type="button"
+                class="laptop-modal-thumb"
+                data-title="Terra Carbon"
+                data-tag="Sustainability"
+                data-desc="Terra Carbon Development Inc. is a sustainable technology leader focused on decarbonizing the steel industry using its Carbon Refinery technology."
+                data-img="https://res.cloudinary.com/gmriwzco/image/upload/v1784275536/Terra-Carbon_vzgt3q.jpg"
+                data-href="terra-carbon-development.html"
+              >
+                <img
+                  src="https://res.cloudinary.com/gmriwzco/image/upload/v1784275536/Terra-Carbon_vzgt3q.jpg"
+                  alt="Terra Carbon project thumbnail"
+                  loading="lazy"
+                />
+              </button>
+              <button
+                type="button"
+                class="laptop-modal-thumb"
+                data-title="Candy Valentino"
+                data-tag="Content Creator"
+                data-desc="Stories told through the lens of excellence — a content and personal-brand platform built for one of today's leading creators."
+                data-img="https://res.cloudinary.com/gmriwzco/image/upload/v1784275375/handheld-scaled_u4dmgd.jpg"
+                data-href="candy-valentino.html"
+              >
+                <img
+                  src="https://res.cloudinary.com/gmriwzco/image/upload/v1784275375/handheld-scaled_u4dmgd.jpg"
+                  alt="Candy Valentino project thumbnail"
+                  loading="lazy"
+                />
+              </button>
+              <button
+                type="button"
+                class="laptop-modal-thumb"
+                data-title="Coign"
+                data-tag="Conservative-aligned"
+                data-desc="Coign is America's first conservative-focused Visa credit card, offering 1% cash back while directing a portion of every dollar spent toward aligned causes."
+                data-img="https://res.cloudinary.com/gmriwzco/image/upload/v1784275374/coign_fakcpq.jpg"
+                data-href="coign.html"
+              >
+                <img
+                  src="https://res.cloudinary.com/gmriwzco/image/upload/v1784275374/coign_fakcpq.jpg"
+                  alt="Coign project thumbnail"
+                  loading="lazy"
+                />
+              </button>
+            </div>
+
+            <div class="modal-action-row">
+              <a
+                href="roland-frasier.html"
+                id="laptopModalCta"
+                class="btn-primary modal-cta-btn"
+                >Visit Live Page →</a
+              >
+            </div>
+          </div>
+          <div class="modal-image-column laptop-modal-image-column">
+            <img
+              id="laptopModalImage"
+              src="https://res.cloudinary.com/gmriwzco/image/upload/v1784275536/Roland-Frasier-4.png_c6cbjq.jpg"
+              alt="Live portfolio preview"
+              class="laptop-modal-featured-img"
+            />
           </div>
         </div>
       </div>

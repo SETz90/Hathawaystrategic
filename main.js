@@ -20,6 +20,33 @@
 const IS_EMBEDDED_PREVIEW = window.self !== window.top;
 
 /* =========================================================
+   DATA-SAVER GUARD
+   - Respects the Save-Data header, slow effective connection
+     types (2g/slow-2g), and reduced-data users in general.
+   - Rather than fetching the hero video at all, we strip its
+     <source>, leaving the poster frame (Video/hero-poster.jpg)
+     as a static, near-instant hero background.
+   ========================================================= */
+(function guardHeroVideoForDataSaver() {
+  const conn =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
+  const wantsLessData =
+    (conn && (conn.saveData || /2g/.test(conn.effectiveType || ""))) || false;
+
+  if (!wantsLessData) return;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const heroVideo = document.getElementById("heroBgVideo");
+    if (!heroVideo) return;
+    heroVideo.querySelectorAll("source").forEach((s) => s.remove());
+    heroVideo.removeAttribute("autoplay");
+    heroVideo.load();
+  });
+})();
+
+/* =========================================================
    FEATURE 1: MOUSE-TRACKING AMBIENT GLOW + SCROLL PARALLAX
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
@@ -112,6 +139,39 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* =========================================================
+   FEATURE 3b: LIVE-PORTFOLIO MODAL — THUMBNAIL SWAP
+   - Lets a visitor click through real portfolio projects
+     inside the laptop showcase modal without leaving the
+     homepage. The final CTA still deep-links to the live page.
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const thumbs = document.querySelectorAll(".laptop-modal-thumb");
+  if (!thumbs.length) return;
+
+  const titleEl = document.getElementById("laptopModalTitle");
+  const descEl = document.getElementById("laptopModalDesc");
+  const imgEl = document.getElementById("laptopModalImage");
+  const ctaEl = document.getElementById("laptopModalCta");
+
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener("click", () => {
+      thumbs.forEach((t) => t.classList.remove("active"));
+      thumb.classList.add("active");
+
+      if (titleEl) titleEl.textContent = thumb.dataset.title || "";
+      if (descEl) descEl.textContent = thumb.dataset.desc || "";
+      if (imgEl) {
+        imgEl.src = thumb.dataset.img || "";
+        imgEl.alt = `${thumb.dataset.title || "Project"} preview`;
+      }
+      if (ctaEl && thumb.dataset.href) {
+        ctaEl.href = thumb.dataset.href;
+      }
+    });
+  });
+});
+
+/* =========================================================
    FEATURE 4: SCROLL-REVEAL ANIMATIONS (.fade-up-trigger)
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
@@ -160,7 +220,38 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* =========================================================
-   FEATURE 6: CAPABILITIES SCRUBBER — CARD ↔ SLIDE SYNC
+   FEATURE 6a: CORE EXPERTISE — MOBILE ACCORDION
+   - Below the 992px breakpoint the media column is hidden and,
+     previously, all six cards rendered fully expanded — a long
+     wall of text and images. This makes them a single-open
+     accordion instead: tap a card to expand it, the rest
+     collapse to just their heading.
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll(".concept-card-trigger");
+  if (IS_EMBEDDED_PREVIEW || !cards.length) return;
+
+  const isMobileWidth = () => window.innerWidth <= 992;
+
+  cards.forEach((card) => {
+    card.addEventListener("click", () => {
+      if (!isMobileWidth()) return; // Feature 6b owns clicks above 992px
+      const alreadyOpen = card.classList.contains("active");
+      cards.forEach((c) => c.classList.remove("active"));
+      if (!alreadyOpen) {
+        card.classList.add("active");
+        // Bring the newly opened card into view since collapsing the
+        // others shifts everything below it upward.
+        requestAnimationFrame(() => {
+          card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+      }
+    });
+  });
+});
+
+/* =========================================================
+   FEATURE 6b: CAPABILITIES SCRUBBER — CARD ↔ SLIDE SYNC
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
   const cards = document.querySelectorAll(".concept-card-trigger");
