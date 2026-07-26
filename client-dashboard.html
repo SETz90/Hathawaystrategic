@@ -1,0 +1,23 @@
+<!-- inside <body>, before other scripts -->
+<script type="module">
+  import {
+    requireAuthOrRedirect,
+    getCurrentUser,
+    onAuthChange,
+    logout,
+  } from "./auth-client.js";
+
+  // Redirects to login.html?next=... if not authenticated.
+  // Pass { role: "ADMIN" } on admin-only pages instead.
+  requireAuthOrRedirect();
+
+  onAuthChange(({ user, isAuthenticated }) => {
+    if (!isAuthenticated) return;
+    document.getElementById("clientFirstName").textContent = user.firstName;
+  });
+
+  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+    await logout();
+    window.location.href = "login.html";
+  });
+</script>

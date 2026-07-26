@@ -1,0 +1,107 @@
+<span class="auth-eyebrow">Client Access</span>
+<h1>Create Your Account</h1>
+<p class="auth-sub">
+  Get access to your project dashboard, files, and updates.
+</p>
+
+<div class="auth-error-banner" id="authError"></div>
+
+<form id="registerForm" novalidate>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem">
+    <div class="auth-field">
+      <label for="firstName">First Name</label>
+      <input
+        type="text"
+        id="firstName"
+        name="firstName"
+        required
+        autocomplete="given-name"
+      />
+    </div>
+    <div class="auth-field">
+      <label for="lastName">Last Name</label>
+      <input
+        type="text"
+        id="lastName"
+        name="lastName"
+        required
+        autocomplete="family-name"
+      />
+    </div>
+  </div>
+  <div class="auth-field">
+    <label for="email">Email Address</label>
+    <input type="email" id="email" name="email" required autocomplete="email" />
+  </div>
+  <div class="auth-field">
+    <label for="password">Password</label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      autocomplete="new-password"
+      minlength="8"
+    />
+    <span style="font-size: 0.75rem; color: var(--text-muted)">
+      At least 8 characters, with an uppercase letter, lowercase letter, and a
+      number.
+    </span>
+  </div>
+
+  <button type="submit" class="btn-primary auth-submit" id="registerSubmit">
+    Create Account
+  </button>
+</form>
+
+<div class="auth-footer-links" style="justify-content: center">
+  <span style="color: var(--text-muted)">
+    Already have an account?
+    <a href="login.html">Log in</a>
+  </span>
+</div>
+<script type="module">
+  import { register } from "./auth-client.js";
+
+  const form = document.getElementById("registerForm");
+  const errorBanner = document.getElementById("authError");
+  const submitBtn = document.getElementById("registerSubmit");
+
+  function showError(message, fieldErrors) {
+    let text = message;
+    if (fieldErrors) {
+      const firstField = Object.values(fieldErrors)[0]?.[0];
+      if (firstField) text = firstField;
+    }
+    errorBanner.textContent = text;
+    errorBanner.classList.add("is-visible");
+  }
+  function clearError() {
+    errorBanner.classList.remove("is-visible");
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearError();
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Creating Account…";
+
+    try {
+      await register({
+        firstName: document.getElementById("firstName").value.trim(),
+        lastName: document.getElementById("lastName").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value,
+      });
+      window.location.href = "client-dashboard.html";
+    } catch (err) {
+      showError(err.message, err.fieldErrors);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Create Account";
+    }
+  });
+</script>
+
+<script src="auth-client.js" type="module"></script>
+<script src="main.js?v=1784946336"></script>

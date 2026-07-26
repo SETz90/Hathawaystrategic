@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In | Hathaway Strategic</title>
+    <link
+      rel="icon"
+      type="Image/png"
+      href="https://res.cloudinary.com/gmriwzco/image/upload/v1784200572/iconweb_xql643.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css?v=1785000000" />
+    <style>
+      /* =========================================================
+         AUTH PAGE — shares tokens from style.css, no new palette
+         ========================================================= */
+      .auth-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10rem 1.5rem 4rem;
+      }
+      .auth-card {
+        width: 100%;
+        max-width: 440px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 3rem;
+        backdrop-filter: blur(10px);
+      }
+      .auth-eyebrow {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+        margin-bottom: 1rem;
+      }
+      .auth-card h1 {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 400;
+        color: #fff;
+        margin-bottom: 0.5rem;
+      }
+      .auth-card > p.auth-sub {
+        font-family: var(--font-sans);
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        margin-bottom: 2.25rem;
+        line-height: 1.7;
+      }
+      .auth-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-bottom: 1.4rem;
+      }
+      .auth-field label {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+      }
+      .auth-field input {
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.9rem 1rem;
+        outline: none;
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .auth-field input:focus {
+        border-color: var(--accent-gold);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .auth-field input:invalid.field-touched {
+        border-color: #e5484d;
+      }
+      @media (max-width: 480px) {
+        .auth-field input {
+          font-size: 16px;
+        } /* prevent iOS auto-zoom */
+      }
+      .auth-error-banner {
+        display: none;
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: #ff8b8f;
+        background: rgba(229, 72, 77, 0.08);
+        border: 1px solid rgba(229, 72, 77, 0.3);
+        border-radius: 6px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .auth-error-banner.is-visible {
+        display: block;
+      }
+      .auth-submit {
+        width: 100%;
+        justify-content: center;
+        border: none;
+        margin-top: 0.5rem;
+      }
+      .auth-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .auth-footer-links {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+      }
+      .auth-footer-links a {
+        color: var(--accent-gold);
+        text-decoration: none;
+      }
+      .auth-footer-links a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient-glow" id="glow"></div>
+
+    <header class="custom-header-wrapper">
+      <nav class="nav-container">
+        <div class="logo-container">
+          <a href="index.html">
+            <img
+              src="https://res.cloudinary.com/gmriwzco/image/upload/f_auto,q_auto/logo_gepp36"
+              alt="Hathaway Logo"
+              class="logo-img"
+            />
+          </a>
+        </div>
+        <div class="nav-pill" id="main-nav-pill">
+          <a class="nav-link" href="index.html#home">Home</a>
+          <a class="nav-link" href="solutions.html">Our Solution</a>
+          <a class="nav-link" href="portfolio.html">Our Works</a>
+          <a class="nav-link mobile-only-link" href="consultation.html"
+            >Consultation</a
+          >
+        </div>
+        <a href="consultation.html" class="nav-btn desktop-only-btn"
+          >CONSULTATION</a
+        >
+        <button
+          class="mobile-nav-toggle"
+          aria-label="Toggle navigation menu"
+          id="mobileMenuButton"
+        >
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+          <span class="burger-bar"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="auth-section">
+        <div class="auth-card fade-up-trigger motion-active">
+          <span class="auth-eyebrow">Client Access</span>
+          <h1>Welcome Back</h1>
+          <p class="auth-sub">
+            Log in to view your projects, files, and messages.
+          </p>
+
+          <div class="auth-error-banner" id="authError"></div>
+
+          <form id="loginForm" novalidate>
+            <div class="auth-field">
+              <label for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                autocomplete="email"
+              />
+            </div>
+            <div class="auth-field">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                autocomplete="current-password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="btn-primary auth-submit"
+              id="loginSubmit"
+            >
+              Log In
+            </button>
+          </form>
+
+          <div class="auth-footer-links">
+            <a href="forgot-password.html">Forgot password?</a>
+            <a href="register.html">Create an account</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { login, isAuthenticated } from "./auth-client.js";
+
+      const form = document.getElementById("loginForm");
+      const errorBanner = document.getElementById("authError");
+      const submitBtn = document.getElementById("loginSubmit");
+
+      function getNextUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get("next");
+        // Only allow same-origin relative redirects — never trust an open redirect
+        return next && next.startsWith("/") ? next : "client-dashboard.html";
+      }
+
+      // If already logged in (e.g. session restored via silent refresh),
+      // skip straight past the login form.
+      document.addEventListener("auth:ready", () => {
+        if (isAuthenticated()) {
+          window.location.href = getNextUrl();
+        }
+      });
+
+      function showError(message) {
+        errorBanner.textContent = message;
+        errorBanner.classList.add("is-visible");
+      }
+      function clearError() {
+        errorBanner.classList.remove("is-visible");
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearError();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Logging In…";
+
+        try {
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+          await login({ email, password });
+          window.location.href = getNextUrl();
+        } catch (err) {
+          showError(err.message || "Something went wrong. Please try again.");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Log In";
+        }
+      });
+    </script>
+
+    <script src="auth-client.js" type="module"></script>
+    <script src="main.js?v=1784946336"></script>
+  </body>
+</html>
