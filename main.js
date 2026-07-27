@@ -578,7 +578,7 @@ const IS_EMBEDDED_PREVIEW = window.self !== window.top;
           (a("declined"), r());
         }));
   }));
-import { onAuthChange, logout } from "./auth-client.js";
+import { onAuthChange, logout } from "./server/assets/js/auth-client.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const authSlot = document.querySelector("[data-auth-slot]"); // add this attribute to a nav-pill link

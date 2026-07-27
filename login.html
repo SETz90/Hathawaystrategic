@@ -17,15 +17,14 @@
     />
     <link rel="stylesheet" href="style.css?v=1785000000" />
     <style>
-      /* =========================================================
-         AUTH PAGE — shares tokens from style.css, no new palette
-         ========================================================= */
       .auth-section {
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 10rem 1.5rem 4rem;
+        position: relative;
+        z-index: 2;
       }
       .auth-card {
         width: 100%;
@@ -86,6 +85,8 @@
         transition:
           border-color 0.3s,
           background 0.3s;
+        width: 100%;
+        box-sizing: border-box;
       }
       .auth-field input:focus {
         border-color: var(--accent-gold);
@@ -97,7 +98,29 @@
       @media (max-width: 480px) {
         .auth-field input {
           font-size: 16px;
-        } /* prevent iOS auto-zoom */
+        }
+      }
+      .auth-remember-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.75rem;
+      }
+      .auth-remember {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        user-select: none;
+      }
+      .auth-remember input {
+        accent-color: var(--accent-gold);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
       }
       .auth-error-banner {
         display: none;
@@ -117,7 +140,7 @@
         width: 100%;
         justify-content: center;
         border: none;
-        margin-top: 0.5rem;
+        margin-top: 0.25rem;
       }
       .auth-submit:disabled {
         opacity: 0.6;
@@ -169,9 +192,8 @@
           aria-label="Toggle navigation menu"
           id="mobileMenuButton"
         >
-          <span class="burger-bar"></span>
-          <span class="burger-bar"></span>
-          <span class="burger-bar"></span>
+          <span class="burger-bar"></span><span class="burger-bar"></span
+          ><span class="burger-bar"></span>
         </button>
       </nav>
     </header>
@@ -185,7 +207,7 @@
             Log in to view your projects, files, and messages.
           </p>
 
-          <div class="auth-error-banner" id="authError"></div>
+          <div class="auth-error-banner" id="authError" role="alert"></div>
 
           <form id="loginForm" novalidate>
             <div class="auth-field">
@@ -209,6 +231,13 @@
               />
             </div>
 
+            <div class="auth-remember-row">
+              <label class="auth-remember">
+                <input type="checkbox" id="rememberMe" />
+                Remember me
+              </label>
+            </div>
+
             <button
               type="submit"
               class="btn-primary auth-submit"
@@ -227,26 +256,17 @@
     </main>
 
     <script type="module">
-      import { login, isAuthenticated } from "./auth-client.js";
+      import { login } from "./server/assets/js/auth-client.js";
+      import {
+        redirectIfAuthenticated,
+        getNextUrl,
+      } from "./server/assets/js/auth-guard.js";
+
+      redirectIfAuthenticated();
 
       const form = document.getElementById("loginForm");
       const errorBanner = document.getElementById("authError");
       const submitBtn = document.getElementById("loginSubmit");
-
-      function getNextUrl() {
-        const params = new URLSearchParams(window.location.search);
-        const next = params.get("next");
-        // Only allow same-origin relative redirects — never trust an open redirect
-        return next && next.startsWith("/") ? next : "client-dashboard.html";
-      }
-
-      // If already logged in (e.g. session restored via silent refresh),
-      // skip straight past the login form.
-      document.addEventListener("auth:ready", () => {
-        if (isAuthenticated()) {
-          window.location.href = getNextUrl();
-        }
-      });
 
       function showError(message) {
         errorBanner.textContent = message;
@@ -265,7 +285,8 @@
         try {
           const email = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
-          await login({ email, password });
+          const rememberMe = document.getElementById("rememberMe").checked;
+          await login({ email, password, rememberMe });
           window.location.href = getNextUrl();
         } catch (err) {
           showError(err.message || "Something went wrong. Please try again.");
@@ -276,7 +297,6 @@
       });
     </script>
 
-    <script src="auth-client.js" type="module"></script>
-    <script src="main.js?v=1784946336"></script>
+    <script type="module" src="main.js?v=1784946336"></script>
   </body>
 </html>

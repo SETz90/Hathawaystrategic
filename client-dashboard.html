@@ -1,23 +1,717 @@
-<!-- inside <body>, before other scripts -->
-<script type="module">
-  import {
-    requireAuthOrRedirect,
-    getCurrentUser,
-    onAuthChange,
-    logout,
-  } from "./auth-client.js";
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client Dashboard | Hathaway Strategic</title>
+    <link
+      rel="icon"
+      type="Image/png"
+      href="https://res.cloudinary.com/gmriwzco/image/upload/v1784200572/iconweb_xql643.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css?v=1785000000" />
+    <style>
+      /* =========================================================
+         CLIENT DASHBOARD — reuses style.css tokens, no new palette
+         ========================================================= */
+      body {
+        overflow-x: hidden;
+      }
 
-  // Redirects to login.html?next=... if not authenticated.
-  // Pass { role: "ADMIN" } on admin-only pages instead.
-  requireAuthOrRedirect();
+      .dash-shell {
+        display: flex;
+        min-height: 100vh;
+        padding-top: 80px; /* clears fixed nav */
+      }
 
-  onAuthChange(({ user, isAuthenticated }) => {
-    if (!isAuthenticated) return;
-    document.getElementById("clientFirstName").textContent = user.firstName;
-  });
+      /* ---- Sidebar ---- */
+      .dash-sidebar {
+        width: 260px;
+        flex-shrink: 0;
+        background: rgba(10, 14, 23, 0.6);
+        border-right: 1px solid var(--glass-border);
+        padding: 2.5rem 1.25rem;
+        position: fixed;
+        top: 80px;
+        bottom: 0;
+        left: 0;
+        overflow-y: auto;
+        z-index: 40;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .dash-nav-group {
+        margin-bottom: 2rem;
+      }
+      .dash-nav-label {
+        font-family: var(--font-sans);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        opacity: 0.7;
+        padding: 0 0.75rem;
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      .dash-nav-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-align: left;
+        padding: 0.75rem 0.75rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+        margin-bottom: 0.25rem;
+      }
+      .dash-nav-btn .material-symbols-outlined {
+        font-size: 20px;
+      }
+      .dash-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+      }
+      .dash-nav-btn.is-active {
+        background: rgba(197, 155, 39, 0.1);
+        color: var(--accent-gold);
+      }
 
-  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-    await logout();
-    window.location.href = "login.html";
-  });
-</script>
+      .dash-mobile-toggle {
+        display: none;
+        position: fixed;
+        top: 92px;
+        left: 16px;
+        z-index: 50;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(10, 14, 23, 0.85);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @media (max-width: 900px) {
+        .dash-sidebar {
+          transform: translateX(-100%);
+          box-shadow: 20px 0 50px rgba(0, 0, 0, 0.4);
+        }
+        .dash-sidebar.is-open {
+          transform: translateX(0);
+        }
+        .dash-mobile-toggle {
+          display: flex;
+        }
+        .dash-main {
+          margin-left: 0 !important;
+        }
+      }
+
+      /* ---- Main content ---- */
+      .dash-main {
+        margin-left: 260px;
+        flex: 1;
+        padding: 3rem 3rem 6rem;
+        max-width: 1200px;
+      }
+      @media (max-width: 640px) {
+        .dash-main {
+          padding: 2.5rem 1.25rem 4rem;
+        }
+      }
+
+      [data-dash-section] {
+        display: none;
+      }
+      [data-dash-section].is-active {
+        display: block;
+        animation: dashFadeIn 0.45s ease;
+      }
+      @keyframes dashFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .dash-section-header {
+        margin-bottom: 2.5rem;
+      }
+      .dash-section-eyebrow {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+        margin-bottom: 0.75rem;
+      }
+      .dash-section-title {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 400;
+        color: #fff;
+      }
+
+      /* ---- Cards (glassmorphism, matches existing .glass-card language) ---- */
+      .dash-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 2rem;
+      }
+
+      /* ---- Welcome card ---- */
+      .dash-welcome-card {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .dash-welcome-card::before {
+        content: "";
+        position: absolute;
+        top: -30%;
+        right: -10%;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(
+          circle,
+          var(--accent-glow) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .dash-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(
+          160deg,
+          rgba(197, 155, 39, 0.25),
+          rgba(197, 155, 39, 0.05)
+        );
+        border: 1px solid rgba(197, 155, 39, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-serif);
+        font-size: 1.4rem;
+        color: var(--accent-gold);
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+      }
+      .dash-welcome-text {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        min-width: 200px;
+      }
+      .dash-welcome-text h2 {
+        font-family: var(--font-serif);
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: #fff;
+        margin-bottom: 0.35rem;
+      }
+      .dash-welcome-text p {
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        color: var(--text-muted);
+      }
+      .dash-badge {
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        position: relative;
+        z-index: 1;
+      }
+      .badge-verified {
+        color: #8fe0a1;
+        background: rgba(143, 224, 161, 0.1);
+        border: 1px solid rgba(143, 224, 161, 0.3);
+      }
+      .badge-unverified {
+        color: #f0c674;
+        background: rgba(240, 198, 116, 0.1);
+        border: 1px solid rgba(240, 198, 116, 0.3);
+      }
+
+      /* ---- Overview grid ---- */
+      .dash-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+      }
+      .dash-stat-card {
+        text-align: left;
+      }
+      .dash-stat-label {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      .dash-stat-value {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        color: #fff;
+      }
+
+      /* ---- Empty states ---- */
+      .dash-empty-state {
+        text-align: center;
+        padding: 3.5rem 1.5rem;
+      }
+      .dash-empty-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: rgba(197, 155, 39, 0.08);
+        border: 1px solid rgba(197, 155, 39, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.25rem;
+        color: var(--accent-gold);
+      }
+      .dash-empty-state h3 {
+        font-family: var(--font-serif);
+        font-size: 1.15rem;
+        color: #fff;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+      }
+      .dash-empty-state p {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        max-width: 340px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      /* ---- Settings form ---- */
+      .dash-settings-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+      .dash-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+      }
+      @media (max-width: 560px) {
+        .dash-form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .dash-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .dash-field label {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+      }
+      .dash-field input {
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.8rem 1rem;
+      }
+      .dash-field input[readonly] {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+      .dash-card-divider {
+        border-top: 1px solid var(--glass-border);
+        margin: 2rem 0;
+      }
+      .dash-card-title {
+        font-family: var(--font-serif);
+        font-size: 1.2rem;
+        color: #fff;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+      }
+
+      .dash-logout-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
+        border: 1px solid rgba(229, 72, 77, 0.3);
+        color: #ff8b8f;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        padding: 0.7rem 1.4rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .dash-logout-btn:hover {
+        background: rgba(229, 72, 77, 0.1);
+        border-color: #e5484d;
+      }
+
+      .dash-sidebar-footer {
+        position: sticky;
+        bottom: 0;
+        padding-top: 1.5rem;
+        margin-top: 1rem;
+        border-top: 1px solid var(--glass-border);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient-glow" id="glow"></div>
+
+    <header class="custom-header-wrapper">
+      <nav class="nav-container">
+        <div class="logo-container">
+          <a href="index.html">
+            <img
+              src="https://res.cloudinary.com/gmriwzco/image/upload/f_auto,q_auto/logo_gepp36"
+              alt="Hathaway Logo"
+              class="logo-img"
+            />
+          </a>
+        </div>
+        <div class="nav-pill" id="main-nav-pill">
+          <a class="nav-link" href="index.html#home">Home</a>
+          <a class="nav-link" href="portfolio.html">Our Works</a>
+          <a class="nav-link active" href="client-dashboard.html">Dashboard</a>
+        </div>
+        <button
+          class="nav-btn desktop-only-btn"
+          data-logout-btn
+          style="background: transparent"
+        >
+          LOG OUT
+        </button>
+        <button
+          class="mobile-nav-toggle"
+          aria-label="Toggle navigation menu"
+          id="mobileMenuButton"
+        >
+          <span class="burger-bar"></span><span class="burger-bar"></span
+          ><span class="burger-bar"></span>
+        </button>
+      </nav>
+    </header>
+
+    <button
+      class="dash-mobile-toggle"
+      id="dashMobileToggle"
+      aria-label="Toggle dashboard menu"
+    >
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="dash-shell">
+      <!-- ================= SIDEBAR ================= -->
+      <aside class="dash-sidebar" id="dashSidebar">
+        <div class="dash-nav-group">
+          <span class="dash-nav-label">Dashboard</span>
+          <button class="dash-nav-btn is-active" data-dash-nav="overview">
+            <span class="material-symbols-outlined">dashboard</span> Overview
+          </button>
+        </div>
+        <div class="dash-nav-group">
+          <span class="dash-nav-label">Workspace</span>
+          <button class="dash-nav-btn" data-dash-nav="projects">
+            <span class="material-symbols-outlined">work</span> Projects
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="messages">
+            <span class="material-symbols-outlined">chat_bubble</span> Messages
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="files">
+            <span class="material-symbols-outlined">folder</span> Files
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="invoices">
+            <span class="material-symbols-outlined">receipt_long</span> Invoices
+          </button>
+        </div>
+        <div class="dash-nav-group">
+          <span class="dash-nav-label">Account</span>
+          <button class="dash-nav-btn" data-dash-nav="notifications">
+            <span class="material-symbols-outlined">notifications</span>
+            Notifications
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="settings">
+            <span class="material-symbols-outlined">settings</span> Settings
+          </button>
+        </div>
+
+        <div class="dash-sidebar-footer">
+          <button
+            class="dash-logout-btn"
+            data-logout-btn
+            style="width: 100%; justify-content: center"
+          >
+            <span class="material-symbols-outlined" style="font-size: 18px"
+              >logout</span
+            >
+            Log Out
+          </button>
+        </div>
+      </aside>
+
+      <!-- ================= MAIN ================= -->
+      <main class="dash-main">
+        <!-- Welcome card is shared across every section -->
+        <div class="dash-card dash-welcome-card">
+          <div class="dash-avatar" id="dashUserAvatar">--</div>
+          <div class="dash-welcome-text">
+            <h2>Welcome back, <span id="dashUserName">—</span></h2>
+            <p id="dashUserEmail">—</p>
+          </div>
+          <span class="dash-badge" id="dashVerifiedBadge">—</span>
+        </div>
+
+        <!-- ===== OVERVIEW ===== -->
+        <section data-dash-section="overview" class="is-active">
+          <div class="dash-section-header">
+            <span class="dash-section-eyebrow">Dashboard</span>
+            <h1 class="dash-section-title">Overview</h1>
+          </div>
+
+          <div class="dash-stat-grid">
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Active Projects</span>
+              <span class="dash-stat-value">0</span>
+            </div>
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Unread Messages</span>
+              <span class="dash-stat-value">0</span>
+            </div>
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Open Invoices</span>
+              <span class="dash-stat-value">0</span>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <h3 class="dash-card-title">Recent Activity</h3>
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <span class="material-symbols-outlined">history</span>
+              </div>
+              <h3>Nothing here yet</h3>
+              <p>
+                Once your project kicks off, activity from your team at Hathaway
+                Strategic will show up here.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== PROJECTS ===== -->
+        <section data-dash-section="projects">
+          <div class="dash-section-header">
+            <span class="dash-section-eyebrow">Workspace</span>
+            <h1 class="dash-section-title">Projects</h1>
+          </div>
+          <div class="dash-card">
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <span class="material-symbols-outlined">work</span>
+              </div>
+              <h3>No active projects</h3>
+              <p>
+                When we kick off your first engagement, you'll track its status,
+                milestones, and deadlines right here.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== MESSAGES ===== -->
+        <section data-dash-section="messages">
+          <div class="dash-section-header">
+            <span class="dash-section-eyebrow">Workspace</span>
+            <h1 class="dash-section-title">Messages</h1>
+          </div>
+          <div class="dash-card">
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <span class="material-symbols-outlined">chat_bubble</span>
+              </div>
+              <h3>No messages yet</h3>
+              <p>
+                Direct messages with your Hathaway Strategic team will appear
+                here once your project begins.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FILES ===== -->
+        <section data-dash-section="files">
+          <div class="dash-section-header">
+            <span class="dash-section-eyebrow">Workspace</span>
+            <h1 class="dash-section-title">Files</h1>
+          </div>
+          <div class="dash-card">
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <span class="material-symbols-outlined">folder</span>
+              </div>
+              <h3>No files yet</h3>
+              <p>
+                Deliverables, assets, and shared documents from your team will
+                be organized here.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== INVOICES ===== -->
+        <section data-dash-section="invoices">
+          <div class="dash-section-header">
+            <span class="dash-section-eyebrow">Workspace</span>
+            <h1 class="dash-section-title">Invoices</h1>
+          </div>
+          <div class="dash-card">
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <span class="material-symbols-outlined">receipt_long</span>
+              </div>
+              <h3>No invoices yet</h3>
+              <p>
+                Billing history and payment status for your engagements will
+                show up here.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== NOTIFICATIONS ===== -->
+        <section data-dash-section="notifications">
+          <div class="dash-section-header">
+            <span class="dash-section-eyebrow">Account</span>
+            <h1 class="dash-section-title">Notifications</h1>
+          </div>
+          <div class="dash-card">
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <span class="material-symbols-outlined">notifications</span>
+              </div>
+              <h3>You're all caught up</h3>
+              <p>
+                Project updates, messages, and billing alerts will appear here
+                as they happen.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== SETTINGS ===== -->
+        <section data-dash-section="settings">
+          <div class="dash-section-header">
+            <span class="dash-section-eyebrow">Account</span>
+            <h1 class="dash-section-title">Settings</h1>
+          </div>
+
+          <div class="dash-card dash-settings-grid">
+            <h3 class="dash-card-title">Profile</h3>
+            <div class="dash-form-row">
+              <div class="dash-field">
+                <label for="settingsFirstName">First Name</label>
+                <input type="text" id="settingsFirstName" readonly />
+              </div>
+              <div class="dash-field">
+                <label for="settingsLastName">Last Name</label>
+                <input type="text" id="settingsLastName" readonly />
+              </div>
+            </div>
+            <div class="dash-field">
+              <label for="settingsEmail">Email Address</label>
+              <input type="email" id="settingsEmail" readonly />
+            </div>
+
+            <div class="dash-card-divider"></div>
+
+            <h3 class="dash-card-title">Security</h3>
+            <p
+              style="
+                font-family: var(--font-sans);
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                margin-bottom: 1.25rem;
+                line-height: 1.7;
+              "
+            >
+              To change your password, we'll email you a secure reset link.
+            </p>
+            <a
+              href="forgot-password.html"
+              class="btn-primary"
+              style="
+                width: fit-content;
+                text-decoration: none;
+                display: inline-flex;
+              "
+            >
+              Send Password Reset Link
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="server/assets/js/dashboard.js"></script>
+    <script type="module" src="main.js?v=1784946336"></script>
+  </body>
+</html>
