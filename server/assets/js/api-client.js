@@ -7,11 +7,10 @@
    pulling in auth-page-specific code.
    ========================================================= */
 
-export const API_BASE =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
-    ? `http://${window.location.hostname}:4000/api`
-    : "https://api.hathawaystrategic.com/api";
+export const API_BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:4000"
+    : "https://hathawaystrategic.onrender.com";
 
 export class ApiError extends Error {
   constructor(message, status, fieldErrors = null) {
