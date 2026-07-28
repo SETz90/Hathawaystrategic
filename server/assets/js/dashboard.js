@@ -1,10 +1,10 @@
 /* =========================================================
    HATHAWAY STRATEGIC — CLIENT DASHBOARD LOGIC
    Page-specific: guards the route, renders the welcome card,
-   drives section tabs, and handles logout. Data sections
-   (Projects/Messages/Files/Invoices) show honest empty states
-   since those APIs don't exist yet — this ships clean now and
-   just needs an apiFetch() call swapped in per section later.
+   drives section tabs, and handles logout. Projects, Files,
+   and Messages all load real data via apiFetch(); Invoices
+   still shows an honest empty state since that API doesn't
+   exist yet.
    ========================================================= */
 
 import {
@@ -36,6 +36,9 @@ document.addEventListener(
     loadProjects();
     renderFilesUploadBar();
     loadFiles();
+    loadConversations({ selectFirst: true });
+    initMessageComposer();
+    startMessagesPolling();
   },
   { once: true },
 );
@@ -431,6 +434,249 @@ async function downloadFile(fileId, filename) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+/* ---------------------------------------------------------
+   MESSAGES
+   --------------------------------------------------------- */
+let activeConversationId = null;
+let activeConversationProjectId = null;
+let conversationsCache = [];
+
+function formatTime(iso) {
+  return new Date(iso).toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function conversationPreviewText(conv, currentUserId) {
+  if (!conv.lastMessage) return "No messages yet";
+  const prefix = conv.lastMessage.senderId === currentUserId ? "You: " : "";
+  return `${prefix}${conv.lastMessage.body}`;
+}
+
+function conversationItem(conv, currentUserId) {
+  return `
+    <button
+      type="button"
+      class="dash-conversation-item ${conv.id === activeConversationId ? "is-active" : ""}"
+      data-conversation-id="${conv.id}"
+      data-project-id="${conv.project.id}"
+    >
+      <span class="dash-conversation-name">
+        <span>${escapeHtml(conv.project.name)}</span>
+        ${conv.unreadCount > 0 ? `<span class="dash-unread-dot">${conv.unreadCount}</span>` : ""}
+      </span>
+      <span class="dash-conversation-preview">${escapeHtml(conversationPreviewText(conv, currentUserId))}</span>
+    </button>`;
+}
+
+function emptyConversationsState() {
+  return `
+    <div class="dash-empty-state" style="padding: 2rem 1rem">
+      <div class="dash-empty-icon">
+        <span class="material-symbols-outlined">chat_bubble</span>
+      </div>
+      <h3>No conversations</h3>
+      <p>Conversations tied to your projects will show up here.</p>
+    </div>`;
+}
+
+function errorConversationsState() {
+  return `
+    <div class="dash-empty-state" style="padding: 2rem 1rem">
+      <div class="dash-empty-icon">
+        <span class="material-symbols-outlined">error</span>
+      </div>
+      <h3>Couldn't load conversations</h3>
+    </div>`;
+}
+
+function renderConversationsList() {
+  const container = document.getElementById("conversationsList");
+  if (!container) return;
+  const user = getCurrentUser();
+
+  container.innerHTML = conversationsCache.length
+    ? conversationsCache.map((c) => conversationItem(c, user?.id)).join("")
+    : emptyConversationsState();
+}
+
+async function loadConversations({ selectFirst = false } = {}) {
+  const container = document.getElementById("conversationsList");
+  if (!container) return;
+
+  try {
+    const { data } = await apiFetch("/api/messages");
+    conversationsCache = data.conversations || [];
+    renderConversationsList();
+
+    if (selectFirst && !activeConversationId && conversationsCache.length) {
+      const first = conversationsCache[0];
+      await selectConversation(first.id, first.project.id);
+    }
+  } catch (err) {
+    console.error("Failed to load conversations:", err instanceof ApiError ? err.message : err);
+    container.innerHTML = errorConversationsState();
+  }
+}
+
+function messageBubble(message, currentUserId) {
+  const isOwn = message.sender?.id === currentUserId;
+  const senderLabel = isOwn
+    ? "You"
+    : `${message.sender?.firstName || ""} ${message.sender?.lastName || ""}`.trim();
+
+  return `
+    <div class="dash-message-bubble ${isOwn ? "is-own" : "is-other"}">
+      <div>${escapeHtml(message.body)}</div>
+      ${
+        message.attachment
+          ? `<div class="dash-message-attachment">
+               <span class="material-symbols-outlined">attach_file</span>
+               ${escapeHtml(message.attachment.filename)}
+             </div>`
+          : ""
+      }
+      <div class="dash-message-meta">${escapeHtml(senderLabel)} · ${formatTime(message.createdAt)}</div>
+    </div>`;
+}
+
+function emptyMessagesState() {
+  return `
+    <div class="dash-empty-state">
+      <div class="dash-empty-icon">
+        <span class="material-symbols-outlined">chat_bubble</span>
+      </div>
+      <h3>No messages yet</h3>
+      <p>Send the first message to start the conversation.</p>
+    </div>`;
+}
+
+function errorMessagesState() {
+  return `
+    <div class="dash-empty-state">
+      <div class="dash-empty-icon">
+        <span class="material-symbols-outlined">error</span>
+      </div>
+      <h3>Couldn't load messages</h3>
+      <p>Something went wrong on our end. Please refresh to try again.</p>
+    </div>`;
+}
+
+// Populates the composer's attachment picker from files already uploaded to
+// this project — messaging only ever *references* a File, never uploads one.
+async function populateAttachmentOptions(projectId) {
+  const select = document.getElementById("messageAttachSelect");
+  if (!select) return;
+
+  select.innerHTML = `<option value="">No attachment</option>`;
+
+  try {
+    const { data } = await apiFetch(`/api/files?projectId=${projectId}`);
+    const files = data.files || [];
+    files.forEach((f) => {
+      const option = document.createElement("option");
+      option.value = f.id;
+      option.textContent = f.filename;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Failed to load attachment options:", err instanceof ApiError ? err.message : err);
+  }
+}
+
+async function selectConversation(conversationId, projectId) {
+  activeConversationId = conversationId;
+  activeConversationProjectId = projectId;
+
+  document.querySelectorAll("[data-conversation-id]").forEach((el) => {
+    el.classList.toggle("is-active", el.dataset.conversationId === conversationId);
+  });
+
+  const form = document.getElementById("messageComposerForm");
+  form?.classList.remove("is-hidden");
+
+  await Promise.all([loadMessages(conversationId), populateAttachmentOptions(projectId)]);
+}
+
+async function loadMessages(conversationId) {
+  const body = document.getElementById("messageThreadBody");
+  const header = document.getElementById("messageThreadHeader");
+  if (!body) return;
+
+  const conv = conversationsCache.find((c) => c.id === conversationId);
+  if (header) header.textContent = conv ? conv.project.name : "Conversation";
+
+  try {
+    const { data } = await apiFetch(`/api/messages/${conversationId}`);
+    const messages = data.messages || [];
+    const user = getCurrentUser();
+
+    body.innerHTML = messages.length
+      ? messages.map((m) => messageBubble(m, user?.id)).join("")
+      : emptyMessagesState();
+    body.scrollTop = body.scrollHeight;
+
+    // Opening the conversation just cleared unread counts server-side
+    await loadConversations();
+  } catch (err) {
+    console.error("Failed to load messages:", err instanceof ApiError ? err.message : err);
+    body.innerHTML = errorMessagesState();
+  }
+}
+
+function initMessageComposer() {
+  const form = document.getElementById("messageComposerForm");
+  const input = document.getElementById("messageComposerInput");
+  const attachSelect = document.getElementById("messageAttachSelect");
+  const sendBtn = document.getElementById("messageComposerSend");
+  if (!form || !input) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || !activeConversationProjectId) return;
+
+    const attachmentId = attachSelect?.value || undefined;
+
+    if (sendBtn) sendBtn.disabled = true;
+
+    try {
+      await apiFetch("/api/messages", {
+        method: "POST",
+        body: JSON.stringify({
+          projectId: activeConversationProjectId,
+          body: text,
+          ...(attachmentId ? { attachmentId } : {}),
+        }),
+      });
+      input.value = "";
+      if (attachSelect) attachSelect.value = "";
+      await loadMessages(activeConversationId);
+    } catch (err) {
+      console.error("Failed to send message:", err instanceof ApiError ? err.message : err);
+    } finally {
+      if (sendBtn) sendBtn.disabled = false;
+    }
+  });
+}
+
+document.addEventListener("click", (e) => {
+  const item = e.target.closest("[data-conversation-id]");
+  if (!item) return;
+  selectConversation(item.dataset.conversationId, item.dataset.projectId);
+});
+
+// Polling every 10 seconds keeps the conversation list and any open thread
+// fresh without WebSockets. Swapping this for a socket subscription later
+// shouldn't require touching loadConversations()/loadMessages() callers.
+function startMessagesPolling() {
+  setInterval(() => {
+    loadConversations();
+    if (activeConversationId) loadMessages(activeConversationId);
+  }, 10000);
 }
 
 /* ---------------------------------------------------------
