@@ -1,0 +1,1795 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Hathaway Strategic</title>
+    <link
+      rel="icon"
+      type="Image/png"
+      href="https://res.cloudinary.com/gmriwzco/image/upload/v1784200572/iconweb_xql643.png"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css?v=1785000000" />
+    <style>
+      /* =========================================================
+         ADMIN DASHBOARD (CRM) — reuses style.css + client-dashboard's
+         dash-* tokens/classes 1:1 (sidebar, cards, stat grid, badges,
+         project/file/message components). Only new surface area gets
+         an "admin-" prefix: tables, toolbars, the CRM modal, the
+         client drawer, and the file dropzone.
+         ========================================================= */
+      body {
+        overflow-x: hidden;
+      }
+
+      .dash-shell {
+        display: flex;
+        min-height: 100vh;
+        padding-top: 80px;
+      }
+
+      /* ---- Sidebar (identical structure/behavior to client-dashboard) ---- */
+      .dash-sidebar {
+        width: 260px;
+        flex-shrink: 0;
+        background: rgba(10, 14, 23, 0.6);
+        border-right: 1px solid var(--glass-border);
+        padding: 2.5rem 1.25rem;
+        position: fixed;
+        top: 80px;
+        bottom: 0;
+        left: 0;
+        overflow-y: auto;
+        z-index: 40;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .dash-nav-group {
+        margin-bottom: 2rem;
+      }
+      .dash-nav-label {
+        font-family: var(--font-sans);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        opacity: 0.7;
+        padding: 0 0.75rem;
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      .dash-nav-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-align: left;
+        padding: 0.75rem 0.75rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+        margin-bottom: 0.25rem;
+        position: relative;
+      }
+      .dash-nav-btn .material-symbols-outlined {
+        font-size: 20px;
+      }
+      .dash-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+      }
+      .dash-nav-btn.is-active {
+        background: rgba(197, 155, 39, 0.1);
+        color: var(--accent-gold);
+      }
+      .dash-nav-count {
+        margin-left: auto;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+        color: #14110b;
+        font-size: 0.65rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 0.1rem 0.5rem;
+        min-width: 18px;
+        text-align: center;
+      }
+
+      .dash-mobile-toggle {
+        display: none;
+        position: fixed;
+        top: 92px;
+        left: 16px;
+        z-index: 50;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(10, 14, 23, 0.85);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @media (max-width: 900px) {
+        .dash-sidebar {
+          transform: translateX(-100%);
+          box-shadow: 20px 0 50px rgba(0, 0, 0, 0.4);
+        }
+        .dash-sidebar.is-open {
+          transform: translateX(0);
+        }
+        .dash-mobile-toggle {
+          display: flex;
+        }
+        .dash-main {
+          margin-left: 0 !important;
+        }
+      }
+
+      .dash-main {
+        margin-left: 260px;
+        flex: 1;
+        padding: 3rem 3rem 6rem;
+        max-width: 1320px;
+      }
+      @media (max-width: 640px) {
+        .dash-main {
+          padding: 2.5rem 1.25rem 4rem;
+        }
+      }
+
+      [data-dash-section] {
+        display: none;
+      }
+      [data-dash-section].is-active {
+        display: block;
+        animation: dashFadeIn 0.45s ease;
+      }
+      @keyframes dashFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .dash-section-header {
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .dash-section-eyebrow {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+        margin-bottom: 0.75rem;
+      }
+      .dash-section-title {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 400;
+        color: #fff;
+      }
+
+      .dash-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 2rem;
+      }
+
+      .dash-welcome-card {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .dash-welcome-card::before {
+        content: "";
+        position: absolute;
+        top: -30%;
+        right: -10%;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .dash-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(160deg, rgba(197, 155, 39, 0.25), rgba(197, 155, 39, 0.05));
+        border: 1px solid rgba(197, 155, 39, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-serif);
+        font-size: 1.4rem;
+        color: var(--accent-gold);
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+      }
+      .dash-welcome-text {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        min-width: 200px;
+      }
+      .dash-welcome-text h2 {
+        font-family: var(--font-serif);
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: #fff;
+        margin-bottom: 0.35rem;
+      }
+      .dash-welcome-text p {
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        color: var(--text-muted);
+      }
+      .dash-badge {
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        position: relative;
+        z-index: 1;
+      }
+      .badge-verified {
+        color: #8fe0a1;
+        background: rgba(143, 224, 161, 0.1);
+        border: 1px solid rgba(143, 224, 161, 0.3);
+      }
+      .badge-unverified {
+        color: #f0c674;
+        background: rgba(240, 198, 116, 0.1);
+        border: 1px solid rgba(240, 198, 116, 0.3);
+      }
+
+      .dash-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+      }
+      .dash-stat-card {
+        text-align: left;
+      }
+      .dash-stat-label {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      .dash-stat-value {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        color: #fff;
+      }
+
+      .dash-empty-state {
+        text-align: center;
+        padding: 3.5rem 1.5rem;
+      }
+      .dash-empty-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: rgba(197, 155, 39, 0.08);
+        border: 1px solid rgba(197, 155, 39, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.25rem;
+        color: var(--accent-gold);
+      }
+      .dash-empty-state h3 {
+        font-family: var(--font-serif);
+        font-size: 1.15rem;
+        color: #fff;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+      }
+      .dash-empty-state p {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        max-width: 340px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      .dash-projects-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+      .dash-project-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 1.75rem;
+      }
+      .dash-project-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+      }
+      .dash-project-name-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .dash-project-name {
+        font-family: var(--font-serif);
+        font-size: 1.2rem;
+        color: #fff;
+        font-weight: 400;
+      }
+      .dash-project-client {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        color: var(--accent-gold);
+      }
+      .dash-project-desc {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+      }
+      .dash-project-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+        align-items: center;
+      }
+      .dash-status-badge {
+        font-family: var(--font-sans);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .status-not_started {
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+      .status-in_progress {
+        color: #f0c674;
+        background: rgba(240, 198, 116, 0.1);
+        border: 1px solid rgba(240, 198, 116, 0.3);
+      }
+      .status-on_hold {
+        color: #e08f6b;
+        background: rgba(224, 143, 107, 0.1);
+        border: 1px solid rgba(224, 143, 107, 0.3);
+      }
+      .status-completed {
+        color: #8fe0a1;
+        background: rgba(143, 224, 161, 0.1);
+        border: 1px solid rgba(143, 224, 161, 0.3);
+      }
+      .priority-badge {
+        color: var(--accent-gold);
+        background: rgba(197, 155, 39, 0.1);
+        border: 1px solid rgba(197, 155, 39, 0.3);
+      }
+      .status-active {
+        color: #8fe0a1;
+        background: rgba(143, 224, 161, 0.1);
+        border: 1px solid rgba(143, 224, 161, 0.3);
+      }
+      .status-disabled {
+        color: #ff8b8f;
+        background: rgba(229, 72, 77, 0.1);
+        border: 1px solid rgba(229, 72, 77, 0.3);
+      }
+      .dash-progress-track {
+        width: 100%;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        margin-bottom: 0.4rem;
+      }
+      .dash-progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+      }
+      .dash-progress-label {
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-bottom: 1.25rem;
+      }
+      .dash-project-meta {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 1.25rem;
+      }
+      .dash-project-meta strong {
+        color: #fff;
+        font-weight: 500;
+      }
+      .dash-project-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+      .dash-milestones {
+        border-top: 1px solid var(--glass-border);
+        padding-top: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .dash-milestone-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+      .dash-milestone-row .material-symbols-outlined {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.25);
+      }
+      .dash-milestone-row.is-complete .material-symbols-outlined {
+        color: #8fe0a1;
+      }
+      .dash-milestone-row.is-complete span:last-child {
+        color: var(--text-muted);
+        text-decoration: line-through;
+        opacity: 0.75;
+      }
+      .dash-milestone-label {
+        flex: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .admin-milestone-actions {
+        display: flex;
+        gap: 0.25rem;
+        flex-shrink: 0;
+      }
+      .admin-mini-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .admin-mini-btn:hover {
+        color: var(--accent-gold);
+        border-color: rgba(197, 155, 39, 0.4);
+      }
+      .admin-mini-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .admin-mini-btn.is-danger:hover {
+        color: #ff8b8f;
+        border-color: rgba(229, 72, 77, 0.4);
+      }
+      .admin-mini-btn .material-symbols-outlined {
+        font-size: 16px;
+      }
+      .admin-milestone-add {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .admin-milestone-add input[type="text"] {
+        flex: 1;
+        min-width: 140px;
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+      }
+      .admin-milestone-add input[type="date"] {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.5rem 0.6rem;
+        color-scheme: dark;
+      }
+      .admin-milestone-add button {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--accent-gold);
+        background: rgba(197, 155, 39, 0.1);
+        border: 1px solid rgba(197, 155, 39, 0.3);
+        border-radius: 6px;
+        padding: 0.5rem 0.9rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .admin-milestone-add button:hover {
+        background: rgba(197, 155, 39, 0.18);
+      }
+
+      /* ---- Files ---- */
+      .dash-files-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .dash-file-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 1.1rem 1.4rem;
+      }
+      .dash-file-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: rgba(197, 155, 39, 0.08);
+        border: 1px solid rgba(197, 155, 39, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-gold);
+        flex-shrink: 0;
+      }
+      .dash-file-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .dash-file-name {
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dash-file-meta {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .dash-file-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+      .dash-file-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .dash-file-btn:hover {
+        color: var(--accent-gold);
+        border-color: rgba(197, 155, 39, 0.4);
+      }
+      .dash-file-btn.dash-file-delete:hover {
+        color: #e08f6b;
+        border-color: rgba(224, 143, 107, 0.4);
+      }
+
+      /* ---- Admin toolbar (search / filters / primary action) ---- */
+      .admin-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+      .admin-search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+      }
+      .admin-search-wrap .material-symbols-outlined {
+        position: absolute;
+        left: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: var(--text-muted);
+      }
+      .admin-search-input {
+        width: 100%;
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.7rem 1rem 0.7rem 2.5rem;
+      }
+      .admin-select {
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        padding: 0.65rem 0.75rem;
+      }
+      .admin-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #14110b;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+        border: none;
+        border-radius: 999px;
+        padding: 0.65rem 1.2rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .admin-btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .admin-btn-primary .material-symbols-outlined {
+        font-size: 18px;
+      }
+
+      /* ---- Clients table ---- */
+      .admin-table-wrap {
+        overflow-x: auto;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--font-sans);
+      }
+      .admin-table th {
+        text-align: left;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        padding: 0 1rem 0.85rem;
+        white-space: nowrap;
+      }
+      .admin-table td {
+        padding: 1rem;
+        border-top: 1px solid var(--glass-border);
+        font-size: 0.85rem;
+        color: #fff;
+        vertical-align: middle;
+      }
+      .admin-table tr.is-disabled td {
+        opacity: 0.55;
+      }
+      .admin-client-name {
+        font-family: var(--font-serif);
+        font-size: 0.95rem;
+      }
+      .admin-client-email {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+      }
+      .admin-row-actions {
+        display: flex;
+        gap: 0.4rem;
+        justify-content: flex-end;
+      }
+
+      /* ---- Modal (CRM forms + client drawer) ---- */
+      .admin-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 13, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+      .admin-modal-overlay.is-active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .admin-modal-window {
+        width: 100%;
+        max-width: 640px;
+        max-height: 88vh;
+        overflow-y: auto;
+        background: #0d131f;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        box-shadow: 0 40px 90px rgba(0, 0, 0, 0.9);
+        padding: 2.5rem;
+        position: relative;
+        transform: translateY(24px) scale(0.98);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .admin-modal-overlay.is-active .admin-modal-window {
+        transform: translateY(0) scale(1);
+      }
+      .admin-modal-window.is-wide {
+        max-width: 780px;
+      }
+      .admin-modal-close {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+      }
+      .admin-modal-close:hover {
+        background: #fff;
+        color: var(--bg-dark);
+        transform: rotate(90deg);
+      }
+      .admin-modal-title {
+        font-family: var(--font-serif);
+        font-size: 1.4rem;
+        color: #fff;
+        font-weight: 400;
+        margin-bottom: 1.75rem;
+        padding-right: 2rem;
+      }
+      .admin-form-grid {
+        display: grid;
+        gap: 1.25rem;
+      }
+      .admin-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+      }
+      @media (max-width: 560px) {
+        .admin-form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .admin-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .admin-field label {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+      }
+      .admin-field input,
+      .admin-field select,
+      .admin-field textarea {
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.8rem 1rem;
+        color-scheme: dark;
+      }
+      .admin-field textarea {
+        resize: vertical;
+        min-height: 80px;
+        font-family: var(--font-sans);
+      }
+      .admin-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+      }
+      .admin-btn-ghost {
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.65rem 1.2rem;
+        cursor: pointer;
+      }
+      .admin-btn-ghost:hover {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .admin-btn-danger {
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #ff8b8f;
+        background: transparent;
+        border: 1px solid rgba(229, 72, 77, 0.3);
+        border-radius: 999px;
+        padding: 0.65rem 1.2rem;
+        cursor: pointer;
+      }
+      .admin-btn-danger:hover {
+        background: rgba(229, 72, 77, 0.1);
+      }
+      .admin-form-error {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: #ff8b8f;
+        min-height: 1em;
+      }
+
+      /* ---- Client detail drawer contents ---- */
+      .admin-client-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+        flex-wrap: wrap;
+      }
+      .admin-client-header .dash-avatar {
+        width: 52px;
+        height: 52px;
+        font-size: 1.1rem;
+      }
+      .admin-client-subsection {
+        margin-top: 1.75rem;
+      }
+      .admin-client-subsection h4 {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.9rem;
+      }
+      .admin-mini-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .admin-mini-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+      .admin-mini-row strong {
+        color: #fff;
+        font-weight: 500;
+      }
+
+      /* ---- File upload bar + dropzone ---- */
+      .admin-file-toolbar {
+        margin-bottom: 1.25rem;
+      }
+      .admin-dropzone {
+        border: 1.5px dashed var(--glass-border);
+        border-radius: 14px;
+        padding: 1.75rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        transition: all 0.25s ease;
+        cursor: pointer;
+      }
+      .admin-dropzone.is-dragover {
+        border-color: var(--accent-gold);
+        background: rgba(197, 155, 39, 0.06);
+      }
+      .admin-dropzone .material-symbols-outlined {
+        font-size: 30px;
+        color: var(--accent-gold);
+      }
+      .admin-dropzone p {
+        font-family: var(--font-sans);
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
+      .admin-dropzone-controls {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 0.5rem;
+      }
+      .admin-dropzone-controls select,
+      .admin-dropzone-controls input {
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.55rem 0.75rem;
+      }
+
+      /* ---- Messages (identical to client dashboard) ---- */
+      .dash-messages-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .dash-messages-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .dash-conversations-panel {
+        padding: 0;
+        overflow: hidden;
+      }
+      .admin-conversation-search {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .admin-conversation-search input {
+        width: 100%;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.55rem 0.9rem;
+      }
+      .dash-conversations-list {
+        display: flex;
+        flex-direction: column;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .dash-conversation-item {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        text-align: left;
+        background: none;
+        border: none;
+        border-bottom: 1px solid var(--glass-border);
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+      .dash-conversation-item:last-child {
+        border-bottom: none;
+      }
+      .dash-conversation-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .dash-conversation-item.is-active {
+        background: rgba(197, 155, 39, 0.1);
+      }
+      .dash-conversation-name {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-family: var(--font-serif);
+        font-size: 0.95rem;
+        color: #fff;
+      }
+      .dash-conversation-preview {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dash-unread-dot {
+        flex-shrink: 0;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+        color: #14110b;
+        font-family: var(--font-sans);
+        font-size: 0.65rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 0.1rem 0.5rem;
+        min-width: 18px;
+        text-align: center;
+      }
+      .dash-thread-panel {
+        display: flex;
+        flex-direction: column;
+        height: 560px;
+        padding: 0;
+        overflow: hidden;
+      }
+      .dash-thread-header {
+        flex-shrink: 0;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        color: #fff;
+      }
+      .dash-thread-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
+      .dash-message-bubble {
+        max-width: 72%;
+        padding: 0.7rem 1rem;
+        border-radius: 14px;
+        font-family: var(--font-sans);
+        font-size: 0.87rem;
+        line-height: 1.5;
+        color: #fff;
+      }
+      .dash-message-bubble.is-own {
+        align-self: flex-end;
+        background: linear-gradient(135deg, rgba(197, 155, 39, 0.22), rgba(197, 155, 39, 0.08));
+        border: 1px solid rgba(197, 155, 39, 0.3);
+      }
+      .dash-message-bubble.is-other {
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+      }
+      .dash-message-meta {
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        margin-top: 0.4rem;
+      }
+      .dash-message-attachment {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.5rem;
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: var(--accent-gold);
+      }
+      .dash-message-attachment .material-symbols-outlined {
+        font-size: 1rem;
+      }
+      .dash-message-composer {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--glass-border);
+      }
+      .dash-message-composer.is-hidden {
+        display: none;
+      }
+      .dash-message-attach-select {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.6rem 0.5rem;
+        max-width: 140px;
+        flex-shrink: 0;
+      }
+      .dash-message-composer input {
+        flex: 1;
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.7rem 1.1rem;
+      }
+      .dash-message-composer button {
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+        color: #14110b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+      .dash-message-composer button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* ---- Activity feed ---- */
+      .admin-activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
+      .admin-activity-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.9rem;
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .admin-activity-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .admin-activity-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(197, 155, 39, 0.08);
+        border: 1px solid rgba(197, 155, 39, 0.2);
+        color: var(--accent-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .admin-activity-icon .material-symbols-outlined {
+        font-size: 17px;
+      }
+      .admin-activity-text {
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        color: #fff;
+        line-height: 1.5;
+      }
+      .admin-activity-time {
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+      }
+
+      /* ---- Notifications ---- */
+      .admin-notif-row {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .admin-notif-row:last-child {
+        border-bottom: none;
+      }
+
+      /* ---- Settings form ---- */
+      .dash-settings-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+      .dash-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+      }
+      @media (max-width: 560px) {
+        .dash-form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .dash-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .dash-field label {
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+      }
+      .dash-field input {
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.8rem 1rem;
+      }
+      .dash-field input[readonly] {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+      .dash-card-divider {
+        border-top: 1px solid var(--glass-border);
+        margin: 2rem 0;
+      }
+      .dash-card-title {
+        font-family: var(--font-serif);
+        font-size: 1.2rem;
+        color: #fff;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+      }
+
+      .dash-logout-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
+        border: 1px solid rgba(229, 72, 77, 0.3);
+        color: #ff8b8f;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        padding: 0.7rem 1.4rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .dash-logout-btn:hover {
+        background: rgba(229, 72, 77, 0.1);
+        border-color: #e5484d;
+      }
+
+      .dash-sidebar-footer {
+        position: sticky;
+        bottom: 0;
+        padding-top: 1.5rem;
+        margin-top: 1rem;
+        border-top: 1px solid var(--glass-border);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient-glow" id="glow"></div>
+
+    <header class="custom-header-wrapper">
+      <nav class="nav-container">
+        <div class="logo-container">
+          <a href="index.html">
+            <img
+              src="https://res.cloudinary.com/gmriwzco/image/upload/f_auto,q_auto/logo_gepp36"
+              alt="Hathaway Logo"
+              class="logo-img"
+            />
+          </a>
+        </div>
+        <div class="nav-pill" id="main-nav-pill">
+          <a class="nav-link" href="index.html#home">Home</a>
+          <a class="nav-link" href="portfolio.html">Our Works</a>
+          <a class="nav-link active" href="admin-dashboard.html">Admin</a>
+        </div>
+        <button class="nav-btn desktop-only-btn" data-logout-btn style="background: transparent">
+          LOG OUT
+        </button>
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation menu" id="mobileMenuButton">
+          <span class="burger-bar"></span><span class="burger-bar"></span><span class="burger-bar"></span>
+        </button>
+      </nav>
+    </header>
+
+    <button class="dash-mobile-toggle" id="dashMobileToggle" aria-label="Toggle dashboard menu">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="dash-shell">
+      <!-- ================= SIDEBAR ================= -->
+      <aside class="dash-sidebar" id="dashSidebar">
+        <div class="dash-nav-group">
+          <span class="dash-nav-label">Dashboard</span>
+          <button class="dash-nav-btn is-active" data-dash-nav="overview">
+            <span class="material-symbols-outlined">dashboard</span> Overview
+          </button>
+        </div>
+        <div class="dash-nav-group">
+          <span class="dash-nav-label">CRM</span>
+          <button class="dash-nav-btn" data-dash-nav="clients">
+            <span class="material-symbols-outlined">group</span> Clients
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="projects">
+            <span class="material-symbols-outlined">work</span> Projects
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="files">
+            <span class="material-symbols-outlined">folder</span> Files
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="messages">
+            <span class="material-symbols-outlined">chat_bubble</span> Messages
+            <span class="dash-nav-count" id="navUnreadCount" style="display: none">0</span>
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="invoices">
+            <span class="material-symbols-outlined">receipt_long</span> Invoices
+          </button>
+        </div>
+        <div class="dash-nav-group">
+          <span class="dash-nav-label">Account</span>
+          <button class="dash-nav-btn" data-dash-nav="notifications">
+            <span class="material-symbols-outlined">notifications</span> Notifications
+          </button>
+          <button class="dash-nav-btn" data-dash-nav="settings">
+            <span class="material-symbols-outlined">settings</span> Settings
+          </button>
+        </div>
+
+        <div class="dash-sidebar-footer">
+          <button class="dash-logout-btn" data-logout-btn style="width: 100%; justify-content: center">
+            <span class="material-symbols-outlined" style="font-size: 18px">logout</span>
+            Log Out
+          </button>
+        </div>
+      </aside>
+
+      <!-- ================= MAIN ================= -->
+      <main class="dash-main">
+        <div class="dash-card dash-welcome-card">
+          <div class="dash-avatar" id="dashUserAvatar">--</div>
+          <div class="dash-welcome-text">
+            <h2>Welcome back, <span id="dashUserName">—</span></h2>
+            <p id="dashUserEmail">—</p>
+          </div>
+          <span class="dash-badge badge-verified">Admin</span>
+        </div>
+
+        <!-- ===== OVERVIEW ===== -->
+        <section data-dash-section="overview" class="is-active">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">Dashboard</span>
+              <h1 class="dash-section-title">Overview</h1>
+            </div>
+          </div>
+
+          <div class="dash-stat-grid" id="overviewStatGrid">
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Clients</span>
+              <span class="dash-stat-value">—</span>
+            </div>
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Projects</span>
+              <span class="dash-stat-value">—</span>
+            </div>
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Active Projects</span>
+              <span class="dash-stat-value">—</span>
+            </div>
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Completed Projects</span>
+              <span class="dash-stat-value">—</span>
+            </div>
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Files Uploaded</span>
+              <span class="dash-stat-value">—</span>
+            </div>
+            <div class="dash-card dash-stat-card">
+              <span class="dash-stat-label">Unread Messages</span>
+              <span class="dash-stat-value">—</span>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <h3 class="dash-card-title">Recent Activity</h3>
+            <div id="activityContainer">
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon">
+                  <span class="material-symbols-outlined">hourglass_top</span>
+                </div>
+                <h3>Loading activity…</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CLIENTS ===== -->
+        <section data-dash-section="clients">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">CRM</span>
+              <h1 class="dash-section-title">Clients</h1>
+            </div>
+          </div>
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap">
+              <span class="material-symbols-outlined">search</span>
+              <input type="text" id="clientSearchInput" class="admin-search-input" placeholder="Search clients by name or email…" />
+            </div>
+            <select id="clientStatusFilter" class="admin-select">
+              <option value="">All statuses</option>
+              <option value="ACTIVE">Active</option>
+              <option value="DISABLED">Disabled</option>
+              <option value="ALL">Include deleted</option>
+            </select>
+          </div>
+          <div class="dash-card admin-table-wrap">
+            <div id="clientsTableContainer">
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon">
+                  <span class="material-symbols-outlined">hourglass_top</span>
+                </div>
+                <h3>Loading clients…</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== PROJECTS ===== -->
+        <section data-dash-section="projects">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">CRM</span>
+              <h1 class="dash-section-title">Projects</h1>
+            </div>
+            <button type="button" class="admin-btn-primary" id="openCreateProjectBtn">
+              <span class="material-symbols-outlined">add</span> New Project
+            </button>
+          </div>
+          <div class="admin-toolbar">
+            <select id="projectClientFilter" class="admin-select" style="flex: 1; min-width: 200px">
+              <option value="">All clients</option>
+            </select>
+          </div>
+          <div id="projectsContainer" class="dash-projects-list">
+            <div class="dash-card">
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon">
+                  <span class="material-symbols-outlined">hourglass_top</span>
+                </div>
+                <h3>Loading projects…</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== FILES ===== -->
+        <section data-dash-section="files">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">CRM</span>
+              <h1 class="dash-section-title">Files</h1>
+            </div>
+          </div>
+          <div class="admin-toolbar">
+            <select id="fileProjectFilter" class="admin-select" style="flex: 1; min-width: 200px">
+              <option value="">All projects</option>
+            </select>
+            <input type="text" id="fileCategoryFilter" class="admin-select" placeholder="Filter by category…" style="flex: 1; min-width: 160px" />
+          </div>
+          <div class="admin-file-toolbar" id="filesUploadBar"></div>
+          <div id="filesContainer" class="dash-files-list">
+            <div class="dash-card">
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon">
+                  <span class="material-symbols-outlined">hourglass_top</span>
+                </div>
+                <h3>Loading files…</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== MESSAGES ===== -->
+        <section data-dash-section="messages">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">CRM</span>
+              <h1 class="dash-section-title">Messages</h1>
+            </div>
+          </div>
+          <div class="dash-messages-layout">
+            <div class="dash-card dash-conversations-panel">
+              <div class="admin-conversation-search">
+                <input type="text" id="conversationSearchInput" placeholder="Search conversations…" />
+              </div>
+              <div id="conversationsList" class="dash-conversations-list">
+                <div class="dash-empty-state" style="padding: 2rem 1rem">
+                  <div class="dash-empty-icon">
+                    <span class="material-symbols-outlined">hourglass_top</span>
+                  </div>
+                  <h3>Loading…</h3>
+                </div>
+              </div>
+            </div>
+            <div class="dash-card dash-thread-panel">
+              <div id="messageThreadHeader" class="dash-thread-header">Select a conversation</div>
+              <div id="messageThreadBody" class="dash-thread-body">
+                <div class="dash-empty-state">
+                  <div class="dash-empty-icon">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                  </div>
+                  <h3>No conversation selected</h3>
+                  <p>Pick a client conversation on the left to view and reply to their messages.</p>
+                </div>
+              </div>
+              <form id="messageComposerForm" class="dash-message-composer is-hidden">
+                <select id="messageAttachSelect" class="dash-message-attach-select" title="Attach an existing file">
+                  <option value="">No attachment</option>
+                </select>
+                <input type="text" id="messageComposerInput" placeholder="Type a reply…" autocomplete="off" maxlength="4000" />
+                <button type="submit" id="messageComposerSend" title="Send message">
+                  <span class="material-symbols-outlined">send</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== INVOICES ===== -->
+        <section data-dash-section="invoices">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">CRM</span>
+              <h1 class="dash-section-title">Invoices</h1>
+            </div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <span class="material-symbols-outlined">receipt_long</span>
+              </div>
+              <h3>Billing isn't wired up yet</h3>
+              <p>The Invoices API doesn't exist yet, so this stays an honest empty state rather than fake data.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== NOTIFICATIONS ===== -->
+        <section data-dash-section="notifications">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">Account</span>
+              <h1 class="dash-section-title">Notifications</h1>
+            </div>
+          </div>
+          <div class="dash-card">
+            <div id="notificationsContainer">
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon">
+                  <span class="material-symbols-outlined">notifications</span>
+                </div>
+                <h3>No new notifications</h3>
+                <p>This is a UI-only preview — unread client messages surface here until the notifications API ships.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== SETTINGS ===== -->
+        <section data-dash-section="settings">
+          <div class="dash-section-header">
+            <div>
+              <span class="dash-section-eyebrow">Account</span>
+              <h1 class="dash-section-title">Settings</h1>
+            </div>
+          </div>
+
+          <div class="dash-card dash-settings-grid">
+            <h3 class="dash-card-title">Profile</h3>
+            <div class="dash-form-row">
+              <div class="dash-field">
+                <label for="settingsFirstName">First Name</label>
+                <input type="text" id="settingsFirstName" readonly />
+              </div>
+              <div class="dash-field">
+                <label for="settingsLastName">Last Name</label>
+                <input type="text" id="settingsLastName" readonly />
+              </div>
+            </div>
+            <div class="dash-field">
+              <label for="settingsEmail">Email Address</label>
+              <input type="email" id="settingsEmail" readonly />
+            </div>
+            <div class="dash-form-row">
+              <div class="dash-field">
+                <label>Role</label>
+                <input type="text" value="Administrator" readonly />
+              </div>
+              <div class="dash-field">
+                <label for="settingsJoined">Account Created</label>
+                <input type="text" id="settingsJoined" readonly />
+              </div>
+            </div>
+
+            <div class="dash-card-divider"></div>
+
+            <h3 class="dash-card-title">Security</h3>
+            <p style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.7">
+              To change your password, we'll email you a secure reset link.
+            </p>
+            <a href="forgot-password.html" class="btn-primary" style="width: fit-content; text-decoration: none; display: inline-flex">
+              Send Password Reset Link
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ================= PROJECT MODAL (create/edit) ================= -->
+    <div class="admin-modal-overlay" id="projectModalOverlay">
+      <div class="admin-modal-window">
+        <button type="button" class="admin-modal-close" data-close-modal="projectModalOverlay">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <h2 class="admin-modal-title" id="projectModalTitle">New Project</h2>
+        <form id="projectForm" class="admin-form-grid">
+          <input type="hidden" id="projectFormId" />
+          <div class="admin-field">
+            <label for="projectFormClient">Client</label>
+            <select id="projectFormClient" required></select>
+          </div>
+          <div class="admin-field">
+            <label for="projectFormName">Project Name</label>
+            <input type="text" id="projectFormName" maxlength="160" required />
+          </div>
+          <div class="admin-field">
+            <label for="projectFormDescription">Description</label>
+            <textarea id="projectFormDescription" maxlength="2000"></textarea>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-field">
+              <label for="projectFormStatus">Status</label>
+              <select id="projectFormStatus">
+                <option value="NOT_STARTED">Not Started</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="ON_HOLD">On Hold</option>
+                <option value="COMPLETED">Completed</option>
+              </select>
+            </div>
+            <div class="admin-field">
+              <label for="projectFormPriority">Priority</label>
+              <select id="projectFormPriority">
+                <option value="LOW">Low</option>
+                <option value="MEDIUM" selected>Medium</option>
+                <option value="HIGH">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-field">
+              <label for="projectFormStart">Start Date</label>
+              <input type="date" id="projectFormStart" />
+            </div>
+            <div class="admin-field">
+              <label for="projectFormDue">Due Date</label>
+              <input type="date" id="projectFormDue" />
+            </div>
+          </div>
+          <p class="admin-form-error" id="projectFormError"></p>
+          <div class="admin-form-actions">
+            <button type="button" class="admin-btn-ghost" data-close-modal="projectModalOverlay">Cancel</button>
+            <button type="submit" class="admin-btn-primary" id="projectFormSubmit">Save Project</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ================= CLIENT DETAIL MODAL ================= -->
+    <div class="admin-modal-overlay" id="clientModalOverlay">
+      <div class="admin-modal-window is-wide">
+        <button type="button" class="admin-modal-close" data-close-modal="clientModalOverlay">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <div id="clientModalBody">
+          <div class="dash-empty-state">
+            <div class="dash-empty-icon">
+              <span class="material-symbols-outlined">hourglass_top</span>
+            </div>
+            <h3>Loading client…</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="server/assets/js/admin-dashboard.js"></script>
+    <script type="module" src="main.js?v=1784946336"></script>
+  </body>
+</html>
