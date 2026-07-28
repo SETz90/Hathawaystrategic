@@ -9,10 +9,10 @@ const REFRESH_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
 const cookieOptions = {
   httpOnly: true,
   secure: isProd,
-  sameSite: "strict",
+  sameSite: isProd ? "none" : "lax",
   path: "/api/auth",
   maxAge: REFRESH_COOKIE_MAX_AGE,
-  domain: isProd ? env.cookieDomain : undefined,
+  ...(env.cookieDomain ? { domain: env.cookieDomain } : {}),
 };
 
 const requestMeta = (req) => ({
