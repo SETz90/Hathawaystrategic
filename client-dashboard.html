@@ -467,6 +467,109 @@
         opacity: 0.75;
       }
 
+      /* ---- Files list ---- */
+      .dash-files-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .dash-file-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 1.1rem 1.4rem;
+      }
+      .dash-file-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: rgba(197, 155, 39, 0.08);
+        border: 1px solid rgba(197, 155, 39, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-gold);
+        flex-shrink: 0;
+      }
+      .dash-file-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .dash-file-name {
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dash-file-meta {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .dash-file-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+      .dash-file-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .dash-file-btn:hover {
+        color: var(--accent-gold);
+        border-color: rgba(197, 155, 39, 0.4);
+      }
+      .dash-file-btn.dash-file-delete:hover {
+        color: #e08f6b;
+        border-color: rgba(224, 143, 107, 0.4);
+      }
+      .dash-file-upload-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+      }
+      .dash-file-upload-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #14110b;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+        border: none;
+        border-radius: 999px;
+        padding: 0.6rem 1.2rem;
+        cursor: pointer;
+      }
+      .dash-file-upload-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
       /* ---- Settings form ---- */
       .dash-settings-grid {
         display: grid;
@@ -737,16 +840,15 @@
             <span class="dash-section-eyebrow">Workspace</span>
             <h1 class="dash-section-title">Files</h1>
           </div>
-          <div class="dash-card">
-            <div class="dash-empty-state">
-              <div class="dash-empty-icon">
-                <span class="material-symbols-outlined">folder</span>
+          <div id="filesUploadBar"></div>
+          <div id="filesContainer" class="dash-files-list">
+            <div class="dash-card">
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon">
+                  <span class="material-symbols-outlined">hourglass_top</span>
+                </div>
+                <h3>Loading files…</h3>
               </div>
-              <h3>No files yet</h3>
-              <p>
-                Deliverables, assets, and shared documents from your team will
-                be organized here.
-              </p>
             </div>
           </div>
         </section>
