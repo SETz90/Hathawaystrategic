@@ -1,22 +1,39 @@
 /* =========================================================
-   HATHAWAY STRATEGIC — API CLIENT (lowest layer)
-   Owns: the in-memory access token, the generic fetch wrapper,
-   and token refresh. Nothing here knows about "users" or UI —
-   that's auth-client.js's job. Kept separate so any future
-   module (CMS, CRM, projects...) can reuse apiFetch() without
-   pulling in auth-page-specific code.
+   HATHAWAY STRATEGIC — API CLIENT (networking layer)
+   Single source of truth for: API_BASE_URL, the in-memory
+   access token, refreshSession(), and apiFetch(). Nothing here
+   knows about "users", forms, or UI — that's auth-client.js's
+   job, and it imports this module rather than duplicating any
+   of it. Every future module (Projects, Files, Messaging...)
+   should call apiFetch() from here too.
    ========================================================= */
 
 export const API_BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:4000"
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? `http://${window.location.hostname}:4000`
     : "https://hathawaystrategic.onrender.com";
 
+// Credential endpoints where a 401 means "this request itself failed" —
+// retrying after a silent refresh would be meaningless (e.g. a bad
+// login) or would recurse (refresh calling refresh). Any other path,
+// including /api/auth/me, gets the refresh-and-retry treatment.
+const NO_RETRY_PATHS = new Set([
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/refresh",
+  "/api/auth/logout",
+  "/api/auth/forgot-password",
+  "/api/auth/reset-password",
+]);
+
 export class ApiError extends Error {
-  constructor(message, status, fieldErrors = null) {
+  constructor(message, status, details = null) {
     super(message);
     this.status = status;
-    this.fieldErrors = fieldErrors;
+    this.details = details;
+    // Alias kept for callers (e.g. registration form) that read fieldErrors
+    this.fieldErrors = details;
   }
 }
 
@@ -54,10 +71,10 @@ function buildHeaders(extra = {}) {
 }
 
 /**
- * Hits POST /auth/refresh using the httpOnly refresh cookie.
- * On success, updates the in-memory access token and broadcasts the
- * refreshed user via a DOM event — auth-client.js listens for this so
- * api-client.js never has to import auth-client.js (no circular deps).
+ * Hits POST /api/auth/refresh using the httpOnly refresh cookie and
+ * updates the in-memory access token. Broadcasts the result via a DOM
+ * event so any interested UI (nav, dashboard) can react without every
+ * module needing a direct import of auth-client.js.
  */
 let refreshPromise = null;
 
@@ -66,7 +83,7 @@ export async function refreshSession() {
 
   refreshPromise = (async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
         method: "POST",
         credentials: "include",
         headers: buildHeaders(),
@@ -104,25 +121,24 @@ export async function refreshSession() {
 
 /**
  * Generic authenticated fetch. Attaches the access token, parses JSON,
- * throws ApiError on failure, and — for any endpoint other than the auth
- * endpoints themselves — retries exactly once after a silent refresh if
- * the server returns 401. This is what every future module (projects,
- * files, invoices...) should call instead of raw fetch().
+ * throws ApiError on failure, and — for any endpoint other than the
+ * credential endpoints themselves — retries exactly once after a silent
+ * refresh if the server returns 401. This is what every module (auth,
+ * projects, files, invoices...) should call instead of raw fetch().
  */
 export async function apiFetch(path, options = {}) {
-  const isAuthEndpoint = path.startsWith("/auth/");
   const url = `${API_BASE_URL}${path}`;
 
   const doFetch = () =>
     fetch(url, {
       credentials: "include",
-      headers: buildHeaders(options.headers),
       ...options,
+      headers: buildHeaders(options.headers),
     });
 
   let res = await doFetch();
 
-  if (res.status === 401 && !isAuthEndpoint) {
+  if (res.status === 401 && !NO_RETRY_PATHS.has(path)) {
     const { ok } = await refreshSession();
     if (ok) res = await doFetch();
   }

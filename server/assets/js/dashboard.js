@@ -12,6 +12,7 @@ import {
   logout,
   getCurrentUser,
 } from "./auth-client.js";
+import { apiFetch, ApiError } from "./api-client.js";
 
 // Protect this page
 requireAuthOrRedirect();
@@ -26,6 +27,7 @@ document.addEventListener(
 
     renderWelcomeCard(user);
     renderSettingsCard(user);
+    loadProjects();
   },
   { once: true },
 );
@@ -62,6 +64,142 @@ function renderSettingsCard(user) {
     if (el) el.value = value;
   });
 }
+
+/* ---------------------------------------------------------
+   PROJECTS
+   --------------------------------------------------------- */
+const STATUS_LABELS = {
+  NOT_STARTED: "Not Started",
+  IN_PROGRESS: "In Progress",
+  ON_HOLD: "On Hold",
+  COMPLETED: "Completed",
+};
+
+function escapeHtml(str = "") {
+  return str.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+  );
+}
+
+function formatDate(iso) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function milestoneRow(milestone) {
+  const icon = milestone.completed ? "check_circle" : "radio_button_unchecked";
+  return `
+    <label class="dash-milestone-row ${milestone.completed ? "is-complete" : ""}" data-milestone-id="${milestone.id}">
+      <input type="checkbox" hidden ${milestone.completed ? "checked" : ""} data-milestone-toggle />
+      <span class="material-symbols-outlined">${icon}</span>
+      <span>${escapeHtml(milestone.title)}</span>
+    </label>`;
+}
+
+function projectCard(project) {
+  const due = formatDate(project.dueDate);
+  const start = formatDate(project.startDate);
+  const milestones = project.milestones || [];
+
+  return `
+    <article class="dash-project-card" data-project-id="${project.id}">
+      <div class="dash-project-top">
+        <span class="dash-project-name">${escapeHtml(project.name)}</span>
+        <div class="dash-project-badges">
+          <span class="dash-status-badge status-${project.status.toLowerCase()}">${STATUS_LABELS[project.status]}</span>
+          <span class="dash-status-badge priority-badge">${project.priority} Priority</span>
+        </div>
+      </div>
+      ${project.description ? `<p class="dash-project-desc">${escapeHtml(project.description)}</p>` : ""}
+      <div class="dash-progress-track">
+        <div class="dash-progress-fill" style="width:${project.progress}%"></div>
+      </div>
+      <p class="dash-progress-label">${project.progress}% complete</p>
+      <div class="dash-project-meta">
+        ${start ? `<span>Started <strong>${start}</strong></span>` : ""}
+        ${due ? `<span>Due <strong>${due}</strong></span>` : ""}
+      </div>
+      ${
+        milestones.length
+          ? `<div class="dash-milestones">${milestones.map(milestoneRow).join("")}</div>`
+          : ""
+      }
+    </article>`;
+}
+
+function emptyProjectsState() {
+  return `
+    <div class="dash-card">
+      <div class="dash-empty-state">
+        <div class="dash-empty-icon">
+          <span class="material-symbols-outlined">work</span>
+        </div>
+        <h3>No active projects</h3>
+        <p>
+          When we kick off your first engagement, you'll track its status,
+          milestones, and deadlines right here.
+        </p>
+      </div>
+    </div>`;
+}
+
+function errorProjectsState() {
+  return `
+    <div class="dash-card">
+      <div class="dash-empty-state">
+        <div class="dash-empty-icon">
+          <span class="material-symbols-outlined">error</span>
+        </div>
+        <h3>Couldn't load projects</h3>
+        <p>Something went wrong on our end. Please refresh to try again.</p>
+      </div>
+    </div>`;
+}
+
+async function loadProjects() {
+  const container = document.getElementById("projectsContainer");
+  if (!container) return;
+
+  try {
+    const { data } = await apiFetch("/api/projects");
+    const projects = data.projects || [];
+    container.innerHTML = projects.length
+      ? projects.map(projectCard).join("")
+      : emptyProjectsState();
+  } catch (err) {
+    console.error("Failed to load projects:", err instanceof ApiError ? err.message : err);
+    container.innerHTML = errorProjectsState();
+  }
+}
+
+// Event delegation: toggle a milestone's completed state when clicked
+document.addEventListener("click", async (e) => {
+  const row = e.target.closest("[data-milestone-id]");
+  if (!row) return;
+
+  const card = row.closest("[data-project-id]");
+  const projectId = card?.dataset.projectId;
+  const milestoneId = row.dataset.milestoneId;
+  if (!projectId || !milestoneId) return;
+
+  const willComplete = !row.classList.contains("is-complete");
+
+  try {
+    await apiFetch(`/api/projects/${projectId}/milestones/${milestoneId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ completed: willComplete }),
+    });
+    await loadProjects();
+  } catch (err) {
+    console.error("Failed to update milestone:", err instanceof ApiError ? err.message : err);
+  }
+});
 
 /* ---------------------------------------------------------
    SECTION SWITCHING (Overview / Projects / Messages / Files /

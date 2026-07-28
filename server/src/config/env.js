@@ -12,7 +12,11 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: Number(process.env.PORT) || 4000,
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
-  cookieDomain: process.env.COOKIE_DOMAIN,
+
+  cookieDomain:
+    process.env.NODE_ENV === "production"
+      ? process.env.COOKIE_DOMAIN
+      : undefined,
 
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET,
