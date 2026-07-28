@@ -7,6 +7,8 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import projectRoutes from "./modules/projects/projects.routes.js";
 import fileRoutes from "./modules/files/files.routes.js";
 import messageRoutes from "./modules/messages/messages.routes.js";
+import clientRoutes from "./modules/clients/clients.routes.js";
+import adminRoutes from "./modules/admin/admin.routes.js";
 import {
   notFoundHandler,
   errorHandler,
@@ -32,6 +34,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/clients", clientRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
+    "seed": "node prisma/seed.js",
     "start": "node src/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -12,7 +13,7 @@
   },
   "dependencies": {
     "@prisma/client": "5.20.0",
-    "bcrypt": "5.1.1",
+    "bcrypt": "^5.1.1",
     "cookie-parser": "1.4.6",
     "cors": "2.8.5",
     "dotenv": "16.4.5",

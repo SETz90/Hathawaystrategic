@@ -41,6 +41,7 @@ model User {
   passwordResetExpiry DateTime?
 
   isActive          Boolean   @default(true)
+  deletedAt         DateTime? // soft delete: set when an admin removes a client; account excluded from default lists but recoverable
 
   refreshTokens     RefreshToken[]
   projects          Project[]
@@ -51,6 +52,7 @@ model User {
   updatedAt         DateTime  @updatedAt
 
   @@index([email])
+  @@index([role])
 }
 
 model Project {
