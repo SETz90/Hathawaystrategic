@@ -66,7 +66,7 @@ export async function refreshSession() {
 
   refreshPromise = (async () => {
     try {
-      const res = await fetch(`${API_BASE}/auth/refresh`, {
+      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: "POST",
         credentials: "include",
         headers: buildHeaders(),
@@ -111,7 +111,7 @@ export async function refreshSession() {
  */
 export async function apiFetch(path, options = {}) {
   const isAuthEndpoint = path.startsWith("/auth/");
-  const url = `${API_BASE}${path}`;
+  const url = `${API_BASE_URL}${path}`;
 
   const doFetch = () =>
     fetch(url, {

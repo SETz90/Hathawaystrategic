@@ -17,7 +17,7 @@ const AUTH_API_BASE =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? `http://${window.location.hostname}:4000/api/auth`
-    : "https://hathawaystrategic.onrender.com";
+    : "https://hathawaystrategic.onrender.com/api/auth";
 
 const REMEMBER_KEY = "hathaway_remember";
 const SESSION_ACTIVE_KEY = "hathaway_session_active";
