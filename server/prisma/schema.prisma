@@ -44,6 +44,7 @@ model User {
 
   refreshTokens     RefreshToken[]
   projects          Project[]
+  uploadedFiles     File[]
 
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -66,12 +67,32 @@ model Project {
   dueDate     DateTime?
 
   milestones  Milestone[]
+  files       File[]
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   @@index([clientId])
   @@index([status])
+}
+
+model File {
+  id           String   @id @default(cuid())
+  filename     String   // original filename shown to users
+  storedName   String   @unique // name on disk (uploads/<storedName>)
+  mimeType     String
+  size         Int      // bytes
+  category     String?  // free-text grouping, e.g. "contract", "design", "invoice"
+
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  createdAt    DateTime @default(now())
+
+  @@index([projectId])
 }
 
 model Milestone {

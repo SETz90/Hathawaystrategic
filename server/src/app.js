@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import projectRoutes from "./modules/projects/projects.routes.js";
+import fileRoutes from "./modules/files/files.routes.js";
 import {
   notFoundHandler,
   errorHandler,
@@ -28,6 +29,7 @@ app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/files", fileRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

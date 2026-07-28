@@ -12,7 +12,13 @@ import {
   logout,
   getCurrentUser,
 } from "./auth-client.js";
-import { apiFetch, ApiError } from "./api-client.js";
+import {
+  apiFetch,
+  ApiError,
+  API_BASE_URL,
+  getAccessToken,
+  refreshSession,
+} from "./api-client.js";
 
 // Protect this page
 requireAuthOrRedirect();
@@ -28,6 +34,8 @@ document.addEventListener(
     renderWelcomeCard(user);
     renderSettingsCard(user);
     loadProjects();
+    renderFilesUploadBar();
+    loadFiles();
   },
   { once: true },
 );
@@ -200,6 +208,230 @@ document.addEventListener("click", async (e) => {
     console.error("Failed to update milestone:", err instanceof ApiError ? err.message : err);
   }
 });
+
+/* ---------------------------------------------------------
+   FILES
+   --------------------------------------------------------- */
+const FILE_ICONS = {
+  "application/pdf": "picture_as_pdf",
+  "image/png": "image",
+  "image/jpeg": "image",
+  "image/webp": "image",
+  "image/gif": "image",
+  "text/csv": "table_chart",
+};
+const iconFor = (mimeType) => FILE_ICONS[mimeType] || "description";
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function fileRow(file, isAdmin) {
+  return `
+    <div class="dash-file-row" data-file-id="${file.id}">
+      <div class="dash-file-icon">
+        <span class="material-symbols-outlined">${iconFor(file.mimeType)}</span>
+      </div>
+      <div class="dash-file-info">
+        <div class="dash-file-name">${escapeHtml(file.filename)}</div>
+        <div class="dash-file-meta">
+          <span>${escapeHtml(file.project?.name || "")}</span>
+          <span>${formatBytes(file.size)}</span>
+          <span>${formatDate(file.createdAt)}</span>
+          ${file.category ? `<span>${escapeHtml(file.category)}</span>` : ""}
+        </div>
+      </div>
+      <div class="dash-file-actions">
+        <button type="button" class="dash-file-btn" data-file-download title="Download">
+          <span class="material-symbols-outlined">download</span>
+        </button>
+        ${
+          isAdmin
+            ? `<button type="button" class="dash-file-btn dash-file-delete" data-file-remove title="Delete">
+                 <span class="material-symbols-outlined">delete</span>
+               </button>`
+            : ""
+        }
+      </div>
+    </div>`;
+}
+
+function emptyFilesState() {
+  return `
+    <div class="dash-card">
+      <div class="dash-empty-state">
+        <div class="dash-empty-icon">
+          <span class="material-symbols-outlined">folder</span>
+        </div>
+        <h3>No files yet</h3>
+        <p>
+          Deliverables, assets, and shared documents from your team will
+          be organized here.
+        </p>
+      </div>
+    </div>`;
+}
+
+function errorFilesState() {
+  return `
+    <div class="dash-card">
+      <div class="dash-empty-state">
+        <div class="dash-empty-icon">
+          <span class="material-symbols-outlined">error</span>
+        </div>
+        <h3>Couldn't load files</h3>
+        <p>Something went wrong on our end. Please refresh to try again.</p>
+      </div>
+    </div>`;
+}
+
+async function loadFiles() {
+  const container = document.getElementById("filesContainer");
+  if (!container) return;
+
+  const user = getCurrentUser();
+  const isAdmin = user?.role === "ADMIN";
+
+  try {
+    const { data } = await apiFetch("/api/files");
+    const files = data.files || [];
+    container.innerHTML = files.length
+      ? files.map((f) => fileRow(f, isAdmin)).join("")
+      : emptyFilesState();
+  } catch (err) {
+    console.error("Failed to load files:", err instanceof ApiError ? err.message : err);
+    container.innerHTML = errorFilesState();
+  }
+}
+
+async function renderFilesUploadBar() {
+  const bar = document.getElementById("filesUploadBar");
+  if (!bar) return;
+
+  const user = getCurrentUser();
+  if (user?.role !== "ADMIN") {
+    bar.innerHTML = "";
+    return;
+  }
+
+  // Admin needs a project to attach the upload to
+  let projects = [];
+  try {
+    const { data } = await apiFetch("/api/projects");
+    projects = data.projects || [];
+  } catch {
+    // If this fails the upload bar just won't have project options; list still loads separately
+  }
+
+  bar.innerHTML = `
+    <div class="dash-card dash-file-upload-bar">
+      <select id="fileUploadProject" class="dash-field" style="max-width:220px">
+        ${
+          projects.length
+            ? projects.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("")
+            : `<option value="" disabled selected>No projects available</option>`
+        }
+      </select>
+      <input type="text" id="fileUploadCategory" placeholder="Category (optional)" style="max-width:180px" />
+      <input type="file" id="fileUploadInput" hidden />
+      <button type="button" id="fileUploadBtn" class="dash-file-upload-btn" ${projects.length ? "" : "disabled"}>
+        <span class="material-symbols-outlined">upload</span> Upload File
+      </button>
+    </div>`;
+
+  const fileInput = document.getElementById("fileUploadInput");
+  const uploadBtn = document.getElementById("fileUploadBtn");
+
+  uploadBtn.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+
+    const projectId = document.getElementById("fileUploadProject").value;
+    const category = document.getElementById("fileUploadCategory").value.trim();
+    if (!projectId) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("projectId", projectId);
+    if (category) formData.append("category", category);
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = "Uploading…";
+
+    try {
+      await apiFetch("/api/files", { method: "POST", body: formData });
+      await loadFiles();
+    } catch (err) {
+      console.error("Failed to upload file:", err instanceof ApiError ? err.message : err);
+    } finally {
+      fileInput.value = "";
+      uploadBtn.disabled = false;
+      uploadBtn.innerHTML = `<span class="material-symbols-outlined">upload</span> Upload File`;
+    }
+  });
+}
+
+document.addEventListener("click", async (e) => {
+  const downloadBtn = e.target.closest("[data-file-download]");
+  const removeBtn = e.target.closest("[data-file-remove]");
+  const row = e.target.closest("[data-file-id]");
+  if (!row) return;
+  const fileId = row.dataset.fileId;
+  const filename = row.querySelector(".dash-file-name")?.textContent || "download";
+
+  if (downloadBtn) {
+    downloadBtn.disabled = true;
+    try {
+      await downloadFile(fileId, filename);
+    } catch (err) {
+      console.error("Failed to download file:", err);
+    } finally {
+      downloadBtn.disabled = false;
+    }
+  }
+
+  if (removeBtn) {
+    if (!confirm("Delete this file? This cannot be undone.")) return;
+    try {
+      await apiFetch(`/api/files/${fileId}`, { method: "DELETE" });
+      await loadFiles();
+    } catch (err) {
+      console.error("Failed to delete file:", err instanceof ApiError ? err.message : err);
+    }
+  }
+});
+
+// The download endpoint returns raw bytes, not JSON, so it goes through a
+// direct authenticated fetch (with a single silent-refresh retry on 401)
+// rather than apiFetch, which always parses the response as JSON.
+async function downloadFile(fileId, filename) {
+  const doFetch = () =>
+    fetch(`${API_BASE_URL}/api/files/${fileId}/download`, {
+      credentials: "include",
+      headers: getAccessToken() ? { Authorization: `Bearer ${getAccessToken()}` } : {},
+    });
+
+  let res = await doFetch();
+  if (res.status === 401) {
+    const { ok } = await refreshSession();
+    if (ok) res = await doFetch();
+  }
+  if (!res.ok) throw new Error(`Download failed (${res.status})`);
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 /* ---------------------------------------------------------
    SECTION SWITCHING (Overview / Projects / Messages / Files /

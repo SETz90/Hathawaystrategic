@@ -128,13 +128,20 @@ export async function refreshSession() {
  */
 export async function apiFetch(path, options = {}) {
   const url = `${API_BASE_URL}${path}`;
+  const isFormData =
+    typeof FormData !== "undefined" && options.body instanceof FormData;
 
-  const doFetch = () =>
-    fetch(url, {
+  const doFetch = () => {
+    const headers = buildHeaders(options.headers);
+    // Let the browser set "multipart/form-data; boundary=..." itself
+    if (isFormData) delete headers["Content-Type"];
+
+    return fetch(url, {
       credentials: "include",
       ...options,
-      headers: buildHeaders(options.headers),
+      headers,
     });
+  };
 
   let res = await doFetch();
 
