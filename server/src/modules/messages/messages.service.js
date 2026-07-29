@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { notifyUser, notifyAdmins } from "../notifications/notifications.service.js";
+import { sendNewMessageEmail } from "../../services/email/index.js";
 
 const projectSelect = { id: true, name: true, clientId: true };
 const senderSelect = { id: true, firstName: true, lastName: true, role: true };
@@ -155,6 +156,15 @@ export const createMessage = async (user, { projectId, body, attachmentId }) => 
   } else {
     await notifyAdmins(notifyPayload);
   }
+
+  // Fire-and-forget: email is a side channel, never allowed to fail sending a message
+  const senderName = `${message.sender.firstName} ${message.sender.lastName}`;
+  const emailPayload = { senderName, projectName: project.name, preview };
+  const sendMessagePromise =
+    user.role === "ADMIN"
+      ? sendNewMessageEmail({ userId: project.clientId }, emailPayload)
+      : sendNewMessageEmail({ admins: true, excludeUserId: user.id }, emailPayload);
+  sendMessagePromise.catch((err) => console.error("Failed to send new-message email:", err));
 
   return message;
 };

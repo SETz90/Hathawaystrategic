@@ -51,6 +51,7 @@ document.addEventListener(
     loadNotificationCenter();
     startNotificationPolling();
     initPushSettingsToggle();
+    initEmailPreferences();
     openSectionFromHash();
   },
   { once: true },
@@ -95,6 +96,44 @@ function renderSettingsCard(user) {
   Object.entries(fields).forEach(([id, value]) => {
     const el = document.getElementById(id);
     if (el) el.value = value;
+  });
+  applyEmailPreferences(user.emailPreferences);
+}
+
+/* ---------------------------------------------------------
+   EMAIL PREFERENCES (Phase 3.6)
+   --------------------------------------------------------- */
+function applyEmailPreferences(prefs = {}) {
+  document.querySelectorAll("#emailPrefList input[data-email-pref]").forEach((input) => {
+    const key = input.dataset.emailPref;
+    input.checked = prefs[key] !== false; // default to on when unknown
+  });
+}
+
+function initEmailPreferences() {
+  const saveBtn = document.getElementById("emailPrefSaveBtn");
+  const status = document.getElementById("emailPrefStatus");
+  if (!saveBtn) return;
+
+  saveBtn.addEventListener("click", async () => {
+    const payload = {};
+    document.querySelectorAll("#emailPrefList input[data-email-pref]").forEach((input) => {
+      payload[input.dataset.emailPref] = input.checked;
+    });
+
+    saveBtn.disabled = true;
+    const original = saveBtn.textContent;
+    saveBtn.textContent = "Saving…";
+    try {
+      await apiFetch("/api/auth/email-preferences", { method: "PATCH", body: JSON.stringify(payload) });
+      if (status) status.textContent = "Preferences saved.";
+    } catch (err) {
+      if (status) status.textContent = err.message || "Couldn't save preferences.";
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = original;
+      if (status) setTimeout(() => (status.textContent = ""), 3000);
+    }
   });
 }
 

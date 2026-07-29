@@ -93,3 +93,15 @@ export const me = asyncHandler(async (req, res) => {
   const user = await authService.getCurrentUser(req.user.id);
   res.status(200).json(new ApiResponse(200, { user }));
 });
+
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const user = await authService.verifyEmail(req.body.token);
+  res.status(200).json(new ApiResponse(200, { user }, "Email verified"));
+});
+
+export const updateEmailPreferences = asyncHandler(async (req, res) => {
+  const user = await authService.updateEmailPreferences(req.user.id, req.body);
+  res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "Email preferences updated"));
+});

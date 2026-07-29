@@ -33,6 +33,15 @@ export const env = {
     privateKey: process.env.VAPID_PRIVATE_KEY || "",
     subject: process.env.VAPID_SUBJECT || "mailto:support@hathawaystrategic.com",
   },
+
+  // Optional on purpose, same as VAPID above: smtp.js checks these at
+  // send-time and no-ops (with one startup warning) if the credentials are
+  // missing. In-app + push notifications keep working either way.
+  smtp: {
+    email: process.env.SMTP_EMAIL || "",
+    password: process.env.SMTP_PASSWORD || "",
+    from: process.env.EMAIL_FROM || "Hathaway Strategic <notifications@hathawaystrategic.com>",
+  },
 };
 
 export const isProd = env.nodeEnv === "production";

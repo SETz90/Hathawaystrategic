@@ -25,6 +25,7 @@ const NO_RETRY_PATHS = new Set([
   "/api/auth/logout",
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
+  "/api/auth/verify-email",
 ]);
 
 export class ApiError extends Error {

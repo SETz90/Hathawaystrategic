@@ -8,6 +8,8 @@ import {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  verifyEmailSchema,
+  emailPreferencesSchema,
 } from "./auth.validation.js";
 
 const router = Router();
@@ -33,6 +35,18 @@ router.post(
   validate(resetPasswordSchema),
   controller.resetPassword,
 );
+router.post(
+  "/verify-email",
+  authLimiter,
+  validate(verifyEmailSchema),
+  controller.verifyEmail,
+);
 router.get("/me", requireAuth, controller.me);
+router.patch(
+  "/email-preferences",
+  requireAuth,
+  validate(emailPreferencesSchema),
+  controller.updateEmailPreferences,
+);
 
 export default router;

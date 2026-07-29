@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { notifyUser } from "../notifications/notifications.service.js";
+import { sendProjectAssignedEmail, sendProjectStatusUpdatedEmail, sendProjectCompletedEmail } from "../../services/email/index.js";
 
 const milestoneOrder = { orderBy: { order: "asc" } };
 
@@ -64,6 +65,13 @@ export const createProject = async (data) => {
     relatedEntityId: project.id,
   });
 
+  // Fire-and-forget: email is a side channel, never allowed to fail project creation
+  sendProjectAssignedEmail(project.clientId, {
+    projectName: project.name,
+    status: project.status,
+    priority: project.priority,
+  }).catch((err) => console.error("Failed to send project-assigned email:", err));
+
   return project;
 };
 
@@ -86,6 +94,19 @@ export const updateProject = async (projectId, data) => {
       relatedEntityType: "PROJECT",
       relatedEntityId: project.id,
     });
+
+    if (data.status === "COMPLETED") {
+      sendProjectCompletedEmail(project.clientId, { projectName: project.name }).catch((err) =>
+        console.error("Failed to send project-completed email:", err),
+      );
+    } else {
+      sendProjectStatusUpdatedEmail(project.clientId, {
+        projectName: project.name,
+        oldStatus: existing.status,
+        newStatus: data.status,
+        progress: project.progress,
+      }).catch((err) => console.error("Failed to send project-status-updated email:", err));
+    }
   } else if (Object.keys(data).length > 0) {
     await notifyUser({
       userId: project.clientId,

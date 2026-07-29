@@ -54,6 +54,14 @@ model User {
   isActive          Boolean   @default(true)
   deletedAt         DateTime? // soft delete: set when an admin removes a client; account excluded from default lists but recoverable
 
+  // Per-event email notification preferences (Phase 3.6). Welcome, verification,
+  // and password-reset emails are transactional and always sent regardless of
+  // these flags — only the ongoing activity emails below respect them.
+  emailNotifyMessages         Boolean @default(true)
+  emailNotifyFiles            Boolean @default(true)
+  emailNotifyProjectUpdates   Boolean @default(true)
+  emailNotifyProjectCompleted Boolean @default(true)
+
   refreshTokens     RefreshToken[]
   projects          Project[]
   uploadedFiles     File[]

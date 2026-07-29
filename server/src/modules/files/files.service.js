@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { UPLOAD_DIR } from "../../lib/uploadStorage.js";
 import { notifyUser, notifyAdmins } from "../notifications/notifications.service.js";
+import { sendFileUploadedEmail } from "../../services/email/index.js";
 
 const fileSelect = {
   id: true,
@@ -82,6 +83,15 @@ export const createFile = async (user, { projectId, category }, uploadedFile) =>
   } else {
     await notifyAdmins(notifyPayload);
   }
+
+  // Fire-and-forget: email is a side channel, never allowed to fail the upload
+  const uploaderName = file.uploadedBy ? `${file.uploadedBy.firstName} ${file.uploadedBy.lastName}` : "Someone";
+  const emailPayload = { projectName: project.name, filename: file.filename, uploaderName };
+  const sendFilePromise =
+    user.role === "ADMIN"
+      ? sendFileUploadedEmail({ userId: project.clientId }, emailPayload)
+      : sendFileUploadedEmail({ admins: true }, emailPayload);
+  sendFilePromise.catch((err) => console.error("Failed to send file-uploaded email:", err));
 
   return file;
 };

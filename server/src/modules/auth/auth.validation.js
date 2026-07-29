@@ -26,6 +26,21 @@ export const resetPasswordSchema = z.object({
   password: z.string().min(8).regex(/[A-Z]/).regex(/[a-z]/).regex(/[0-9]/),
 });
 
+export const verifyEmailSchema = z.object({
+  token: z.string().min(1),
+});
+
+export const emailPreferencesSchema = z
+  .object({
+    messages: z.boolean().optional(),
+    files: z.boolean().optional(),
+    projectUpdates: z.boolean().optional(),
+    projectCompleted: z.boolean().optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Provide at least one preference to update",
+  });
+
 export const validate = (schema) => (req, res, next) => {
   const result = schema.safeParse(req.body);
   if (!result.success) {

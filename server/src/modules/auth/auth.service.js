@@ -8,6 +8,7 @@ import {
 } from "../../utils/jwt.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { env } from "../../config/env.js";
+import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail } from "../../services/email/index.js";
 
 const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
@@ -38,6 +39,13 @@ const publicUser = (user) => ({
   lastName: user.lastName,
   role: user.role,
   emailVerified: user.emailVerified,
+  createdAt: user.createdAt,
+  emailPreferences: {
+    messages: user.emailNotifyMessages,
+    files: user.emailNotifyFiles,
+    projectUpdates: user.emailNotifyProjectUpdates,
+    projectCompleted: user.emailNotifyProjectCompleted,
+  },
 });
 
 export const registerUser = async (
@@ -64,8 +72,11 @@ export const registerUser = async (
     },
   });
 
-  // TODO(Phase 10 - Email module): send verification email with emailVerifyToken
-  // await sendVerificationEmail(user.email, emailVerifyToken);
+  // Fire-and-forget: a slow/failed email must never block or fail registration.
+  sendWelcomeEmail(user).catch((err) => console.error("Failed to send welcome email:", err));
+  sendVerificationEmail(user, emailVerifyToken).catch((err) =>
+    console.error("Failed to send verification email:", err),
+  );
 
   const accessToken = buildAccessToken(user);
   const refreshToken = await issueRefreshToken(user.id, meta);
@@ -173,8 +184,9 @@ export const requestPasswordReset = async (email) => {
     },
   });
 
-  // TODO(Phase 10 - Email module): send reset email with token
-  // await sendPasswordResetEmail(user.email, token);
+  sendPasswordResetEmail(user, token).catch((err) =>
+    console.error("Failed to send password reset email:", err),
+  );
 };
 
 export const resetPassword = async (token, newPassword) => {
@@ -212,5 +224,31 @@ export const resetPassword = async (token, newPassword) => {
 export const getCurrentUser = async (userId) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new ApiError(404, "User not found");
+  return publicUser(user);
+};
+
+export const verifyEmail = async (token) => {
+  const user = await prisma.user.findUnique({ where: { emailVerifyToken: token } });
+
+  if (!user || !user.emailVerifyExpiry || user.emailVerifyExpiry < new Date()) {
+    throw new ApiError(400, "Invalid or expired verification link");
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: user.id },
+    data: { emailVerified: true, emailVerifyToken: null, emailVerifyExpiry: null },
+  });
+
+  return publicUser(updated);
+};
+
+export const updateEmailPreferences = async (userId, preferences) => {
+  const data = {};
+  if ("messages" in preferences) data.emailNotifyMessages = preferences.messages;
+  if ("files" in preferences) data.emailNotifyFiles = preferences.files;
+  if ("projectUpdates" in preferences) data.emailNotifyProjectUpdates = preferences.projectUpdates;
+  if ("projectCompleted" in preferences) data.emailNotifyProjectCompleted = preferences.projectCompleted;
+
+  const user = await prisma.user.update({ where: { id: userId }, data });
   return publicUser(user);
 };
