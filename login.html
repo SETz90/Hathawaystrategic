@@ -260,6 +260,7 @@
       import {
         redirectIfAuthenticated,
         getNextUrl,
+        dashboardPathForRole,
       } from "./server/assets/js/auth-guard.js";
 
       redirectIfAuthenticated();
@@ -286,8 +287,8 @@
           const email = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
           const rememberMe = document.getElementById("rememberMe").checked;
-          await login({ email, password, rememberMe });
-          window.location.href = getNextUrl();
+          const user = await login({ email, password, rememberMe });
+          window.location.href = getNextUrl(dashboardPathForRole(user.role));
         } catch (err) {
           showError(err.message || "Something went wrong. Please try again.");
         } finally {
