@@ -1454,6 +1454,38 @@
 
             <div class="dash-card-divider"></div>
 
+            <h3 class="dash-card-title">Email Notifications</h3>
+            <p style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.7">
+              Choose which activity emails you'd like to receive. Account emails (welcome, verification, password reset) are always sent.
+            </p>
+            <div id="emailPrefList" style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.25rem">
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
+                <input type="checkbox" data-email-pref="messages" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
+                New Messages
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
+                <input type="checkbox" data-email-pref="files" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
+                New Files
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
+                <input type="checkbox" data-email-pref="projectUpdates" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
+                Project Updates
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
+                <input type="checkbox" data-email-pref="projectCompleted" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
+                Project Completed
+              </label>
+            </div>
+            <button type="button" id="emailPrefSaveBtn" class="btn-primary" style="width: fit-content; display: inline-flex">
+              Save Email Preferences
+            </button>
+            <span
+              id="emailPrefStatus"
+              style="display: block; font-family: var(--font-sans); font-size: 0.8rem; color: var(--accent-gold); margin-top: 0.6rem; min-height: 1em"
+            ></span>
+
+            <div class="dash-card-divider"></div>
+
             <h3 class="dash-card-title">Security</h3>
             <p
               style="

@@ -257,6 +257,7 @@
 
     <script type="module">
       import { login } from "./server/assets/js/auth-client.js";
+      import { apiFetch } from "./server/assets/js/api-client.js";
       import {
         redirectIfAuthenticated,
         getNextUrl,
@@ -273,8 +274,25 @@
         errorBanner.textContent = message;
         errorBanner.classList.add("is-visible");
       }
+      function showSuccess(message) {
+        errorBanner.textContent = message;
+        errorBanner.style.color = "#5fe08a";
+        errorBanner.style.borderColor = "#5fe08a";
+        errorBanner.classList.add("is-visible");
+      }
       function clearError() {
         errorBanner.classList.remove("is-visible");
+      }
+
+      // Arrived via the emailed "Verify Email Address" link (login.html?verify=<token>)
+      const verifyToken = new URLSearchParams(window.location.search).get("verify");
+      if (verifyToken) {
+        apiFetch("/api/auth/verify-email", {
+          method: "POST",
+          body: JSON.stringify({ token: verifyToken }),
+        })
+          .then(() => showSuccess("Email verified — you can now log in."))
+          .catch((err) => showError(err.message || "That verification link is invalid or has expired."));
       }
 
       form.addEventListener("submit", async (e) => {
