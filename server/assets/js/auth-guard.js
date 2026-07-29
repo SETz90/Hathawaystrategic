@@ -13,14 +13,18 @@ import {
   isAuthenticated,
 } from "./auth-client.js";
 
-function safeNextUrl() {
+function dashboardPathForRole(role) {
+  return role === "ADMIN" ? "admin-dashboard.html" : "client-dashboard.html";
+}
+
+function safeNextUrl(fallback = "client-dashboard.html") {
   const params = new URLSearchParams(window.location.search);
   const next = params.get("next");
 
   // Only allow same-origin relative paths
   return next && next.startsWith("/") && !next.startsWith("//")
     ? next
-    : "client-dashboard.html";
+    : fallback;
 }
 
 /**
@@ -48,12 +52,14 @@ export function requireAuth({ role, onReady } = {}) {
 }
 
 /**
- * Redirect logged-in users away from login/register pages.
+ * Redirect logged-in users away from login/register pages, sending each
+ * role to its own dashboard (unless a same-origin ?next= override is set).
  */
 export function redirectIfAuthenticated() {
   const redirect = () => {
     if (isAuthenticated()) {
-      window.location.href = safeNextUrl();
+      const user = getCurrentUser();
+      window.location.href = safeNextUrl(dashboardPathForRole(user?.role));
     }
   };
 
@@ -64,4 +70,4 @@ export function redirectIfAuthenticated() {
   }
 }
 
-export { safeNextUrl as getNextUrl };
+export { safeNextUrl as getNextUrl, dashboardPathForRole };
