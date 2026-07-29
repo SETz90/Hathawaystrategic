@@ -3,6 +3,7 @@ import path from "node:path";
 import { prisma } from "../../lib/prisma.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { UPLOAD_DIR } from "../../lib/uploadStorage.js";
+import { notifyUser, notifyAdmins } from "../notifications/notifications.service.js";
 
 const fileSelect = {
   id: true,
@@ -56,7 +57,7 @@ export const createFile = async (user, { projectId, category }, uploadedFile) =>
     throw new ApiError(404, "Project not found");
   }
 
-  return prisma.file.create({
+  const file = await prisma.file.create({
     data: {
       filename: uploadedFile.originalname,
       storedName: uploadedFile.filename,
@@ -68,6 +69,21 @@ export const createFile = async (user, { projectId, category }, uploadedFile) =>
     },
     select: fileSelect,
   });
+
+  const notifyPayload = {
+    type: "FILE_UPLOADED",
+    title: "File Uploaded",
+    message: `${file.uploadedBy ? `${file.uploadedBy.firstName} ${file.uploadedBy.lastName}` : "Someone"} uploaded ${file.filename} to ${project.name}`,
+    relatedEntityType: "FILE",
+    relatedEntityId: file.id,
+  };
+  if (user.role === "ADMIN") {
+    await notifyUser({ userId: project.clientId, ...notifyPayload });
+  } else {
+    await notifyAdmins(notifyPayload);
+  }
+
+  return file;
 };
 
 export const deleteFile = async (fileId) => {

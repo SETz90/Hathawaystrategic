@@ -9,6 +9,13 @@
 
 import { requireAuthOrRedirect, logout, getCurrentUser } from "./auth-client.js";
 import { apiFetch, ApiError, API_BASE_URL, getAccessToken, refreshSession } from "./api-client.js";
+import {
+  initNotificationBell,
+  initNotificationCenter,
+  loadNotificationCenter,
+  startNotificationPolling,
+} from "./notifications.js";
+import { initPushSettingsToggle } from "./push-notifications.js";
 
 requireAuthOrRedirect({ role: "ADMIN" });
 
@@ -32,6 +39,11 @@ document.addEventListener(
     initMessageComposer();
     initConversationSearch();
     startMessagesPolling();
+    initNotificationBell();
+    initNotificationCenter();
+    loadNotificationCenter();
+    startNotificationPolling();
+    initPushSettingsToggle();
 
     initSectionNav();
     initMobileToggle();
@@ -42,6 +54,12 @@ document.addEventListener(
     initProjectFilter();
     initFileFilters();
     initDropzone();
+
+    // A clicked push notification (from service-worker.js) lands on
+    // admin-dashboard.html#notifications — open that section on load,
+    // same as clicking the nav button by hand. Runs after initSectionNav()
+    // so the nav buttons' click listeners already exist.
+    openSectionFromHash();
   },
   { once: true },
 );
@@ -222,7 +240,6 @@ async function loadOverview() {
       navBadge.textContent = unread;
       navBadge.style.display = unread > 0 ? "inline-block" : "none";
     }
-    renderNotifications(unread);
   } catch (err) {
     logErr("Failed to load overview:", err);
     if (activityContainer) {
@@ -232,29 +249,6 @@ async function loadOverview() {
         <p>Something went wrong on our end. Please refresh to try again.</p>
       </div>`;
     }
-  }
-}
-
-function renderNotifications(unreadCount) {
-  const container = document.getElementById("notificationsContainer");
-  if (!container) return;
-
-  if (unreadCount > 0) {
-    container.innerHTML = `
-      <div class="admin-notif-row">
-        <div class="dash-empty-icon" style="margin: 0"><span class="material-symbols-outlined">mark_chat_unread</span></div>
-        <div class="admin-activity-text">
-          You have <strong>${unreadCount}</strong> unread client message${unreadCount === 1 ? "" : "s"}.
-          <div class="admin-activity-time">Open Messages to reply.</div>
-        </div>
-      </div>`;
-  } else {
-    container.innerHTML = `
-      <div class="dash-empty-state">
-        <div class="dash-empty-icon"><span class="material-symbols-outlined">notifications</span></div>
-        <h3>No new notifications</h3>
-        <p>This is a UI-only preview — unread client messages surface here until the notifications API ships.</p>
-      </div>`;
   }
 }
 
@@ -1324,6 +1318,12 @@ function initSectionNav() {
       document.getElementById("dashSidebar")?.classList.remove("is-open");
     });
   });
+}
+
+function openSectionFromHash() {
+  const target = window.location.hash.replace("#", "");
+  if (!target) return;
+  document.querySelector(`[data-dash-nav="${target}"]`)?.click();
 }
 
 function initMobileToggle() {

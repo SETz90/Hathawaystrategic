@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 import { ApiError } from "../../utils/ApiError.js";
+import { notifyUser } from "../notifications/notifications.service.js";
 
 const milestoneOrder = { orderBy: { order: "asc" } };
 
@@ -49,21 +50,54 @@ export const createProject = async (data) => {
   const client = await prisma.user.findUnique({ where: { id: data.clientId } });
   if (!client) throw new ApiError(404, "Client not found");
 
-  return prisma.project.create({
+  const project = await prisma.project.create({
     data,
     include: { milestones: milestoneOrder },
   });
+
+  await notifyUser({
+    userId: project.clientId,
+    type: "PROJECT_CREATED",
+    title: "Project Created",
+    message: `Your project "${project.name}" has been created.`,
+    relatedEntityType: "PROJECT",
+    relatedEntityId: project.id,
+  });
+
+  return project;
 };
 
 export const updateProject = async (projectId, data) => {
   const existing = await prisma.project.findUnique({ where: { id: projectId } });
   if (!existing) throw new ApiError(404, "Project not found");
 
-  return prisma.project.update({
+  const project = await prisma.project.update({
     where: { id: projectId },
     data,
     include: { milestones: milestoneOrder },
   });
+
+  if (data.status && data.status !== existing.status) {
+    await notifyUser({
+      userId: project.clientId,
+      type: "PROJECT_STATUS_CHANGED",
+      title: "Project Status Updated",
+      message: `"${project.name}" moved to ${data.status.replaceAll("_", " ").toLowerCase()}.`,
+      relatedEntityType: "PROJECT",
+      relatedEntityId: project.id,
+    });
+  } else if (Object.keys(data).length > 0) {
+    await notifyUser({
+      userId: project.clientId,
+      type: "PROJECT_UPDATED",
+      title: "Project Updated",
+      message: `"${project.name}" was updated.`,
+      relatedEntityType: "PROJECT",
+      relatedEntityId: project.id,
+    });
+  }
+
+  return project;
 };
 
 export const deleteProject = async (projectId) => {

@@ -19,6 +19,13 @@ import {
   getAccessToken,
   refreshSession,
 } from "./api-client.js";
+import {
+  initNotificationBell,
+  initNotificationCenter,
+  loadNotificationCenter,
+  startNotificationPolling,
+} from "./notifications.js";
+import { initPushSettingsToggle } from "./push-notifications.js";
 
 // Protect this page
 requireAuthOrRedirect();
@@ -39,9 +46,24 @@ document.addEventListener(
     loadConversations({ selectFirst: true });
     initMessageComposer();
     startMessagesPolling();
+    initNotificationBell();
+    initNotificationCenter();
+    loadNotificationCenter();
+    startNotificationPolling();
+    initPushSettingsToggle();
+    openSectionFromHash();
   },
   { once: true },
 );
+
+// A clicked push notification (from service-worker.js) lands on
+// client-dashboard.html#notifications — open that section on load,
+// same as clicking the nav button by hand.
+function openSectionFromHash() {
+  const target = window.location.hash.replace("#", "");
+  if (!target) return;
+  document.querySelector(`[data-dash-nav="${target}"]`)?.click();
+}
 
 function initials(user) {
   return `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase();

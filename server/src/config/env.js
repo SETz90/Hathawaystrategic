@@ -24,6 +24,15 @@ export const env = {
     accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "15m",
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
   },
+
+  // Optional on purpose: browser push is an enhancement, not a hard
+  // dependency. push.service.js checks these at send-time and no-ops
+  // (with one startup warning) if either key is missing.
+  vapid: {
+    publicKey: process.env.VAPID_PUBLIC_KEY || "",
+    privateKey: process.env.VAPID_PRIVATE_KEY || "",
+    subject: process.env.VAPID_SUBJECT || "mailto:support@hathawaystrategic.com",
+  },
 };
 
 export const isProd = env.nodeEnv === "production";

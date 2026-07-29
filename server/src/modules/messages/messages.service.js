@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 import { ApiError } from "../../utils/ApiError.js";
+import { notifyUser, notifyAdmins } from "../notifications/notifications.service.js";
 
 const projectSelect = { id: true, name: true, clientId: true };
 const senderSelect = { id: true, firstName: true, lastName: true, role: true };
@@ -139,6 +140,21 @@ export const createMessage = async (user, { projectId, body, attachmentId }) => 
     where: { id: conversation.id },
     data: { updatedAt: new Date() },
   });
+
+  // Clients notify every admin; an admin's reply notifies just that project's client
+  const preview = body.length > 80 ? `${body.slice(0, 80)}…` : body;
+  const notifyPayload = {
+    type: "NEW_MESSAGE",
+    title: "New Message",
+    message: `${message.sender.firstName} ${message.sender.lastName} sent a message about ${project.name}: ${preview}`,
+    relatedEntityType: "CONVERSATION",
+    relatedEntityId: conversation.id,
+  };
+  if (user.role === "ADMIN") {
+    await notifyUser({ userId: project.clientId, ...notifyPayload });
+  } else {
+    await notifyAdmins(notifyPayload);
+  }
 
   return message;
 };
