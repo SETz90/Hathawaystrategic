@@ -77,11 +77,6 @@ export const sendEmail = async ({ to, subject, html, text, replyTo }) => {
 
     const transporter = getTransporter();
 
-    console.log("Verifying transporter...");
-    await transporter.verify();
-
-    console.log("Transport verified.");
-
     console.log("Sending email...");
 
     const info = await transporter.sendMail({
