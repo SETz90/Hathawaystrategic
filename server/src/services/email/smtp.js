@@ -1,100 +1,79 @@
-import nodemailer from "nodemailer";
+import SibApiV3Sdk from "sib-api-v3-sdk";
 import { env } from "../../config/env.js";
 
-/* ---------------------------------------------------------
-   Config guard
-   Email is an enhancement on top of the database notification system,
-   not a replacement for it — same posture as push.service.js. If
-   BREVO_SMTP_LOGIN / BREVO_SMTP_KEY aren't set (local dev, or before the
-   env vars are added on Render), sendEmail() no-ops instead of throwing,
-   and everything else (in-app bell, browser push) keeps working.
-   --------------------------------------------------------- */
 let warnedOnce = false;
 
 const isConfigured = () => {
-  if (env.brevo.login && env.brevo.key) return true;
+  if (env.brevo.apiKey) return true;
+
   if (!warnedOnce) {
-    console.warn(
-      "[email] BREVO_SMTP_LOGIN/BREVO_SMTP_KEY not set — outgoing email is disabled. " +
-        "In-app and push notifications are unaffected. Set BREVO_SMTP_LOGIN, BREVO_SMTP_KEY " +
-        "(an SMTP key generated in Brevo, not your account password), and EMAIL_FROM to enable it.",
-    );
+    console.warn("[email] BREVO_API_KEY not set — outgoing email is disabled.");
     warnedOnce = true;
   }
+
   return false;
 };
 
-/* ---------------------------------------------------------
-   Transport
-   Created lazily and cached — createTransport() is cheap and doesn't
-   touch the network itself, but there's no reason to redo it per send.
-   Brevo's relay uses STARTTLS on 587 (their documented default), not
-   implicit TLS on 465.
-   --------------------------------------------------------- */
-let transporter = null;
+// Configure Brevo API
+const client = SibApiV3Sdk.ApiClient.instance;
 
-const getTransporter = () => {
-  if (transporter) return transporter;
+client.authentications["api-key"].apiKey = env.brevo.apiKey;
 
-  console.log("Creating Brevo transporter...");
+const emailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
-  transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: env.brevo.login,
-      pass: env.brevo.key,
-    },
-  });
-
-  return transporter;
-};
-
-/**
- * Low-level send. Never throws — a failed email must never fail or roll
- * back the action that triggered it (registration, a project update,
- * etc.), same contract as sendPushForNotification. Callers that need to
- * know whether it actually went out can check the resolved boolean.
- *
- * @param {{ to: string, subject: string, html: string, text?: string, replyTo?: string }} message
- * @returns {Promise<boolean>} true if Brevo accepted the message
- */
 export const sendEmail = async ({ to, subject, html, text, replyTo }) => {
   if (!to || !subject || !html) {
-    console.error(
-      "[email] sendEmail called with missing to/subject/html — skipping",
-    );
+    console.error("[email] Missing required email fields.");
     return false;
   }
 
   if (!isConfigured()) return false;
 
   try {
-    console.log("Preparing email...");
-    console.log("SMTP Login:", env.brevo.login);
-    console.log("EMAIL_FROM:", env.brevo.from);
+    console.log("Sending email through Brevo API...");
+    console.log("To:", to);
+    console.log("From:", env.brevo.from);
 
-    const transporter = getTransporter();
+    const senderName =
+      env.brevo.from.match(/^(.*?)</)?.[1].trim() || "Hathaway Strategic";
 
-    console.log("Sending email...");
+    const senderEmail = env.brevo.from.match(/<(.+)>/)?.[1] || env.brevo.from;
 
-    const info = await transporter.sendMail({
-      from: env.brevo.from,
-      to,
-      subject,
-      html,
-      text,
-      ...(replyTo ? { replyTo } : {}),
+    const result = await emailApi.sendTransacEmail({
+      sender: {
+        name: senderName,
+        email: senderEmail,
+      },
+
+      to: [
+        {
+          email: to,
+        },
+      ],
+
+      subject: subject,
+
+      htmlContent: html,
+
+      textContent: text,
+
+      ...(replyTo
+        ? {
+            replyTo: {
+              email: replyTo,
+            },
+          }
+        : {}),
     });
 
-    console.log("Email sent successfully!");
-    console.log(info);
+    console.log("Brevo response:");
+    console.log(result);
 
     return true;
   } catch (err) {
-    console.error("[email] Failed to send:");
-    console.error(err);
+    console.error("BREVO ERROR");
+    console.error(err.response?.body || err);
+
     return false;
   }
 };

@@ -31,16 +31,18 @@ export const env = {
   vapid: {
     publicKey: process.env.VAPID_PUBLIC_KEY || "",
     privateKey: process.env.VAPID_PRIVATE_KEY || "",
-    subject: process.env.VAPID_SUBJECT || "mailto:support@hathawaystrategic.com",
+    subject:
+      process.env.VAPID_SUBJECT || "mailto:support@hathawaystrategic.com",
   },
 
   // Optional on purpose, same as VAPID above: smtp.js checks these at
   // send-time and no-ops (with one startup warning) if the credentials are
   // missing. In-app + push notifications keep working either way.
   brevo: {
-    login: process.env.BREVO_SMTP_LOGIN || "",
-    key: process.env.BREVO_SMTP_KEY || "",
-    from: process.env.EMAIL_FROM || "Hathaway Strategic <notifications@hathawaystrategic.com>",
+    apiKey: process.env.BREVO_API_KEY || "",
+    from:
+      process.env.EMAIL_FROM ||
+      "Hathaway Strategic <hathawaystrategic@gmail.com>",
   },
 };
 
