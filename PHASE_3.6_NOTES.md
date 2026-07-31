@@ -1,4 +1,4 @@
-# Phase 3.6 — Email Integration (Gmail SMTP)
+# Phase 3.6 — Email Integration (Brevo SMTP)
 
 Email is now the third notification channel alongside in-app and browser push,
 following the exact "optional, no-op if unconfigured" posture already used by
@@ -7,52 +7,69 @@ following the exact "optional, no-op if unconfigured" posture already used by
 Originally built on Resend, but Resend requires a verified custom domain to
 send to arbitrary recipients in production, and this project currently only
 has the `hathawaystrategic.netlify.app` domain (no custom domain purchased
-yet). The provider layer was swapped to Gmail SMTP via Nodemailer instead;
-nothing above the provider layer changed — see "What changed" below.
+yet). Briefly moved to Gmail SMTP as an interim fix, then swapped again to
+Brevo's SMTP relay, which — like Resend — supports sending to arbitrary
+recipients from a verified sender without needing a paid Google Workspace
+domain or juggling Gmail App Passwords. Nothing above the provider layer
+changed either time — see "What changed" below.
 
 ## 1. Install / environment
 
 One new npm dependency was added: `nodemailer` (see `server/package.json`).
 Run `npm install` in `server/` to pull it in and update the lockfile.
 
-`smtp.js` connects to `smtp.gmail.com` on port 465 (implicit TLS) using
-Nodemailer's `createTransport`.
+`smtp.js` connects to Brevo's relay at `smtp-relay.brevo.com` on port 587
+(STARTTLS, Brevo's documented default) using Nodemailer's `createTransport`.
 
 Add to your `.env` (and to Render's environment variables):
 
 ```
-SMTP_EMAIL=hathawaystrategic@gmail.com
-SMTP_PASSWORD=your_google_app_password
-EMAIL_FROM="Hathaway Strategic <hathawaystrategic@gmail.com>"
+BREVO_SMTP_LOGIN=your_brevo_account_email@example.com
+BREVO_SMTP_KEY=your_brevo_smtp_key
+EMAIL_FROM="Hathaway Strategic <notifications@hathawaystrategic.com>"
 ```
 
-**`SMTP_PASSWORD` must be a Google App Password, not the Gmail account
-password.** App Passwords require 2-Step Verification to be turned on for
-the Google account first, then can be generated at
-https://myaccount.google.com/apppasswords. A regular Gmail password will be
-rejected by Google's SMTP servers.
+**`BREVO_SMTP_LOGIN`** is the login shown on Brevo's SMTP & API page (under
+Settings), typically the email address of the Brevo account.
 
-**`EMAIL_FROM` should use the same address as `SMTP_EMAIL`** (or a verified
-"Send As" alias configured in that Gmail account's settings) — Gmail's SMTP
-servers generally reject or silently rewrite a `From` address that doesn't
-belong to the authenticated account, unlike Resend which allowed any
-`EMAIL_FROM` once a domain was verified.
+**`BREVO_SMTP_KEY` must be an SMTP key generated in Brevo (Settings → SMTP &
+API → SMTP → "Generate a new SMTP key"), not the Brevo account password.**
 
-If `SMTP_EMAIL` or `SMTP_PASSWORD` is left blank, `sendEmail()` no-ops with a
-single startup warning — the app runs fine without it, same as push.
+**`EMAIL_FROM` must be a sender verified in Brevo** (Settings → Senders →
+"Add a sender"). Unlike Gmail's SMTP relay, Brevo doesn't require `EMAIL_FROM`
+to match the login address — any verified sender works, which is closer to
+how Resend behaved (verified sender/domain, not verified login).
+
+If `BREVO_SMTP_LOGIN` or `BREVO_SMTP_KEY` is left blank, `sendEmail()` no-ops
+with a single startup warning — the app runs fine without it, same as push.
 
 Links inside emails are built from the existing `CLIENT_URL` env var — no new
 URL variable was introduced.
+
+## What changed vs. the Gmail SMTP version
+
+Only the provider layer, same pattern as the Resend → Gmail swap before it:
+
+- `smtp.js`: transport now points at `smtp-relay.brevo.com:587` (STARTTLS)
+  instead of `smtp.gmail.com:465` (implicit TLS), and reads
+  `env.brevo.login` / `env.brevo.key` / `env.brevo.from` instead of
+  `env.smtp.email` / `env.smtp.password` / `env.smtp.from`. The exported
+  `sendEmail()` function's signature and "never throws" behavior are
+  unchanged.
+- `env.js`: `env.smtp` → `env.brevo` (`BREVO_SMTP_LOGIN` / `BREVO_SMTP_KEY` /
+  `EMAIL_FROM` instead of `SMTP_EMAIL` / `SMTP_PASSWORD` / `EMAIL_FROM`).
+- `email/index.js`: **no changes** — it still just imports `sendEmail` from
+  `./smtp.js`; the file name and its exported functions didn't move.
+- `.env.example` and this file updated to match.
 
 ## What changed vs. the original Resend version
 
 Only the provider layer:
 
 - `server/src/services/email/resend.js` removed, replaced by
-  `server/src/services/email/smtp.js` (Nodemailer over Gmail SMTP instead of
+  `server/src/services/email/smtp.js` (Nodemailer over SMTP instead of
   the Resend REST API).
-- `env.js`: `env.resend` → `env.smtp` (`SMTP_EMAIL` / `SMTP_PASSWORD` /
-  `EMAIL_FROM` instead of `RESEND_API_KEY` / `EMAIL_FROM`).
+- `env.js`: `env.resend` → `env.brevo` (see above).
 - `email/index.js`: one import line now points at `./smtp.js` instead of
   `./resend.js`. Its exported functions (`sendWelcomeEmail`,
   `sendVerificationEmail`, `sendPasswordResetEmail`,
@@ -60,7 +77,7 @@ Only the provider layer:
   `sendProjectCompletedEmail`, `sendNewMessageEmail`,
   `sendFileUploadedEmail`) are unchanged, so `auth.service.js`,
   `projects.service.js`, `files.service.js`, and `messages.service.js`
-  needed no changes at all.
+  needed no changes at all — through both provider swaps.
 - `.env.example` and this file updated to match.
 
 Everything else — templates, `layout.js`, preference logic, the fire-and-
@@ -84,7 +101,7 @@ actual schema state.)
 ## 3. What's new
 
 **`server/src/services/email/`** — the centralized email service:
-- `smtp.js` — low-level `sendEmail()` (Nodemailer over Gmail SMTP), never throws
+- `smtp.js` — low-level `sendEmail()` (Nodemailer over Brevo SMTP relay), never throws
 - `layout.js` — shared branded HTML wrapper (dark/gold, matches site tokens) + plain-text fallback
 - `templates/` — welcome, emailVerification, passwordReset, newProject, newMessage, fileUpload, projectStatusUpdate, projectCompleted
 - `index.js` — exports the specialized senders every module calls:
