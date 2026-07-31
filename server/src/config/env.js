@@ -37,9 +37,9 @@ export const env = {
   // Optional on purpose, same as VAPID above: smtp.js checks these at
   // send-time and no-ops (with one startup warning) if the credentials are
   // missing. In-app + push notifications keep working either way.
-  smtp: {
-    email: process.env.SMTP_EMAIL || "",
-    password: process.env.SMTP_PASSWORD || "",
+  brevo: {
+    login: process.env.BREVO_SMTP_LOGIN || "",
+    key: process.env.BREVO_SMTP_KEY || "",
     from: process.env.EMAIL_FROM || "Hathaway Strategic <notifications@hathawaystrategic.com>",
   },
 };

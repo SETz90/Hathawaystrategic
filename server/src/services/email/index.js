@@ -32,28 +32,18 @@ const recipientSelect = {
 /** Sends to a single user if they exist and haven't opted out of `prefField`. */
 const sendToUser = async (userId, prefField, buildTemplate) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: recipientSelect,
-    });
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: recipientSelect });
     if (!user || user[prefField] === false) return;
 
     const { subject, html, text } = buildTemplate(user);
     await sendEmail({ to: user.email, subject, html, text });
   } catch (err) {
-    console.error(
-      `[email] sendToUser(${prefField}) failed:`,
-      err.message || err,
-    );
+    console.error(`[email] sendToUser(${prefField}) failed:`, err.message || err);
   }
 };
 
 /** Sends to every admin who hasn't opted out of `prefField`. */
-const sendToAdmins = async (
-  prefField,
-  buildTemplate,
-  { excludeUserId } = {},
-) => {
+const sendToAdmins = async (prefField, buildTemplate, { excludeUserId } = {}) => {
   try {
     const admins = await prisma.user.findMany({
       where: {
@@ -71,10 +61,7 @@ const sendToAdmins = async (
       }),
     );
   } catch (err) {
-    console.error(
-      `[email] sendToAdmins(${prefField}) failed:`,
-      err.message || err,
-    );
+    console.error(`[email] sendToAdmins(${prefField}) failed:`, err.message || err);
   }
 };
 
@@ -88,18 +75,12 @@ export const sendWelcomeEmail = async (user) => {
 };
 
 export const sendVerificationEmail = async (user, token) => {
-  const { subject, html, text } = emailVerificationEmail({
-    firstName: user.firstName,
-    token,
-  });
+  const { subject, html, text } = emailVerificationEmail({ firstName: user.firstName, token });
   await sendEmail({ to: user.email, subject, html, text });
 };
 
 export const sendPasswordResetEmail = async (user, token) => {
-  const { subject, html, text } = passwordResetEmail({
-    firstName: user.firstName,
-    token,
-  });
+  const { subject, html, text } = passwordResetEmail({ firstName: user.firstName, token });
   await sendEmail({ to: user.email, subject, html, text });
 };
 
@@ -107,31 +88,14 @@ export const sendPasswordResetEmail = async (user, token) => {
    ACTIVITY — preference-aware
    --------------------------------------------------------- */
 
-export const sendProjectAssignedEmail = (
-  clientId,
-  { projectName, status, priority },
-) =>
+export const sendProjectAssignedEmail = (clientId, { projectName, status, priority }) =>
   sendToUser(clientId, "emailNotifyProjectUpdates", (user) =>
-    newProjectEmail({
-      firstName: user.firstName,
-      projectName,
-      status,
-      priority,
-    }),
+    newProjectEmail({ firstName: user.firstName, projectName, status, priority }),
   );
 
-export const sendProjectStatusUpdatedEmail = (
-  clientId,
-  { projectName, oldStatus, newStatus, progress },
-) =>
+export const sendProjectStatusUpdatedEmail = (clientId, { projectName, oldStatus, newStatus, progress }) =>
   sendToUser(clientId, "emailNotifyProjectUpdates", (user) =>
-    projectStatusUpdateEmail({
-      firstName: user.firstName,
-      projectName,
-      oldStatus,
-      newStatus,
-      progress,
-    }),
+    projectStatusUpdateEmail({ firstName: user.firstName, projectName, oldStatus, newStatus, progress }),
   );
 
 export const sendProjectCompletedEmail = (clientId, { projectName }) =>
@@ -140,49 +104,23 @@ export const sendProjectCompletedEmail = (clientId, { projectName }) =>
   );
 
 /** recipient is either { userId } (a specific client) or { admins: true, excludeUserId? }. */
-export const sendNewMessageEmail = (
-  recipient,
-  { senderName, projectName, preview },
-) => {
+export const sendNewMessageEmail = (recipient, { senderName, projectName, preview }) => {
   const buildTemplate = (isAdminRecipient) => (user) =>
-    newMessageEmail({
-      firstName: user.firstName,
-      senderName,
-      projectName,
-      preview,
-      isAdminRecipient,
-    });
+    newMessageEmail({ firstName: user.firstName, senderName, projectName, preview, isAdminRecipient });
 
   if (recipient.admins) {
-    return sendToAdmins("emailNotifyMessages", buildTemplate(true), {
-      excludeUserId: recipient.excludeUserId,
-    });
+    return sendToAdmins("emailNotifyMessages", buildTemplate(true), { excludeUserId: recipient.excludeUserId });
   }
-  return sendToUser(
-    recipient.userId,
-    "emailNotifyMessages",
-    buildTemplate(false),
-  );
+  return sendToUser(recipient.userId, "emailNotifyMessages", buildTemplate(false));
 };
 
 /** recipient is either { userId } (a specific client) or { admins: true, excludeUserId? }. */
-export const sendFileUploadedEmail = (
-  recipient,
-  { projectName, filename, uploaderName },
-) => {
+export const sendFileUploadedEmail = (recipient, { projectName, filename, uploaderName }) => {
   const buildTemplate = (isAdminRecipient) => (user) =>
-    fileUploadEmail({
-      firstName: user.firstName,
-      projectName,
-      filename,
-      uploaderName,
-      isAdminRecipient,
-    });
+    fileUploadEmail({ firstName: user.firstName, projectName, filename, uploaderName, isAdminRecipient });
 
   if (recipient.admins) {
-    return sendToAdmins("emailNotifyFiles", buildTemplate(true), {
-      excludeUserId: recipient.excludeUserId,
-    });
+    return sendToAdmins("emailNotifyFiles", buildTemplate(true), { excludeUserId: recipient.excludeUserId });
   }
   return sendToUser(recipient.userId, "emailNotifyFiles", buildTemplate(false));
 };
