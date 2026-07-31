@@ -38,6 +38,14 @@ const getTransporter = () => {
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
+
+    connectionTimeout: 30000,
+    greetingTimeout: 30000,
+    socketTimeout: 30000,
+
+    logger: true,
+    debug: true,
+
     auth: {
       user: env.smtp.email,
       pass: env.smtp.password,
@@ -58,13 +66,23 @@ const getTransporter = () => {
  */
 export const sendEmail = async ({ to, subject, html, text, replyTo }) => {
   if (!to || !subject || !html) {
-    console.error("[email] sendEmail called with missing to/subject/html — skipping");
+    console.error(
+      "[email] sendEmail called with missing to/subject/html — skipping",
+    );
     return false;
   }
   if (!isConfigured()) return false;
 
   try {
-    await getTransporter().sendMail({
+    const transporter = getTransporter();
+
+    console.log("Checking SMTP connection...");
+
+    await transporter.verify();
+
+    console.log("SMTP verified!");
+
+    await transporter.sendMail({
       from: env.smtp.from,
       to,
       subject,
@@ -75,7 +93,8 @@ export const sendEmail = async ({ to, subject, html, text, replyTo }) => {
 
     return true;
   } catch (err) {
-    console.error("[email] Failed to send:", err.message || err);
+    console.error("SMTP ERROR:");
+    console.error(err);
     return false;
   }
 };
