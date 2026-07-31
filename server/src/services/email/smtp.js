@@ -36,6 +36,8 @@ let transporter = null;
 const getTransporter = () => {
   if (transporter) return transporter;
 
+  console.log("Creating Brevo transporter...");
+
   transporter = nodemailer.createTransport({
     host: "smtp-relay.brevo.com",
     port: 587,
@@ -61,13 +63,29 @@ const getTransporter = () => {
  */
 export const sendEmail = async ({ to, subject, html, text, replyTo }) => {
   if (!to || !subject || !html) {
-    console.error("[email] sendEmail called with missing to/subject/html — skipping");
+    console.error(
+      "[email] sendEmail called with missing to/subject/html — skipping",
+    );
     return false;
   }
+
   if (!isConfigured()) return false;
 
   try {
-    await getTransporter().sendMail({
+    console.log("Preparing email...");
+    console.log("SMTP Login:", env.brevo.login);
+    console.log("EMAIL_FROM:", env.brevo.from);
+
+    const transporter = getTransporter();
+
+    console.log("Verifying transporter...");
+    await transporter.verify();
+
+    console.log("Transport verified.");
+
+    console.log("Sending email...");
+
+    const info = await transporter.sendMail({
       from: env.brevo.from,
       to,
       subject,
@@ -76,9 +94,13 @@ export const sendEmail = async ({ to, subject, html, text, replyTo }) => {
       ...(replyTo ? { replyTo } : {}),
     });
 
+    console.log("Email sent successfully!");
+    console.log(info);
+
     return true;
   } catch (err) {
-    console.error("[email] Failed to send:", err.message || err);
+    console.error("[email] Failed to send:");
+    console.error(err);
     return false;
   }
 };
