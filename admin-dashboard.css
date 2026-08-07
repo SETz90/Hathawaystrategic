@@ -1,27 +1,35 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard | Hathaway Strategic</title>
-    <link
-      rel="icon"
-      type="Image/png"
-      href="https://res.cloudinary.com/gmriwzco/image/upload/v1784200572/iconweb_xql643.png"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css?v=1785000000" />
-    <link rel="stylesheet" href="dashboard-system.css?v=1785100000" />
-    <style>
+/* =============================================================
+   HATHAWAY STRATEGIC — ADMIN DASHBOARD STYLES
+   Phase 4 UI/UX Redesign
+
+   Load order (see admin-dashboard.html <head>):
+     1. style.css              — site-wide tokens (:root), fonts,
+                                  marketing-site components, and the
+                                  Phase 4 design-system token
+                                  extension + toast system appended
+                                  at the bottom of that file.
+     2. admin-dashboard.css    — this file. Admin-only layout and
+                                  components.
+
+   Contents:
+     1. Layout & Sidebar
+     2. Header / Topbar elements
+     3. Cards & Stat Grid
+     4. Files
+     5. Toolbar / Search / Table
+     6. Modals (CRM forms, client drawer)
+     7. File upload / dropzone
+     8. Messages
+     9. Activity feed
+     10. Notifications
+     11. Settings form
+     12. Visual polish (hover/focus/transition refinements on the
+         sections above)
+     13. New components (KPI trend, risk pills, charts, skeletons,
+         tooltips) — additive, opt-in via markup
+     14. Responsive
+   ============================================================= */
+
       /* =========================================================
          ADMIN DASHBOARD (CRM) — reuses style.css + client-dashboard's
          dash-* tokens/classes 1:1 (sidebar, cards, stat grid, badges,
@@ -54,81 +62,6 @@
         z-index: 40;
         transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
-      /* ---- Sidebar brand lockup (Phase 4.2) ---- */
-      .dash-sidebar-brand {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
-        padding: 0 0.75rem;
-        margin-bottom: 2.25rem;
-      }
-      .dash-sidebar-brand strong {
-        font-family: var(--font-serif);
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: #fff;
-        letter-spacing: 0.01em;
-      }
-      .dash-sidebar-brand span {
-        font-family: var(--font-sans);
-        font-size: 0.62rem;
-        font-weight: 700;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--accent-gold);
-      }
-
-      /* ---- Persistent "New Project" CTA (Phase 4.2) ---- */
-      .dash-sidebar-cta {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        width: 100%;
-        background: linear-gradient(135deg, var(--accent-gold), #eec14b);
-        color: #14110b;
-        font-family: var(--font-sans);
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-        border: none;
-        border-radius: 8px;
-        padding: 0.8rem 1rem;
-        cursor: pointer;
-        margin-bottom: 2rem;
-        transition: transform 0.25s var(--ds-ease-out, ease), box-shadow 0.25s ease, filter 0.25s ease;
-        box-shadow: 0 8px 22px rgba(197, 155, 39, 0.2);
-      }
-      .dash-sidebar-cta:hover {
-        filter: brightness(1.06);
-        transform: translateY(-1px);
-        box-shadow: 0 12px 28px rgba(197, 155, 39, 0.3);
-      }
-      .dash-sidebar-cta .material-symbols-outlined {
-        font-size: 18px;
-      }
-
-      .dash-support-link {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: var(--text-muted);
-        font-family: var(--font-sans);
-        font-size: 0.85rem;
-        font-weight: 500;
-        text-decoration: none;
-        padding: 0.75rem;
-        border-radius: 8px;
-        transition: background 0.25s ease, color 0.25s ease;
-      }
-      .dash-support-link:hover {
-        background: rgba(255, 255, 255, 0.04);
-        color: #fff;
-      }
-      .dash-support-link .material-symbols-outlined {
-        font-size: 20px;
-      }
-
       .dash-nav-group {
         margin-bottom: 2rem;
       }
@@ -175,17 +108,6 @@
       .dash-nav-btn.is-active {
         background: rgba(197, 155, 39, 0.1);
         color: var(--accent-gold);
-      }
-      .dash-nav-btn.is-active::before {
-        content: "";
-        position: absolute;
-        left: -1.25rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 60%;
-        border-radius: 0 3px 3px 0;
-        background: var(--accent-gold);
       }
       .dash-nav-count {
         margin-left: auto;
@@ -378,26 +300,6 @@
       }
       .dash-stat-card {
         text-align: left;
-        transition: transform 0.3s var(--ds-ease-out, ease), border-color 0.3s ease;
-      }
-      .dash-stat-card:hover {
-        transform: translateY(-3px);
-        border-color: rgba(197, 155, 39, 0.35);
-      }
-      .dash-stat-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
-        background: rgba(197, 155, 39, 0.1);
-        border: 1px solid rgba(197, 155, 39, 0.25);
-        color: var(--accent-gold);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1rem;
-      }
-      .dash-stat-icon .material-symbols-outlined {
-        font-size: 19px;
       }
       .dash-stat-label {
         font-family: var(--font-sans);
@@ -854,33 +756,8 @@
         color: #fff;
         vertical-align: middle;
       }
-      .admin-table tbody tr {
-        transition: background 0.2s ease;
-      }
-      .admin-table tbody tr:hover {
-        background: rgba(255, 255, 255, 0.02);
-      }
       .admin-table tr.is-disabled td {
         opacity: 0.55;
-      }
-      .admin-client-cell {
-        display: flex;
-        align-items: center;
-        gap: 0.85rem;
-      }
-      .admin-client-avatar {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        background: linear-gradient(160deg, rgba(197, 155, 39, 0.25), rgba(197, 155, 39, 0.05));
-        border: 1px solid rgba(197, 155, 39, 0.35);
-        color: var(--accent-gold);
-        font-family: var(--font-serif);
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
       }
       .admin-client-name {
         font-family: var(--font-serif);
@@ -1146,11 +1023,203 @@
         padding: 0.55rem 0.75rem;
       }
 
-      /* ---- Messages ----
-         Full messaging component styling now lives in the shared
-         "16. MESSAGING" section of dashboard-system.css so admin and
-         client stay pixel-identical. Nothing page-specific left to
-         override here. */
+      /* ---- Messages (identical to client dashboard) ---- */
+      .dash-messages-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 1.25rem;
+        align-items: start;
+      }
+      @media (max-width: 760px) {
+        .dash-messages-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .dash-conversations-panel {
+        padding: 0;
+        overflow: hidden;
+      }
+      .admin-conversation-search {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .admin-conversation-search input {
+        width: 100%;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.55rem 0.9rem;
+      }
+      .dash-conversations-list {
+        display: flex;
+        flex-direction: column;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .dash-conversation-item {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        text-align: left;
+        background: none;
+        border: none;
+        border-bottom: 1px solid var(--glass-border);
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+      .dash-conversation-item:last-child {
+        border-bottom: none;
+      }
+      .dash-conversation-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .dash-conversation-item.is-active {
+        background: rgba(197, 155, 39, 0.1);
+      }
+      .dash-conversation-name {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-family: var(--font-serif);
+        font-size: 0.95rem;
+        color: #fff;
+      }
+      .dash-conversation-preview {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dash-unread-dot {
+        flex-shrink: 0;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+        color: #14110b;
+        font-family: var(--font-sans);
+        font-size: 0.65rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 0.1rem 0.5rem;
+        min-width: 18px;
+        text-align: center;
+      }
+      .dash-thread-panel {
+        display: flex;
+        flex-direction: column;
+        height: 560px;
+        padding: 0;
+        overflow: hidden;
+      }
+      .dash-thread-header {
+        flex-shrink: 0;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        color: #fff;
+      }
+      .dash-thread-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
+      .dash-message-bubble {
+        max-width: 72%;
+        padding: 0.7rem 1rem;
+        border-radius: 14px;
+        font-family: var(--font-sans);
+        font-size: 0.87rem;
+        line-height: 1.5;
+        color: #fff;
+      }
+      .dash-message-bubble.is-own {
+        align-self: flex-end;
+        background: linear-gradient(135deg, rgba(197, 155, 39, 0.22), rgba(197, 155, 39, 0.08));
+        border: 1px solid rgba(197, 155, 39, 0.3);
+      }
+      .dash-message-bubble.is-other {
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+      }
+      .dash-message-meta {
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        margin-top: 0.4rem;
+      }
+      .dash-message-attachment {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.5rem;
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: var(--accent-gold);
+      }
+      .dash-message-attachment .material-symbols-outlined {
+        font-size: 1rem;
+      }
+      .dash-message-composer {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--glass-border);
+      }
+      .dash-message-composer.is-hidden {
+        display: none;
+      }
+      .dash-message-attach-select {
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        padding: 0.6rem 0.5rem;
+        max-width: 140px;
+        flex-shrink: 0;
+      }
+      .dash-message-composer input {
+        flex: 1;
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 999px;
+        padding: 0.7rem 1.1rem;
+      }
+      .dash-message-composer button {
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
+        color: #14110b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+      .dash-message-composer button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
       /* ---- Activity feed ---- */
       .admin-activity-list {
@@ -1163,10 +1232,10 @@
         align-items: flex-start;
         gap: 0.9rem;
         padding-bottom: 0.9rem;
-        border-bottom: none;
-        position: relative;
+        border-bottom: 1px solid var(--glass-border);
       }
       .admin-activity-row:last-child {
+        border-bottom: none;
         padding-bottom: 0;
       }
       .admin-activity-icon {
@@ -1180,18 +1249,6 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        position: relative;
-        z-index: 1;
-      }
-      .admin-activity-row:not(:last-child) .admin-activity-icon::after {
-        content: "";
-        position: absolute;
-        top: 36px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 1px;
-        height: calc(100% + 0.9rem - 20px);
-        background: var(--glass-border);
       }
       .admin-activity-icon .material-symbols-outlined {
         font-size: 17px;
@@ -1508,557 +1565,272 @@
         margin-top: 1rem;
         border-top: 1px solid var(--glass-border);
       }
-    </style>
-  </head>
-  <body>
-    <div class="ambient-glow" id="glow"></div>
 
-    <header class="custom-header-wrapper">
-      <nav class="nav-container">
-        <div class="logo-container">
-          <a href="index.html">
-            <img
-              src="https://res.cloudinary.com/gmriwzco/image/upload/f_auto,q_auto/logo_gepp36"
-              alt="Hathaway Logo"
-              class="logo-img"
-            />
-          </a>
-        </div>
-        <div class="nav-pill" id="main-nav-pill">
-          <a class="nav-link" href="index.html#home">Home</a>
-          <a class="nav-link" href="portfolio.html">Our Works</a>
-          <a class="nav-link active" href="admin-dashboard.html">Admin</a>
-        </div>
-        <div class="notif-bell-wrap">
-          <button type="button" class="notif-bell-btn" id="notifBellButton" aria-label="Notifications">
-            <span class="material-symbols-outlined">notifications</span>
-            <span class="notif-bell-badge" id="notifBellBadge" style="display: none">0</span>
-          </button>
-          <div class="notif-dropdown" id="notifDropdown">
-            <div class="notif-dropdown-header">
-              <span>Notifications</span>
-              <a href="#" id="notifDropdownViewAll">View all</a>
-            </div>
-            <div class="notif-dropdown-list" id="notifDropdownList">
-              <div class="dash-empty-state" style="padding: 2rem 1rem">
-                <div class="dash-empty-icon"><span class="material-symbols-outlined">hourglass_top</span></div>
-                <h3>Loading…</h3>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="nav-btn desktop-only-btn" data-logout-btn style="background: transparent">
-          LOG OUT
-        </button>
-        <button class="mobile-nav-toggle" aria-label="Toggle navigation menu" id="mobileMenuButton">
-          <span class="burger-bar"></span><span class="burger-bar"></span><span class="burger-bar"></span>
-        </button>
-      </nav>
-    </header>
+      /* =========================================================
+         PHASE 4 — VISUAL POLISH
+         These rules target the SAME selectors already defined above
+         (.dash-stat-card, .dash-project-card, .dash-nav-btn, etc.).
+         Nothing is renamed or removed — this block only adds
+         transitions, shadows, and hover refinements on top of the
+         existing layout rules, using the token scale from style.css
+         (--surface-*, --shadow-*, --radius-*, --ease-premium).
+         ========================================================= */
 
-    <button class="dash-mobile-toggle" id="dashMobileToggle" aria-label="Toggle dashboard menu">
-      <span class="material-symbols-outlined">menu</span>
-    </button>
+      /* ---- Sidebar nav: smoother active/hover motion ---- */
+      .dash-nav-btn {
+        transition: background var(--duration-base, 0.25s) var(--ease-premium, ease),
+          color var(--duration-base, 0.25s) var(--ease-premium, ease),
+          transform var(--duration-fast, 0.15s) var(--ease-premium, ease);
+      }
+      .dash-nav-btn:hover { transform: translateX(2px); }
+      .dash-nav-btn.is-active {
+        box-shadow: inset 2px 0 0 var(--accent-gold);
+      }
 
-    <div class="dash-shell">
-      <!-- ================= SIDEBAR ================= -->
-      <aside class="dash-sidebar" id="dashSidebar">
-        <div class="dash-sidebar-brand">
-          <strong>Hathaway Strategic</strong>
-          <span>AI Digital Agency</span>
-        </div>
+      /* ---- Stat / KPI cards: elevation + lift on hover ---- */
+      .dash-stat-card {
+        border-radius: var(--radius-lg, 16px);
+        box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.35));
+        transition: transform var(--duration-base, 0.25s) var(--ease-premium, ease),
+          box-shadow var(--duration-base, 0.25s) ease,
+          border-color var(--duration-base, 0.25s) ease;
+      }
+      .dash-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md, 0 12px 30px rgba(0, 0, 0, 0.45));
+        border-color: var(--surface-border-hover, rgba(197, 155, 39, 0.35));
+      }
 
-        <button type="button" class="dash-sidebar-cta" id="sidebarNewProjectBtn">
-          <span class="material-symbols-outlined">add</span> New Project
-        </button>
+      /* ---- Project / client cards ---- */
+      .dash-project-card {
+        transition: transform var(--duration-base, 0.25s) var(--ease-premium, ease),
+          box-shadow var(--duration-base, 0.25s) ease,
+          border-color var(--duration-base, 0.25s) ease;
+      }
+      .dash-project-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md, 0 12px 30px rgba(0, 0, 0, 0.45));
+      }
 
-        <div class="dash-nav-group">
-          <span class="dash-nav-label">Dashboard</span>
-          <button class="dash-nav-btn is-active" data-dash-nav="overview">
-            <span class="material-symbols-outlined">dashboard</span> Overview
-          </button>
-        </div>
-        <div class="dash-nav-group">
-          <span class="dash-nav-label">CRM</span>
-          <button class="dash-nav-btn" data-dash-nav="clients">
-            <span class="material-symbols-outlined">group</span> Clients
-          </button>
-          <button class="dash-nav-btn" data-dash-nav="projects">
-            <span class="material-symbols-outlined">work</span> Projects
-          </button>
-          <button class="dash-nav-btn" data-dash-nav="files">
-            <span class="material-symbols-outlined">folder</span> Files
-          </button>
-          <button class="dash-nav-btn" data-dash-nav="messages">
-            <span class="material-symbols-outlined">chat_bubble</span> Messages
-            <span class="dash-nav-count" id="navUnreadCount" style="display: none">0</span>
-          </button>
-          <button class="dash-nav-btn" data-dash-nav="invoices">
-            <span class="material-symbols-outlined">receipt_long</span> Invoices
-          </button>
-        </div>
-        <div class="dash-nav-group">
-          <span class="dash-nav-label">Account</span>
-          <button class="dash-nav-btn" data-dash-nav="notifications">
-            <span class="material-symbols-outlined">notifications</span> Notifications
-          </button>
-          <button class="dash-nav-btn" data-dash-nav="settings">
-            <span class="material-symbols-outlined">settings</span> Settings
-          </button>
-        </div>
+      /* ---- Progress bars: smoother fill animation ---- */
+      .dash-progress-fill {
+        transition: width var(--duration-slow, 0.45s) var(--ease-premium, ease);
+      }
 
-        <div class="dash-sidebar-footer">
-          <a href="mailto:team@hathawaystrategic.com" class="dash-support-link">
-            <span class="material-symbols-outlined">support_agent</span> Support
-          </a>
-          <button class="dash-logout-btn" data-logout-btn style="width: 100%; justify-content: center">
-            <span class="material-symbols-outlined" style="font-size: 18px">logout</span>
-            Log Out
-          </button>
-        </div>
-      </aside>
+      /* ---- Buttons: consistent focus + press feedback ---- */
+      .admin-btn-primary,
+      .admin-btn-ghost,
+      .admin-btn-danger,
+      .dash-logout-btn,
+      .dash-file-btn,
+      .notif-action-btn {
+        transition: transform var(--duration-fast, 0.15s) var(--ease-premium, ease),
+          background var(--duration-base, 0.25s) ease,
+          border-color var(--duration-base, 0.25s) ease,
+          box-shadow var(--duration-base, 0.25s) ease;
+      }
+      .admin-btn-primary:hover { box-shadow: var(--shadow-gold, 0 20px 45px rgba(197, 155, 39, 0.12)); }
+      .admin-btn-primary:active,
+      .admin-btn-ghost:active,
+      .admin-btn-danger:active { transform: translateY(1px) scale(0.98); }
 
-      <!-- ================= MAIN ================= -->
-      <main class="dash-main">
-        <div class="dash-card dash-welcome-card">
-          <div class="dash-avatar" id="dashUserAvatar">--</div>
-          <div class="dash-welcome-text">
-            <h2><span id="dashGreeting">Welcome back</span>, <span id="dashUserName">—</span></h2>
-            <p id="dashUserEmail">—</p>
-          </div>
-          <span class="dash-badge badge-verified">Admin</span>
-        </div>
+      /* ---- Form fields: consistent focus ring ---- */
+      .admin-field input,
+      .admin-field select,
+      .admin-field textarea,
+      .dash-field input,
+      .dash-field select,
+      .dash-field textarea,
+      .admin-search-input,
+      .admin-select {
+        transition: border-color var(--duration-base, 0.25s) ease,
+          background var(--duration-base, 0.25s) ease;
+      }
+      .admin-field input:focus,
+      .admin-field select:focus,
+      .admin-field textarea:focus,
+      .dash-field input:focus,
+      .dash-field select:focus,
+      .dash-field textarea:focus,
+      .admin-search-input:focus,
+      .admin-select:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.12);
+      }
 
-        <!-- ===== OVERVIEW ===== -->
-        <section data-dash-section="overview" class="is-active">
-          <div class="dash-section-header">
-            <div>
-              <span class="dash-section-eyebrow">Dashboard</span>
-              <h1 class="dash-section-title">Overview</h1>
-            </div>
-          </div>
+      /* ---- Table rows: hover feedback ---- */
+      .admin-table tbody tr {
+        transition: background var(--duration-fast, 0.15s) ease;
+      }
+      .admin-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.025);
+      }
 
-          <div class="dash-stat-grid" id="overviewStatGrid">
-            <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Clients</span>
-              <span class="dash-stat-value">—</span>
-            </div>
-            <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Projects</span>
-              <span class="dash-stat-value">—</span>
-            </div>
-            <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Active Projects</span>
-              <span class="dash-stat-value">—</span>
-            </div>
-            <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Completed Projects</span>
-              <span class="dash-stat-value">—</span>
-            </div>
-            <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Files Uploaded</span>
-              <span class="dash-stat-value">—</span>
-            </div>
-            <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Unread Messages</span>
-              <span class="dash-stat-value">—</span>
-            </div>
-          </div>
+      /* ---- Universal focus-visible floor (keyboard accessibility) ---- */
+      .dash-nav-btn:focus-visible,
+      .admin-btn-primary:focus-visible,
+      .admin-btn-ghost:focus-visible,
+      .admin-btn-danger:focus-visible,
+      .dash-project-card:focus-visible,
+      .notif-bell-btn:focus-visible,
+      .admin-mini-btn:focus-visible {
+        outline: 2px solid var(--accent-gold);
+        outline-offset: 2px;
+      }
 
-          <div class="dash-card">
-            <h3 class="dash-card-title">Recent Activity</h3>
-            <div id="activityContainer">
-              <div class="dash-empty-state">
-                <div class="dash-empty-icon">
-                  <span class="material-symbols-outlined">hourglass_top</span>
-                </div>
-                <h3>Loading activity…</h3>
-              </div>
-            </div>
-          </div>
-        </section>
+      /* =========================================================
+         NEW REUSABLE COMPONENTS (additive — safe to adopt in markup
+         incrementally; nothing above depends on these existing)
+         ========================================================= */
 
-        <!-- ===== CLIENTS ===== -->
-        <section data-dash-section="clients">
-          <div class="dash-section-header">
-            <div>
-              <span class="dash-section-eyebrow">CRM</span>
-              <h1 class="dash-section-title">Clients</h1>
-            </div>
-          </div>
-          <div class="admin-toolbar">
-            <div class="admin-search-wrap">
-              <span class="material-symbols-outlined">search</span>
-              <input type="text" id="clientSearchInput" class="admin-search-input" placeholder="Search clients by name or email…" />
-            </div>
-            <select id="clientStatusFilter" class="admin-select">
-              <option value="">All statuses</option>
-              <option value="ACTIVE">Active</option>
-              <option value="DISABLED">Disabled</option>
-              <option value="ALL">Include deleted</option>
-            </select>
-          </div>
-          <div class="dash-card admin-table-wrap">
-            <div id="clientsTableContainer">
-              <div class="dash-empty-state">
-                <div class="dash-empty-icon">
-                  <span class="material-symbols-outlined">hourglass_top</span>
-                </div>
-                <h3>Loading clients…</h3>
-              </div>
-            </div>
-          </div>
-        </section>
+      /* ---- KPI trend indicator (drop into a .dash-stat-card) ---- */
+      .kpi-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        border-radius: var(--radius-full, 999px);
+      }
+      .kpi-trend .material-symbols-outlined { font-size: 15px; }
+      .kpi-trend-up { color: var(--success); background: var(--success-bg); }
+      .kpi-trend-down { color: var(--danger); background: var(--danger-bg); }
+      .kpi-trend-flat { color: var(--neutral); background: var(--neutral-bg); }
 
-        <!-- ===== PROJECTS ===== -->
-        <section data-dash-section="projects">
-          <div class="dash-section-header">
-            <div>
-              <span class="dash-section-eyebrow">CRM</span>
-              <h1 class="dash-section-title">Projects</h1>
-            </div>
-            <button type="button" class="admin-btn-primary" id="openCreateProjectBtn">
-              <span class="material-symbols-outlined">add</span> New Project
-            </button>
-          </div>
-          <div class="admin-toolbar">
-            <select id="projectClientFilter" class="admin-select" style="flex: 1; min-width: 200px">
-              <option value="">All clients</option>
-            </select>
-          </div>
-          <div id="projectsContainer" class="dash-projects-list">
-            <div class="dash-card">
-              <div class="dash-empty-state">
-                <div class="dash-empty-icon">
-                  <span class="material-symbols-outlined">hourglass_top</span>
-                </div>
-                <h3>Loading projects…</h3>
-              </div>
-            </div>
-          </div>
-        </section>
+      /* ---- Priority / risk pills (CRM risk level, project priority) ---- */
+      .risk-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        padding: 0.28rem 0.7rem;
+        border-radius: var(--radius-full, 999px);
+      }
+      .risk-pill-dot { width: 6px; height: 6px; border-radius: 50%; }
+      .risk-pill.is-low { color: var(--priority-low); background: rgba(96, 165, 250, 0.12); }
+      .risk-pill.is-low .risk-pill-dot { background: var(--priority-low); }
+      .risk-pill.is-medium { color: var(--priority-medium); background: rgba(234, 179, 8, 0.12); }
+      .risk-pill.is-medium .risk-pill-dot { background: var(--priority-medium); }
+      .risk-pill.is-high { color: var(--priority-high); background: rgba(251, 146, 60, 0.12); }
+      .risk-pill.is-high .risk-pill-dot { background: var(--priority-high); }
+      .risk-pill.is-critical { color: var(--priority-critical); background: rgba(248, 113, 113, 0.12); }
+      .risk-pill.is-critical .risk-pill-dot { background: var(--priority-critical); }
 
-        <!-- ===== FILES ===== -->
-        <section data-dash-section="files">
-          <div class="dash-section-header">
-            <div>
-              <span class="dash-section-eyebrow">CRM</span>
-              <h1 class="dash-section-title">Files</h1>
-            </div>
-          </div>
-          <div class="admin-toolbar">
-            <select id="fileProjectFilter" class="admin-select" style="flex: 1; min-width: 200px">
-              <option value="">All projects</option>
-            </select>
-            <input type="text" id="fileCategoryFilter" class="admin-select" placeholder="Filter by category…" style="flex: 1; min-width: 160px" />
-          </div>
-          <div class="admin-file-toolbar" id="filesUploadBar"></div>
-          <div id="filesContainer" class="dash-files-list">
-            <div class="dash-card">
-              <div class="dash-empty-state">
-                <div class="dash-empty-icon">
-                  <span class="material-symbols-outlined">hourglass_top</span>
-                </div>
-                <h3>Loading files…</h3>
-              </div>
-            </div>
-          </div>
-        </section>
+      /* ---- Simple bar chart (analytics widgets) ---- */
+      .chart-card {
+        background: var(--surface-2);
+        border: 1px solid var(--surface-border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem 1.5rem 1.25rem;
+      }
+      .chart-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .chart-card-title { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 500; color: #fff; }
+      .chart-card-subtitle { font-family: var(--font-sans); font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+      .bar-chart { display: flex; align-items: flex-end; gap: 0.75rem; height: 160px; border-bottom: 1px solid var(--chart-grid); }
+      .bar-track { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; flex: 1; }
+      .bar-fill {
+        width: 100%;
+        min-width: 8px;
+        border-radius: 4px 4px 0 0;
+        background: linear-gradient(180deg, var(--accent-gold), rgba(197, 155, 39, 0.35));
+        height: calc(var(--value, 0.5) * 100%);
+        transition: height var(--duration-slow) var(--ease-premium);
+      }
+      .bar-label { font-family: var(--font-sans); font-size: 0.7rem; color: var(--text-muted); }
 
-        <!-- ===== MESSAGES ===== -->
-        <section data-dash-section="messages">
-          <div class="dash-section-header">
-            <div>
-              <span class="dash-section-eyebrow">CRM</span>
-              <h1 class="dash-section-title">Messages</h1>
-            </div>
-          </div>
-          <div class="dash-messages-layout">
-            <div class="dash-card dash-conversations-panel">
-              <div class="dash-conv-search">
-                <span class="material-symbols-outlined">search</span>
-                <input type="text" id="conversationSearchInput" placeholder="Search conversations…" autocomplete="off" />
-              </div>
-              <div id="conversationsList" class="dash-conversations-list">
-                <div class="dash-conv-skeleton-row" aria-hidden="true">
-                  <span class="ds-skeleton ds-skeleton-avatar"></span>
-                  <div class="dash-conv-skeleton-body">
-                    <span class="ds-skeleton ds-skeleton-text w-60"></span>
-                    <span class="ds-skeleton ds-skeleton-text w-40"></span>
-                  </div>
-                </div>
-                <div class="dash-conv-skeleton-row" aria-hidden="true">
-                  <span class="ds-skeleton ds-skeleton-avatar"></span>
-                  <div class="dash-conv-skeleton-body">
-                    <span class="ds-skeleton ds-skeleton-text w-60"></span>
-                    <span class="ds-skeleton ds-skeleton-text w-40"></span>
-                  </div>
-                </div>
-                <div class="dash-conv-skeleton-row" aria-hidden="true">
-                  <span class="ds-skeleton ds-skeleton-avatar"></span>
-                  <div class="dash-conv-skeleton-body">
-                    <span class="ds-skeleton ds-skeleton-text w-60"></span>
-                    <span class="ds-skeleton ds-skeleton-text w-40"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="dash-card dash-thread-panel">
-              <div id="messageThreadHeader" class="dash-thread-header">Select a conversation</div>
-              <div id="messageThreadBody" class="dash-thread-body">
-                <div class="dash-empty-state">
-                  <div class="dash-empty-icon">
-                    <span class="material-symbols-outlined">chat_bubble</span>
-                  </div>
-                  <h3>No conversation selected</h3>
-                  <p>Pick a client conversation on the left to view and reply to their messages.</p>
-                </div>
-              </div>
-              <form id="messageComposerForm" class="dash-message-composer is-hidden">
-                <div class="dash-composer-preview" id="messageAttachPreview" hidden>
-                  <span class="material-symbols-outlined">description</span>
-                  <span class="dash-composer-preview-name" id="messageAttachPreviewName"></span>
-                  <button type="button" class="dash-composer-preview-remove" id="messageAttachClear" aria-label="Remove attachment">
-                    <span class="material-symbols-outlined">close</span>
-                  </button>
-                </div>
-                <div class="dash-composer-row">
-                  <div class="dash-composer-attach-wrap" title="Attach an existing file">
-                    <span class="material-symbols-outlined dash-composer-attach-icon">attach_file</span>
-                    <select id="messageAttachSelect" class="dash-message-attach-select">
-                      <option value="">Attach</option>
-                    </select>
-                  </div>
-                  <textarea id="messageComposerInput" class="dash-composer-textarea" placeholder="Type a reply…" rows="1" autocomplete="off" maxlength="4000"></textarea>
-                  <button type="submit" id="messageComposerSend" class="dash-composer-send" title="Send message" disabled>
-                    <span class="material-symbols-outlined">send</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </section>
+      /* ---- Progress ring ---- */
+      .progress-ring { position: relative; width: 88px; height: 88px; }
+      .progress-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+      .progress-ring circle { fill: none; stroke-width: 8; }
+      .progress-ring .ring-track { stroke: rgba(255, 255, 255, 0.06); }
+      .progress-ring .ring-value { stroke: var(--accent-gold); stroke-linecap: round; transition: stroke-dashoffset var(--duration-slow) var(--ease-premium); }
+      .progress-ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 1.05rem; color: #fff; }
 
-        <!-- ===== INVOICES ===== -->
-        <section data-dash-section="invoices">
-          <div class="dash-section-header">
-            <div>
-              <span class="dash-section-eyebrow">CRM</span>
-              <h1 class="dash-section-title">Invoices</h1>
-            </div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-empty-state">
-              <div class="dash-empty-icon">
-                <span class="material-symbols-outlined">receipt_long</span>
-              </div>
-              <h3>Billing isn't wired up yet</h3>
-              <p>The Invoices API doesn't exist yet, so this stays an honest empty state rather than fake data.</p>
-            </div>
-          </div>
-        </section>
+      /* ---- Skeleton loaders ---- */
+      @keyframes skeleton-shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      .skeleton {
+        background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 37%, var(--surface-2) 63%);
+        background-size: 400% 100%;
+        animation: skeleton-shimmer 1.6s ease-in-out infinite;
+        border-radius: var(--radius-sm);
+      }
+      .skeleton-text { height: 0.85em; margin-bottom: 0.5em; border-radius: 4px; }
+      .skeleton-text:last-child { width: 70%; }
+      .skeleton-card { height: 140px; border-radius: var(--radius-lg); }
+      .skeleton-avatar { width: 40px; height: 40px; border-radius: 50%; }
+      @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
 
-        <!-- ===== NOTIFICATIONS ===== -->
-        <section data-dash-section="notifications">
-          <div class="dash-section-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <span class="dash-section-eyebrow">Account</span>
-              <h1 class="dash-section-title">Notifications</h1>
-            </div>
-            <div class="notif-center-actions">
-              <button type="button" id="notifMarkAllReadBtn">Mark all as read</button>
-              <button type="button" id="notifClearAllBtn">Clear all</button>
-            </div>
-          </div>
-          <div class="notif-filter-tabs" id="notifFilterTabs">
-            <button type="button" class="notif-filter-tab is-active" data-notif-filter="all">All</button>
-            <button type="button" class="notif-filter-tab" data-notif-filter="unread">Unread</button>
-            <button type="button" class="notif-filter-tab" data-notif-filter="messages">Messages</button>
-            <button type="button" class="notif-filter-tab" data-notif-filter="projects">Projects</button>
-            <button type="button" class="notif-filter-tab" data-notif-filter="files">Files</button>
-          </div>
-          <div class="dash-card" style="padding: 0">
-            <div id="notificationsContainer">
-              <div class="dash-empty-state" style="padding: 2rem 1rem">
-                <div class="dash-empty-icon"><span class="material-symbols-outlined">hourglass_top</span></div>
-                <h3>Loading notifications…</h3>
-              </div>
-            </div>
-          </div>
-        </section>
+      /* ---- Tooltip ---- */
+      [data-tooltip] { position: relative; }
+      [data-tooltip]::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        background: var(--surface-3);
+        border: 1px solid var(--surface-border);
+        color: #fff;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        padding: 0.4rem 0.7rem;
+        border-radius: var(--radius-sm);
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
+        box-shadow: var(--shadow-md);
+        z-index: 50;
+      }
+      [data-tooltip]:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        <!-- ===== SETTINGS ===== -->
-        <section data-dash-section="settings">
-          <div class="dash-section-header">
-            <div>
-              <span class="dash-section-eyebrow">Account</span>
-              <h1 class="dash-section-title">Settings</h1>
-            </div>
-          </div>
+      /* =========================================================
+         RESPONSIVE — additional breakpoints for the new components
+         ========================================================= */
+      @media (max-width: 768px) {
+        .chart-card-header { flex-direction: column; }
+        .bar-chart { height: 130px; }
+      }
 
-          <div class="dash-card dash-settings-grid">
-            <h3 class="dash-card-title">Profile</h3>
-            <div class="dash-form-row">
-              <div class="dash-field">
-                <label for="settingsFirstName">First Name</label>
-                <input type="text" id="settingsFirstName" readonly />
-              </div>
-              <div class="dash-field">
-                <label for="settingsLastName">Last Name</label>
-                <input type="text" id="settingsLastName" readonly />
-              </div>
-            </div>
-            <div class="dash-field">
-              <label for="settingsEmail">Email Address</label>
-              <input type="email" id="settingsEmail" readonly />
-            </div>
-            <div class="dash-form-row">
-              <div class="dash-field">
-                <label>Role</label>
-                <input type="text" value="Administrator" readonly />
-              </div>
-              <div class="dash-field">
-                <label for="settingsJoined">Account Created</label>
-                <input type="text" id="settingsJoined" readonly />
-              </div>
-            </div>
+      /* ---- Admin table: responsive stacking on small screens ---- */
+      @media (max-width: 768px) {
+        .admin-table thead { display: none; }
+        .admin-table tbody tr {
+          display: block;
+          border-bottom: 1px solid var(--surface-border, rgba(255, 255, 255, 0.07));
+          padding: 0.75rem 1rem;
+        }
+        .admin-table tbody td {
+          display: flex;
+          justify-content: space-between;
+          gap: 1rem;
+          border-bottom: none !important;
+          padding: 0.4rem 0 !important;
+        }
+        .admin-table tbody td[data-label]::before {
+          content: attr(data-label);
+          color: var(--text-muted);
+          font-size: 0.75rem;
+          flex-shrink: 0;
+        }
+      }
 
-            <div class="dash-card-divider"></div>
-
-            <h3 class="dash-card-title">Notifications</h3>
-            <p
-              style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.85rem; line-height: 1.7"
-              id="pushNotifStatus"
-            >
-              Get notified on this device even when Hathaway Strategic isn't open.
-            </p>
-            <button type="button" id="pushNotifToggleBtn" class="btn-primary" style="width: fit-content; display: inline-flex">
-              Allow Notifications
-            </button>
-
-            <div class="dash-card-divider"></div>
-
-            <h3 class="dash-card-title">Email Notifications</h3>
-            <p style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.7">
-              Choose which activity emails you'd like to receive. Account emails (welcome, verification, password reset) are always sent.
-            </p>
-            <div id="emailPrefList" style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.25rem">
-              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
-                <input type="checkbox" data-email-pref="messages" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
-                New Messages
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
-                <input type="checkbox" data-email-pref="files" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
-                New Files
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
-                <input type="checkbox" data-email-pref="projectUpdates" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
-                Project Updates
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.65rem; font-family: var(--font-sans); font-size: 0.9rem; color: #fff; cursor: pointer">
-                <input type="checkbox" data-email-pref="projectCompleted" style="accent-color: var(--accent-gold); width: 16px; height: 16px" />
-                Project Completed
-              </label>
-            </div>
-            <button type="button" id="emailPrefSaveBtn" class="btn-primary" style="width: fit-content; display: inline-flex">
-              Save Email Preferences
-            </button>
-            <span
-              id="emailPrefStatus"
-              style="display: block; font-family: var(--font-sans); font-size: 0.8rem; color: var(--accent-gold); margin-top: 0.6rem; min-height: 1em"
-            ></span>
-
-            <div class="dash-card-divider"></div>
-
-            <h3 class="dash-card-title">Security</h3>
-            <p style="font-family: var(--font-sans); font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.7">
-              To change your password, we'll email you a secure reset link.
-            </p>
-            <a href="forgot-password.html" class="btn-primary" style="width: fit-content; text-decoration: none; display: inline-flex">
-              Send Password Reset Link
-            </a>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <!-- ================= PROJECT MODAL (create/edit) ================= -->
-    <div class="admin-modal-overlay" id="projectModalOverlay">
-      <div class="admin-modal-window">
-        <button type="button" class="admin-modal-close" data-close-modal="projectModalOverlay">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-        <h2 class="admin-modal-title" id="projectModalTitle">New Project</h2>
-        <form id="projectForm" class="admin-form-grid">
-          <input type="hidden" id="projectFormId" />
-          <div class="admin-field">
-            <label for="projectFormClient">Client</label>
-            <select id="projectFormClient" required></select>
-          </div>
-          <div class="admin-field">
-            <label for="projectFormName">Project Name</label>
-            <input type="text" id="projectFormName" maxlength="160" required />
-          </div>
-          <div class="admin-field">
-            <label for="projectFormDescription">Description</label>
-            <textarea id="projectFormDescription" maxlength="2000"></textarea>
-          </div>
-          <div class="admin-form-row">
-            <div class="admin-field">
-              <label for="projectFormStatus">Status</label>
-              <select id="projectFormStatus">
-                <option value="NOT_STARTED">Not Started</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="ON_HOLD">On Hold</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
-            </div>
-            <div class="admin-field">
-              <label for="projectFormPriority">Priority</label>
-              <select id="projectFormPriority">
-                <option value="LOW">Low</option>
-                <option value="MEDIUM" selected>Medium</option>
-                <option value="HIGH">High</option>
-              </select>
-            </div>
-          </div>
-          <div class="admin-form-row">
-            <div class="admin-field">
-              <label for="projectFormStart">Start Date</label>
-              <input type="date" id="projectFormStart" />
-            </div>
-            <div class="admin-field">
-              <label for="projectFormDue">Due Date</label>
-              <input type="date" id="projectFormDue" />
-            </div>
-          </div>
-          <p class="admin-form-error" id="projectFormError"></p>
-          <div class="admin-form-actions">
-            <button type="button" class="admin-btn-ghost" data-close-modal="projectModalOverlay">Cancel</button>
-            <button type="submit" class="admin-btn-primary" id="projectFormSubmit">Save Project</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- ================= CLIENT DETAIL MODAL ================= -->
-    <div class="admin-modal-overlay" id="clientModalOverlay">
-      <div class="admin-modal-window is-wide">
-        <button type="button" class="admin-modal-close" data-close-modal="clientModalOverlay">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-        <div id="clientModalBody">
-          <div class="dash-empty-state">
-            <div class="dash-empty-icon">
-              <span class="material-symbols-outlined">hourglass_top</span>
-            </div>
-            <h3>Loading client…</h3>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script type="module" src="server/assets/js/admin-dashboard.js"></script>
-    <script type="module" src="main.js?v=1784946336"></script>
-  </body>
-</html>
+      /* ---- CRM client cards: consistent card polish ---- */
+      .admin-client-header { transition: background var(--duration-fast, 0.15s) ease; }

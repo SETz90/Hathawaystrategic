@@ -155,13 +155,22 @@ function initModals() {
 /* ---------------------------------------------------------
    WELCOME / SETTINGS
    --------------------------------------------------------- */
+function timeOfDayGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 function renderWelcomeCard(user) {
   const nameEl = document.getElementById("dashUserName");
   const emailEl = document.getElementById("dashUserEmail");
   const avatarEl = document.getElementById("dashUserAvatar");
+  const greetingEl = document.getElementById("dashGreeting");
   if (nameEl) nameEl.textContent = user.firstName;
   if (emailEl) emailEl.textContent = user.email;
   if (avatarEl) avatarEl.textContent = initials(user.firstName, user.lastName);
+  if (greetingEl) greetingEl.textContent = timeOfDayGreeting();
 }
 
 function renderSettingsCard(user) {
@@ -221,12 +230,12 @@ function initEmailPreferences() {
    OVERVIEW
    --------------------------------------------------------- */
 const KPI_LABELS = [
-  ["clientsCount", "Clients"],
-  ["projectsCount", "Projects"],
-  ["activeProjectsCount", "Active Projects"],
-  ["completedProjectsCount", "Completed Projects"],
-  ["filesCount", "Files Uploaded"],
-  ["unreadMessagesCount", "Unread Messages"],
+  ["clientsCount", "Clients", "group"],
+  ["projectsCount", "Projects", "work"],
+  ["activeProjectsCount", "Active Projects", "bolt"],
+  ["completedProjectsCount", "Completed Projects", "task_alt"],
+  ["filesCount", "Files Uploaded", "folder"],
+  ["unreadMessagesCount", "Unread Messages", "chat_bubble"],
 ];
 
 const ACTIVITY_ICONS = { file: "upload_file", message: "chat_bubble", project: "work" };
@@ -255,8 +264,9 @@ async function loadOverview() {
 
     if (grid) {
       grid.innerHTML = KPI_LABELS.map(
-        ([key, label]) => `
+        ([key, label, icon]) => `
         <div class="dash-card dash-stat-card">
+          <div class="dash-stat-icon"><span class="material-symbols-outlined">${icon}</span></div>
           <span class="dash-stat-label">${label}</span>
           <span class="dash-stat-value">${kpis[key] ?? 0}</span>
         </div>`,
@@ -309,8 +319,13 @@ function clientRow(client) {
   return `
     <tr data-client-id="${client.id}" class="${client.isActive && !client.deletedAt ? "" : "is-disabled"}">
       <td>
-        <div class="admin-client-name">${escapeHtml(client.firstName)} ${escapeHtml(client.lastName)}</div>
-        <div class="admin-client-email">${escapeHtml(client.email)}</div>
+        <div class="admin-client-cell">
+          <div class="admin-client-avatar">${initials(client.firstName, client.lastName)}</div>
+          <div>
+            <div class="admin-client-name">${escapeHtml(client.firstName)} ${escapeHtml(client.lastName)}</div>
+            <div class="admin-client-email">${escapeHtml(client.email)}</div>
+          </div>
+        </div>
       </td>
       <td>${client.projectCount ?? 0}</td>
       <td>${clientStatusBadge(client)}</td>
@@ -755,6 +770,9 @@ function initProjectForm() {
     openModal("projectModalOverlay");
   });
 
+  // Sidebar CTA (Phase 4.2) reuses the same open flow as the Projects tab button.
+  document.getElementById("sidebarNewProjectBtn")?.addEventListener("click", () => openBtn?.click());
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     errorEl.textContent = "";
@@ -1152,17 +1170,76 @@ let activeConversationId = null;
 let activeConversationProjectId = null;
 let conversationSearchTerm = "";
 
+// Short, relative-feeling timestamp for the conversation list ("2m ago",
+// "Yesterday", or a plain date once it's more than a week old).
+function formatRelativeTime(iso) {
+  if (!iso) return "";
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMin = Math.round(diffMs / 60000);
+  if (diffMin < 1) return "Just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.round(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.round(diffHr / 24);
+  if (diffDay === 1) return "Yesterday";
+  if (diffDay < 7) return `${diffDay}d ago`;
+  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+// Label used above a run of messages sent on the same day ("Today",
+// "Yesterday", or a full date for anything older).
+function messageDateLabel(iso) {
+  const date = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const sameDay = (a, b) => a.toDateString() === b.toDateString();
+  if (sameDay(date, today)) return "Today";
+  if (sameDay(date, yesterday)) return "Yesterday";
+  return date.toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric",
+    year: date.getFullYear() !== today.getFullYear() ? "numeric" : undefined,
+  });
+}
+
+// Two-letter avatar initials from a project or person's name.
+function initialsFrom(str = "") {
+  const parts = String(str).trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+// Material icon that best represents a file's mime type in attachment chips.
+function iconForMimeType(mimeType = "") {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "movie";
+  if (mimeType === "application/pdf") return "picture_as_pdf";
+  if (mimeType.includes("spreadsheet") || mimeType.includes("excel")) return "table_chart";
+  if (mimeType.includes("presentation") || mimeType.includes("powerpoint")) return "slideshow";
+  if (mimeType.includes("word") || mimeType.includes("document")) return "description";
+  return "draft";
+}
+
 function conversationItem(conversation) {
   const clientName = clientNameById(conversation.project?.clientId);
   const preview = conversation.lastMessage?.body || "No messages yet";
+  const time = conversation.lastMessage ? formatRelativeTime(conversation.lastMessage.createdAt) : "";
   return `
     <button type="button" class="dash-conversation-item ${conversation.id === activeConversationId ? "is-active" : ""}"
       data-conversation-id="${conversation.id}" data-project-id="${conversation.project?.id || ""}">
-      <span class="dash-conversation-name">
-        <span>${escapeHtml(conversation.project?.name || "Project")}</span>
-        ${conversation.unreadCount ? `<span class="dash-unread-dot">${conversation.unreadCount}</span>` : ""}
+      <span class="ds-avatar" aria-hidden="true">${escapeHtml(initialsFrom(conversation.project?.name || "?"))}</span>
+      <span class="dash-conv-item-body">
+        <span class="dash-conversation-name">
+          <span class="dash-conv-item-title">${escapeHtml(conversation.project?.name || "Project")}</span>
+          ${time ? `<span class="dash-conv-item-time">${escapeHtml(time)}</span>` : ""}
+        </span>
+        <span class="dash-conversation-preview-row">
+          <span class="dash-conversation-preview">${escapeHtml(clientName)} — ${escapeHtml(preview)}</span>
+          ${conversation.unreadCount ? `<span class="dash-unread-dot">${conversation.unreadCount}</span>` : ""}
+        </span>
       </span>
-      <span class="dash-conversation-preview">${escapeHtml(clientName)} — ${escapeHtml(preview)}</span>
     </button>`;
 }
 
@@ -1219,35 +1296,87 @@ function initConversationSearch() {
   });
 }
 
+function attachmentMarkup(attachment) {
+  if (!attachment) return "";
+  return `
+    <div class="dash-message-attachment">
+      <span class="material-symbols-outlined">${iconForMimeType(attachment.mimeType)}</span>
+      <span class="dash-message-attachment-info">
+        <span class="dash-message-attachment-name">${escapeHtml(attachment.filename)}</span>
+        ${
+          typeof attachment.size === "number"
+            ? `<span class="dash-message-attachment-size">${escapeHtml(formatBytes(attachment.size))}</span>`
+            : ""
+        }
+      </span>
+    </div>`;
+}
+
 function messageBubble(message, currentUserId) {
   const isOwn = message.senderId ? message.senderId === currentUserId : message.sender?.id === currentUserId;
   const senderName = `${message.sender.firstName} ${message.sender.lastName}`;
-  return `
+
+  const bubble = `
     <div class="dash-message-bubble ${isOwn ? "is-own" : "is-other"}">
-      <div>${escapeHtml(message.body)}</div>
-      ${
-        message.attachment
-          ? `<div class="dash-message-attachment">
-               <span class="material-symbols-outlined">attach_file</span>
-               <span>${escapeHtml(message.attachment.filename)}</span>
-             </div>`
-          : ""
-      }
+      <div class="dash-message-text">${escapeHtml(message.body)}</div>
+      ${attachmentMarkup(message.attachment)}
       <div class="dash-message-meta">${isOwn ? "You" : escapeHtml(senderName)} · ${formatDateTime(message.createdAt)}</div>
     </div>`;
+
+  if (isOwn) {
+    return `<div class="dash-message-row is-own">${bubble}</div>`;
+  }
+  return `
+    <div class="dash-message-row is-other">
+      <span class="ds-avatar ds-avatar-sm" aria-hidden="true">${escapeHtml(initialsFrom(senderName))}</span>
+      ${bubble}
+    </div>`;
+}
+
+// Groups messages by calendar day and interleaves a date-divider between
+// each run, so the thread reads like a modern chat app instead of one
+// continuous scroll.
+function messagesWithDateDividers(messages, currentUserId) {
+  let lastDay = null;
+  return messages
+    .map((m) => {
+      const day = new Date(m.createdAt).toDateString();
+      const divider =
+        day !== lastDay
+          ? `<div class="dash-msg-date-divider"><span>${escapeHtml(messageDateLabel(m.createdAt))}</span></div>`
+          : "";
+      lastDay = day;
+      return divider + messageBubble(m, currentUserId);
+    })
+    .join("");
+}
+
+function hideAttachmentPreview() {
+  const preview = document.getElementById("messageAttachPreview");
+  if (preview) preview.hidden = true;
+}
+
+function showAttachmentPreview(filename) {
+  const preview = document.getElementById("messageAttachPreview");
+  const name = document.getElementById("messageAttachPreviewName");
+  if (!preview || !name) return;
+  name.textContent = filename;
+  preview.hidden = false;
 }
 
 async function populateAttachmentOptions(projectId) {
   const select = document.getElementById("messageAttachSelect");
   if (!select || !projectId) return;
+  select.classList.remove("has-value");
+  hideAttachmentPreview();
   try {
     const { data } = await apiFetch(`/api/files?projectId=${projectId}`);
     const files = data.files || [];
     select.innerHTML =
-      `<option value="">No attachment</option>` +
+      `<option value="">Attach</option>` +
       files.map((f) => `<option value="${f.id}">${escapeHtml(f.filename)}</option>`).join("");
   } catch {
-    select.innerHTML = `<option value="">No attachment</option>`;
+    select.innerHTML = `<option value="">Attach</option>`;
   }
 }
 
@@ -1263,15 +1392,25 @@ async function selectConversation(conversationId, projectId) {
   await Promise.all([loadMessages(conversationId), populateAttachmentOptions(projectId)]);
 }
 
+function threadHeaderMarkup(conv) {
+  const clientName = clientNameById(conv.project?.clientId);
+  return `
+    <div class="dash-thread-header-inner">
+      <span class="ds-avatar ds-avatar-lg" aria-hidden="true">${escapeHtml(initialsFrom(conv.project?.name || "?"))}</span>
+      <span class="dash-thread-header-text">
+        <span class="dash-thread-title">${escapeHtml(conv.project?.name || "Conversation")}</span>
+        <span class="dash-thread-subtitle">${escapeHtml(clientName)}</span>
+      </span>
+    </div>`;
+}
+
 async function loadMessages(conversationId) {
   const body = document.getElementById("messageThreadBody");
   const header = document.getElementById("messageThreadHeader");
   if (!body) return;
 
   const conv = conversationsCache.find((c) => c.id === conversationId);
-  if (header) {
-    header.textContent = conv ? `${conv.project.name} — ${clientNameById(conv.project.clientId)}` : "Conversation";
-  }
+  if (header) header.innerHTML = conv ? threadHeaderMarkup(conv) : "Conversation";
 
   try {
     const { data } = await apiFetch(`/api/messages/${conversationId}`);
@@ -1279,7 +1418,7 @@ async function loadMessages(conversationId) {
     const user = getCurrentUser();
 
     body.innerHTML = messages.length
-      ? messages.map((m) => messageBubble(m, user?.id)).join("")
+      ? messagesWithDateDividers(messages, user?.id)
       : `<div class="dash-empty-state">
            <div class="dash-empty-icon"><span class="material-symbols-outlined">chat_bubble</span></div>
            <h3>No messages yet</h3>
@@ -1298,12 +1437,56 @@ async function loadMessages(conversationId) {
   }
 }
 
+// Grows the composer textarea with its content (capped by the CSS
+// max-height, which switches to an internal scrollbar beyond that).
+function autoGrowTextarea(el) {
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight}px`;
+}
+
 function initMessageComposer() {
   const form = document.getElementById("messageComposerForm");
   const input = document.getElementById("messageComposerInput");
   const attachSelect = document.getElementById("messageAttachSelect");
+  const attachClear = document.getElementById("messageAttachClear");
   const sendBtn = document.getElementById("messageComposerSend");
   if (!form || !input) return;
+
+  const syncSendState = () => {
+    if (sendBtn) sendBtn.disabled = !input.value.trim();
+  };
+
+  input.addEventListener("input", () => {
+    autoGrowTextarea(input);
+    syncSendState();
+  });
+
+  // Enter sends the message; Shift+Enter inserts a newline like every
+  // other modern chat composer.
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  attachSelect?.addEventListener("change", () => {
+    const selected = attachSelect.options[attachSelect.selectedIndex];
+    attachSelect.classList.toggle("has-value", !!attachSelect.value);
+    if (attachSelect.value && selected) {
+      showAttachmentPreview(selected.textContent);
+    } else {
+      hideAttachmentPreview();
+    }
+  });
+
+  attachClear?.addEventListener("click", () => {
+    if (attachSelect) {
+      attachSelect.value = "";
+      attachSelect.classList.remove("has-value");
+    }
+    hideAttachmentPreview();
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -1319,12 +1502,17 @@ function initMessageComposer() {
         body: JSON.stringify({ projectId: activeConversationProjectId, body: text, ...(attachmentId ? { attachmentId } : {}) }),
       });
       input.value = "";
-      if (attachSelect) attachSelect.value = "";
+      autoGrowTextarea(input);
+      if (attachSelect) {
+        attachSelect.value = "";
+        attachSelect.classList.remove("has-value");
+      }
+      hideAttachmentPreview();
       await loadMessages(activeConversationId);
     } catch (err) {
       logErr("Failed to send message:", err);
     } finally {
-      if (sendBtn) sendBtn.disabled = false;
+      syncSendState();
     }
   });
 }

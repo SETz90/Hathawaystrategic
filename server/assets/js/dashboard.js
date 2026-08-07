@@ -24,6 +24,7 @@ import {
   initNotificationCenter,
   loadNotificationCenter,
   startNotificationPolling,
+  fetchUnreadCount,
 } from "./notifications.js";
 import { initPushSettingsToggle } from "./push-notifications.js";
 
@@ -40,11 +41,14 @@ document.addEventListener(
 
     renderWelcomeCard(user);
     renderSettingsCard(user);
+    loadOverview();
+    initQuickActions();
     loadProjects();
     renderFilesUploadBar();
     loadFiles();
     loadConversations({ selectFirst: true });
     initMessageComposer();
+    initConversationSearch();
     startMessagesPolling();
     initNotificationBell();
     initNotificationCenter();
@@ -70,15 +74,24 @@ function initials(user) {
   return `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase();
 }
 
+function timeOfDayGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 function renderWelcomeCard(user) {
   const nameEl = document.getElementById("dashUserName");
   const emailEl = document.getElementById("dashUserEmail");
   const avatarEl = document.getElementById("dashUserAvatar");
   const verifiedBadge = document.getElementById("dashVerifiedBadge");
+  const greetingEl = document.getElementById("dashGreeting");
 
   if (nameEl) nameEl.textContent = user.firstName;
   if (emailEl) emailEl.textContent = user.email;
   if (avatarEl) avatarEl.textContent = initials(user);
+  if (greetingEl) greetingEl.textContent = timeOfDayGreeting();
 
   if (verifiedBadge) {
     verifiedBadge.textContent = user.emailVerified ? "Verified" : "Unverified";
@@ -250,6 +263,126 @@ async function loadProjects() {
   }
 }
 
+/* ---------------------------------------------------------
+   OVERVIEW (Phase 4.3) — KPIs, current project progress, and
+   upcoming deadlines, all derived from data already served by
+   /api/projects, /api/files, and /api/notifications/unread.
+   --------------------------------------------------------- */
+function emptyOverviewCard(icon, title, desc) {
+  return `
+    <div class="dash-empty-state" style="padding: 1.5rem 1rem">
+      <div class="dash-empty-icon"><span class="material-symbols-outlined">${icon}</span></div>
+      <h3>${title}</h3>
+      <p>${desc}</p>
+    </div>`;
+}
+
+function renderOverviewProgress(project) {
+  const body = document.getElementById("overviewProgressBody");
+  if (!body) return;
+
+  if (!project) {
+    body.innerHTML = emptyOverviewCard(
+      "work",
+      "No active project",
+      "Progress on your current engagement will appear here once it kicks off.",
+    );
+    return;
+  }
+
+  const milestones = (project.milestones || []).slice(0, 4);
+  body.innerHTML = `
+    <div class="dash-progress-summary">
+      <div class="ds-progress-ring" style="--ds-ring-value:${project.progress}">
+        <div class="ds-progress-ring-label">${project.progress}%<small>Complete</small></div>
+      </div>
+      <div class="dash-progress-summary-info">
+        <div class="dash-progress-summary-name">${escapeHtml(project.name)}</div>
+        <div class="dash-progress-summary-meta">
+          ${STATUS_LABELS[project.status] || project.status}
+          ${project.dueDate ? ` &middot; Due ${formatDate(project.dueDate)}` : ""}
+        </div>
+      </div>
+    </div>
+    ${
+      milestones.length
+        ? `<div class="dash-milestones" data-project-id="${project.id}" style="margin-top: 1.5rem">${milestones.map(milestoneRow).join("")}</div>`
+        : ""
+    }`;
+}
+
+function renderOverviewDeadlines(projects) {
+  const body = document.getElementById("overviewDeadlinesBody");
+  if (!body) return;
+
+  const upcoming = projects
+    .filter((p) => p.dueDate && p.status !== "COMPLETED")
+    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+    .slice(0, 4);
+
+  if (!upcoming.length) {
+    body.innerHTML = emptyOverviewCard(
+      "event_available",
+      "Nothing due soon",
+      "Project deadlines will show up here as they're scheduled.",
+    );
+    return;
+  }
+
+  body.innerHTML = upcoming
+    .map((p) => {
+      const d = new Date(p.dueDate);
+      const month = d.toLocaleDateString(undefined, { month: "short" });
+      const day = d.toLocaleDateString(undefined, { day: "numeric" });
+      return `
+        <div class="dash-deadline-item">
+          <div class="dash-deadline-date"><span class="dd-month">${month}</span><span class="dd-day">${day}</span></div>
+          <div class="dash-deadline-info">
+            <div class="dash-deadline-title">${escapeHtml(p.name)}</div>
+            <div class="dash-deadline-sub">${STATUS_LABELS[p.status] || p.status}</div>
+          </div>
+        </div>`;
+    })
+    .join("");
+}
+
+async function loadOverview() {
+  try {
+    const [{ data: projData }, { data: filesData }, unread] = await Promise.all([
+      apiFetch("/api/projects"),
+      apiFetch("/api/files"),
+      fetchUnreadCount(),
+    ]);
+    const projects = projData.projects || [];
+    const files = filesData.files || [];
+    const activeProjects = projects.filter((p) => p.status === "IN_PROGRESS");
+
+    const activeCountEl = document.getElementById("overviewActiveProjects");
+    const unreadEl = document.getElementById("overviewUnreadCount");
+    const filesCountEl = document.getElementById("overviewFilesCount");
+    if (activeCountEl) activeCountEl.textContent = activeProjects.length;
+    if (unreadEl) unreadEl.textContent = unread;
+    if (filesCountEl) filesCountEl.textContent = files.length;
+
+    renderOverviewProgress(activeProjects[0] || projects[0]);
+    renderOverviewDeadlines(projects);
+  } catch (err) {
+    console.error("Failed to load overview:", err instanceof ApiError ? err.message : err);
+    const progressBody = document.getElementById("overviewProgressBody");
+    const deadlinesBody = document.getElementById("overviewDeadlinesBody");
+    if (progressBody) progressBody.innerHTML = emptyOverviewCard("error", "Couldn't load", "Please refresh to try again.");
+    if (deadlinesBody) deadlinesBody.innerHTML = emptyOverviewCard("error", "Couldn't load", "Please refresh to try again.");
+  }
+}
+
+function initQuickActions() {
+  document.querySelectorAll("[data-quick-action]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelector(`[data-dash-nav="${btn.dataset.quickAction}"]`)?.click();
+    });
+  });
+}
+
 // Event delegation: toggle a milestone's completed state when clicked
 document.addEventListener("click", async (e) => {
   const row = e.target.closest("[data-milestone-id]");
@@ -268,6 +401,7 @@ document.addEventListener("click", async (e) => {
       body: JSON.stringify({ completed: willComplete }),
     });
     await loadProjects();
+    if (document.getElementById("overviewProgressBody")) await loadOverview();
   } catch (err) {
     console.error("Failed to update milestone:", err instanceof ApiError ? err.message : err);
   }
@@ -503,12 +637,65 @@ async function downloadFile(fileId, filename) {
 let activeConversationId = null;
 let activeConversationProjectId = null;
 let conversationsCache = [];
+let conversationSearchTerm = "";
 
 function formatTime(iso) {
   return new Date(iso).toLocaleTimeString(undefined, {
     hour: "numeric",
     minute: "2-digit",
   });
+}
+
+// Short, relative-feeling timestamp for the conversation list ("2m ago",
+// "Yesterday", or a plain date once it's more than a week old).
+function formatRelativeTime(iso) {
+  if (!iso) return "";
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMin = Math.round(diffMs / 60000);
+  if (diffMin < 1) return "Just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.round(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDay = Math.round(diffHr / 24);
+  if (diffDay === 1) return "Yesterday";
+  if (diffDay < 7) return `${diffDay}d ago`;
+  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+// Label used above a run of messages sent on the same day ("Today",
+// "Yesterday", or a full date for anything older).
+function messageDateLabel(iso) {
+  const date = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  const sameDay = (a, b) => a.toDateString() === b.toDateString();
+  if (sameDay(date, today)) return "Today";
+  if (sameDay(date, yesterday)) return "Yesterday";
+  return date.toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric",
+    year: date.getFullYear() !== today.getFullYear() ? "numeric" : undefined,
+  });
+}
+
+// Two-letter avatar initials from a project or person's name.
+function initialsFrom(str = "") {
+  const parts = String(str).trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+// Material icon that best represents a file's mime type in attachment chips.
+function iconForMimeType(mimeType = "") {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "movie";
+  if (mimeType === "application/pdf") return "picture_as_pdf";
+  if (mimeType.includes("spreadsheet") || mimeType.includes("excel")) return "table_chart";
+  if (mimeType.includes("presentation") || mimeType.includes("powerpoint")) return "slideshow";
+  if (mimeType.includes("word") || mimeType.includes("document")) return "description";
+  return "draft";
 }
 
 function conversationPreviewText(conv, currentUserId) {
@@ -518,6 +705,7 @@ function conversationPreviewText(conv, currentUserId) {
 }
 
 function conversationItem(conv, currentUserId) {
+  const time = conv.lastMessage ? formatRelativeTime(conv.lastMessage.createdAt) : "";
   return `
     <button
       type="button"
@@ -525,11 +713,17 @@ function conversationItem(conv, currentUserId) {
       data-conversation-id="${conv.id}"
       data-project-id="${conv.project.id}"
     >
-      <span class="dash-conversation-name">
-        <span>${escapeHtml(conv.project.name)}</span>
-        ${conv.unreadCount > 0 ? `<span class="dash-unread-dot">${conv.unreadCount}</span>` : ""}
+      <span class="ds-avatar" aria-hidden="true">${escapeHtml(initialsFrom(conv.project.name))}</span>
+      <span class="dash-conv-item-body">
+        <span class="dash-conversation-name">
+          <span class="dash-conv-item-title">${escapeHtml(conv.project.name)}</span>
+          ${time ? `<span class="dash-conv-item-time">${escapeHtml(time)}</span>` : ""}
+        </span>
+        <span class="dash-conversation-preview-row">
+          <span class="dash-conversation-preview">${escapeHtml(conversationPreviewText(conv, currentUserId))}</span>
+          ${conv.unreadCount > 0 ? `<span class="dash-unread-dot">${conv.unreadCount}</span>` : ""}
+        </span>
       </span>
-      <span class="dash-conversation-preview">${escapeHtml(conversationPreviewText(conv, currentUserId))}</span>
     </button>`;
 }
 
@@ -544,6 +738,16 @@ function emptyConversationsState() {
     </div>`;
 }
 
+function noMatchesState() {
+  return `
+    <div class="dash-empty-state" style="padding: 2rem 1rem">
+      <div class="dash-empty-icon">
+        <span class="material-symbols-outlined">search_off</span>
+      </div>
+      <h3>No matches</h3>
+    </div>`;
+}
+
 function errorConversationsState() {
   return `
     <div class="dash-empty-state" style="padding: 2rem 1rem">
@@ -554,14 +758,33 @@ function errorConversationsState() {
     </div>`;
 }
 
+function filteredConversations() {
+  if (!conversationSearchTerm) return conversationsCache;
+  const needle = conversationSearchTerm.toLowerCase();
+  return conversationsCache.filter((c) => c.project.name.toLowerCase().includes(needle));
+}
+
 function renderConversationsList() {
   const container = document.getElementById("conversationsList");
   if (!container) return;
   const user = getCurrentUser();
+  const visible = filteredConversations();
 
-  container.innerHTML = conversationsCache.length
-    ? conversationsCache.map((c) => conversationItem(c, user?.id)).join("")
-    : emptyConversationsState();
+  if (!conversationsCache.length) {
+    container.innerHTML = emptyConversationsState();
+  } else if (!visible.length) {
+    container.innerHTML = noMatchesState();
+  } else {
+    container.innerHTML = visible.map((c) => conversationItem(c, user?.id)).join("");
+  }
+}
+
+function initConversationSearch() {
+  const input = document.getElementById("conversationSearchInput");
+  input?.addEventListener("input", () => {
+    conversationSearchTerm = input.value.trim();
+    renderConversationsList();
+  });
 }
 
 async function loadConversations({ selectFirst = false } = {}) {
@@ -583,25 +806,61 @@ async function loadConversations({ selectFirst = false } = {}) {
   }
 }
 
+function attachmentMarkup(attachment) {
+  if (!attachment) return "";
+  return `
+    <div class="dash-message-attachment">
+      <span class="material-symbols-outlined">${iconForMimeType(attachment.mimeType)}</span>
+      <span class="dash-message-attachment-info">
+        <span class="dash-message-attachment-name">${escapeHtml(attachment.filename)}</span>
+        ${
+          typeof attachment.size === "number"
+            ? `<span class="dash-message-attachment-size">${escapeHtml(formatBytes(attachment.size))}</span>`
+            : ""
+        }
+      </span>
+    </div>`;
+}
+
 function messageBubble(message, currentUserId) {
   const isOwn = message.sender?.id === currentUserId;
   const senderLabel = isOwn
     ? "You"
     : `${message.sender?.firstName || ""} ${message.sender?.lastName || ""}`.trim();
 
-  return `
+  const bubble = `
     <div class="dash-message-bubble ${isOwn ? "is-own" : "is-other"}">
-      <div>${escapeHtml(message.body)}</div>
-      ${
-        message.attachment
-          ? `<div class="dash-message-attachment">
-               <span class="material-symbols-outlined">attach_file</span>
-               ${escapeHtml(message.attachment.filename)}
-             </div>`
-          : ""
-      }
+      <div class="dash-message-text">${escapeHtml(message.body)}</div>
+      ${attachmentMarkup(message.attachment)}
       <div class="dash-message-meta">${escapeHtml(senderLabel)} · ${formatTime(message.createdAt)}</div>
     </div>`;
+
+  if (isOwn) {
+    return `<div class="dash-message-row is-own">${bubble}</div>`;
+  }
+  return `
+    <div class="dash-message-row is-other">
+      <span class="ds-avatar ds-avatar-sm" aria-hidden="true">${escapeHtml(initialsFrom(senderLabel))}</span>
+      ${bubble}
+    </div>`;
+}
+
+// Groups messages by calendar day and interleaves a date-divider between
+// each run, so the thread reads like a modern chat app instead of one
+// continuous scroll.
+function messagesWithDateDividers(messages, currentUserId) {
+  let lastDay = null;
+  return messages
+    .map((m) => {
+      const day = new Date(m.createdAt).toDateString();
+      const divider =
+        day !== lastDay
+          ? `<div class="dash-msg-date-divider"><span>${escapeHtml(messageDateLabel(m.createdAt))}</span></div>`
+          : "";
+      lastDay = day;
+      return divider + messageBubble(m, currentUserId);
+    })
+    .join("");
 }
 
 function emptyMessagesState() {
@@ -632,7 +891,9 @@ async function populateAttachmentOptions(projectId) {
   const select = document.getElementById("messageAttachSelect");
   if (!select) return;
 
-  select.innerHTML = `<option value="">No attachment</option>`;
+  select.innerHTML = `<option value="">Attach</option>`;
+  select.classList.remove("has-value");
+  hideAttachmentPreview();
 
   try {
     const { data } = await apiFetch(`/api/files?projectId=${projectId}`);
@@ -646,6 +907,19 @@ async function populateAttachmentOptions(projectId) {
   } catch (err) {
     console.error("Failed to load attachment options:", err instanceof ApiError ? err.message : err);
   }
+}
+
+function hideAttachmentPreview() {
+  const preview = document.getElementById("messageAttachPreview");
+  if (preview) preview.hidden = true;
+}
+
+function showAttachmentPreview(filename) {
+  const preview = document.getElementById("messageAttachPreview");
+  const name = document.getElementById("messageAttachPreviewName");
+  if (!preview || !name) return;
+  name.textContent = filename;
+  preview.hidden = false;
 }
 
 async function selectConversation(conversationId, projectId) {
@@ -662,13 +936,24 @@ async function selectConversation(conversationId, projectId) {
   await Promise.all([loadMessages(conversationId), populateAttachmentOptions(projectId)]);
 }
 
+function threadHeaderMarkup(conv) {
+  return `
+    <div class="dash-thread-header-inner">
+      <span class="ds-avatar ds-avatar-lg" aria-hidden="true">${escapeHtml(initialsFrom(conv.project.name))}</span>
+      <span class="dash-thread-header-text">
+        <span class="dash-thread-title">${escapeHtml(conv.project.name)}</span>
+        <span class="dash-thread-subtitle">Direct line with your Hathaway Strategic team</span>
+      </span>
+    </div>`;
+}
+
 async function loadMessages(conversationId) {
   const body = document.getElementById("messageThreadBody");
   const header = document.getElementById("messageThreadHeader");
   if (!body) return;
 
   const conv = conversationsCache.find((c) => c.id === conversationId);
-  if (header) header.textContent = conv ? conv.project.name : "Conversation";
+  if (header) header.innerHTML = conv ? threadHeaderMarkup(conv) : "Conversation";
 
   try {
     const { data } = await apiFetch(`/api/messages/${conversationId}`);
@@ -676,7 +961,7 @@ async function loadMessages(conversationId) {
     const user = getCurrentUser();
 
     body.innerHTML = messages.length
-      ? messages.map((m) => messageBubble(m, user?.id)).join("")
+      ? messagesWithDateDividers(messages, user?.id)
       : emptyMessagesState();
     body.scrollTop = body.scrollHeight;
 
@@ -688,12 +973,56 @@ async function loadMessages(conversationId) {
   }
 }
 
+// Grows the composer textarea with its content (capped by the CSS
+// max-height, which switches to an internal scrollbar beyond that).
+function autoGrowTextarea(el) {
+  el.style.height = "auto";
+  el.style.height = `${el.scrollHeight}px`;
+}
+
 function initMessageComposer() {
   const form = document.getElementById("messageComposerForm");
   const input = document.getElementById("messageComposerInput");
   const attachSelect = document.getElementById("messageAttachSelect");
+  const attachClear = document.getElementById("messageAttachClear");
   const sendBtn = document.getElementById("messageComposerSend");
   if (!form || !input) return;
+
+  const syncSendState = () => {
+    if (sendBtn) sendBtn.disabled = !input.value.trim();
+  };
+
+  input.addEventListener("input", () => {
+    autoGrowTextarea(input);
+    syncSendState();
+  });
+
+  // Enter sends the message; Shift+Enter inserts a newline like every
+  // other modern chat composer.
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  attachSelect?.addEventListener("change", () => {
+    const selected = attachSelect.options[attachSelect.selectedIndex];
+    attachSelect.classList.toggle("has-value", !!attachSelect.value);
+    if (attachSelect.value && selected) {
+      showAttachmentPreview(selected.textContent);
+    } else {
+      hideAttachmentPreview();
+    }
+  });
+
+  attachClear?.addEventListener("click", () => {
+    if (attachSelect) {
+      attachSelect.value = "";
+      attachSelect.classList.remove("has-value");
+    }
+    hideAttachmentPreview();
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -714,12 +1043,17 @@ function initMessageComposer() {
         }),
       });
       input.value = "";
-      if (attachSelect) attachSelect.value = "";
+      autoGrowTextarea(input);
+      if (attachSelect) {
+        attachSelect.value = "";
+        attachSelect.classList.remove("has-value");
+      }
+      hideAttachmentPreview();
       await loadMessages(activeConversationId);
     } catch (err) {
       console.error("Failed to send message:", err instanceof ApiError ? err.message : err);
     } finally {
-      if (sendBtn) sendBtn.disabled = false;
+      syncSendState();
     }
   });
 }

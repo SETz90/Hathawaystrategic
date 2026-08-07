@@ -20,6 +20,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css?v=1785000000" />
+    <link rel="stylesheet" href="dashboard-system.css?v=1785100000" />
     <style>
       /* =========================================================
          CLIENT DASHBOARD — reuses style.css tokens, no new palette
@@ -161,6 +162,16 @@
 
       .dash-section-header {
         margin-bottom: 2.5rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .dash-quick-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
       }
       .dash-section-eyebrow {
         display: block;
@@ -282,6 +293,26 @@
       }
       .dash-stat-card {
         text-align: left;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+      .dash-stat-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(197, 155, 39, 0.35);
+      }
+      .dash-stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: rgba(197, 155, 39, 0.1);
+        border: 1px solid rgba(197, 155, 39, 0.25);
+        color: var(--accent-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+      .dash-stat-icon .material-symbols-outlined {
+        font-size: 19px;
       }
       .dash-stat-label {
         font-family: var(--font-sans);
@@ -296,6 +327,94 @@
         font-family: var(--font-serif);
         font-size: 2rem;
         color: #fff;
+      }
+
+      /* ---- Overview: progress + deadlines (Phase 4.3) ---- */
+      .dash-overview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+      }
+      @media (max-width: 900px) {
+        .dash-overview-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .dash-progress-summary {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+      .dash-progress-summary-info {
+        flex: 1;
+        min-width: 160px;
+      }
+      .dash-progress-summary-name {
+        font-family: var(--font-serif);
+        font-size: 1.1rem;
+        color: #fff;
+        margin-bottom: 0.4rem;
+      }
+      .dash-progress-summary-meta {
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+      .dash-deadline-item {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--glass-border);
+      }
+      .dash-deadline-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .dash-deadline-date {
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+        background: rgba(197, 155, 39, 0.1);
+        border: 1px solid rgba(197, 155, 39, 0.25);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-family: var(--font-sans);
+        color: var(--accent-gold);
+      }
+      .dash-deadline-date .dd-month {
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .dash-deadline-date .dd-day {
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        line-height: 1.1;
+      }
+      .dash-deadline-info {
+        min-width: 0;
+      }
+      .dash-deadline-title {
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dash-deadline-sub {
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        color: var(--text-muted);
       }
 
       /* ---- Empty states ---- */
@@ -570,193 +689,12 @@
         cursor: not-allowed;
       }
 
-      /* ---- Messages ---- */
-      .dash-messages-layout {
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 1.25rem;
-        align-items: start;
-      }
-      @media (max-width: 760px) {
-        .dash-messages-layout {
-          grid-template-columns: 1fr;
-        }
-      }
-      .dash-conversations-panel {
-        padding: 0;
-        overflow: hidden;
-      }
-      .dash-conversations-list {
-        display: flex;
-        flex-direction: column;
-        max-height: 560px;
-        overflow-y: auto;
-      }
-      .dash-conversation-item {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-        text-align: left;
-        background: none;
-        border: none;
-        border-bottom: 1px solid var(--glass-border);
-        padding: 1rem 1.25rem;
-        cursor: pointer;
-        transition: background 0.2s ease;
-      }
-      .dash-conversation-item:last-child {
-        border-bottom: none;
-      }
-      .dash-conversation-item:hover {
-        background: rgba(255, 255, 255, 0.04);
-      }
-      .dash-conversation-item.is-active {
-        background: rgba(197, 155, 39, 0.1);
-      }
-      .dash-conversation-name {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        font-family: var(--font-serif);
-        font-size: 0.95rem;
-        color: #fff;
-      }
-      .dash-conversation-preview {
-        font-family: var(--font-sans);
-        font-size: 0.78rem;
-        color: var(--text-muted);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .dash-unread-dot {
-        flex-shrink: 0;
-        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
-        color: #14110b;
-        font-family: var(--font-sans);
-        font-size: 0.65rem;
-        font-weight: 700;
-        border-radius: 999px;
-        padding: 0.1rem 0.5rem;
-        min-width: 18px;
-        text-align: center;
-      }
-      .dash-thread-panel {
-        display: flex;
-        flex-direction: column;
-        height: 560px;
-        padding: 0;
-        overflow: hidden;
-      }
-      .dash-thread-header {
-        flex-shrink: 0;
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--glass-border);
-        font-family: var(--font-serif);
-        font-size: 1.05rem;
-        color: #fff;
-      }
-      .dash-thread-body {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.9rem;
-      }
-      .dash-message-bubble {
-        max-width: 72%;
-        padding: 0.7rem 1rem;
-        border-radius: 14px;
-        font-family: var(--font-sans);
-        font-size: 0.87rem;
-        line-height: 1.5;
-        color: #fff;
-      }
-      .dash-message-bubble.is-own {
-        align-self: flex-end;
-        background: linear-gradient(
-          135deg,
-          rgba(197, 155, 39, 0.22),
-          rgba(197, 155, 39, 0.08)
-        );
-        border: 1px solid rgba(197, 155, 39, 0.3);
-      }
-      .dash-message-bubble.is-other {
-        align-self: flex-start;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--glass-border);
-      }
-      .dash-message-meta {
-        font-family: var(--font-sans);
-        font-size: 0.68rem;
-        color: var(--text-muted);
-        margin-top: 0.4rem;
-      }
-      .dash-message-attachment {
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-        margin-top: 0.5rem;
-        font-family: var(--font-sans);
-        font-size: 0.78rem;
-        color: var(--accent-gold);
-      }
-      .dash-message-attachment .material-symbols-outlined {
-        font-size: 1rem;
-      }
-      .dash-message-composer {
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.65rem;
-        padding: 1rem 1.25rem;
-        border-top: 1px solid var(--glass-border);
-      }
-      .dash-message-composer.is-hidden {
-        display: none;
-      }
-      .dash-message-attach-select {
-        font-family: var(--font-sans);
-        font-size: 0.78rem;
-        color: var(--text-muted);
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--glass-border);
-        border-radius: 6px;
-        padding: 0.6rem 0.5rem;
-        max-width: 140px;
-        flex-shrink: 0;
-      }
-      .dash-message-composer input {
-        flex: 1;
-        font-family: var(--font-sans);
-        font-size: 0.88rem;
-        color: #fff;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--glass-border);
-        border-radius: 999px;
-        padding: 0.7rem 1.1rem;
-      }
-      .dash-message-composer button {
-        flex-shrink: 0;
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        border: none;
-        background: linear-gradient(90deg, var(--accent-gold), #eec14b);
-        color: #14110b;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: opacity 0.2s ease;
-      }
-      .dash-message-composer button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
+      /* ---- Messages ----
+         Full messaging component styling (layout, conversation list,
+         thread panel, bubbles, composer) now lives in the shared
+         "16. MESSAGING" section of dashboard-system.css so admin and
+         client stay pixel-identical. Nothing page-specific left to
+         override here. */
 
       /* ---- Notification bell ---- */
       .notif-bell-wrap {
@@ -1177,7 +1115,7 @@
         <div class="dash-card dash-welcome-card">
           <div class="dash-avatar" id="dashUserAvatar">--</div>
           <div class="dash-welcome-text">
-            <h2>Welcome back, <span id="dashUserName">—</span></h2>
+            <h2><span id="dashGreeting">Welcome back</span>, <span id="dashUserName">—</span></h2>
             <p id="dashUserEmail">—</p>
           </div>
           <span class="dash-badge" id="dashVerifiedBadge">—</span>
@@ -1186,22 +1124,56 @@
         <!-- ===== OVERVIEW ===== -->
         <section data-dash-section="overview" class="is-active">
           <div class="dash-section-header">
-            <span class="dash-section-eyebrow">Dashboard</span>
-            <h1 class="dash-section-title">Overview</h1>
+            <div>
+              <span class="dash-section-eyebrow">Dashboard</span>
+              <h1 class="dash-section-title">Overview</h1>
+            </div>
+            <div class="dash-quick-actions">
+              <button type="button" class="ds-btn ds-btn-secondary" data-quick-action="messages">
+                <span class="material-symbols-outlined">chat_bubble</span> Message Team
+              </button>
+              <button type="button" class="ds-btn ds-btn-primary" data-quick-action="files">
+                <span class="material-symbols-outlined">folder</span> View Files
+              </button>
+            </div>
           </div>
 
           <div class="dash-stat-grid">
             <div class="dash-card dash-stat-card">
+              <div class="dash-stat-icon"><span class="material-symbols-outlined">bolt</span></div>
               <span class="dash-stat-label">Active Projects</span>
-              <span class="dash-stat-value">0</span>
+              <span class="dash-stat-value" id="overviewActiveProjects">—</span>
             </div>
             <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Unread Messages</span>
-              <span class="dash-stat-value">0</span>
+              <div class="dash-stat-icon"><span class="material-symbols-outlined">notifications</span></div>
+              <span class="dash-stat-label">Unread Notifications</span>
+              <span class="dash-stat-value" id="overviewUnreadCount">—</span>
             </div>
             <div class="dash-card dash-stat-card">
-              <span class="dash-stat-label">Open Invoices</span>
-              <span class="dash-stat-value">0</span>
+              <div class="dash-stat-icon"><span class="material-symbols-outlined">folder</span></div>
+              <span class="dash-stat-label">Files Shared</span>
+              <span class="dash-stat-value" id="overviewFilesCount">—</span>
+            </div>
+          </div>
+
+          <div class="dash-overview-grid">
+            <div class="dash-card" id="overviewProgressCard">
+              <h3 class="dash-card-title">Current Project Progress</h3>
+              <div id="overviewProgressBody">
+                <div class="dash-empty-state" style="padding: 2rem 1rem">
+                  <div class="dash-empty-icon"><span class="material-symbols-outlined">hourglass_top</span></div>
+                  <h3>Loading…</h3>
+                </div>
+              </div>
+            </div>
+            <div class="dash-card" id="overviewDeadlinesCard">
+              <h3 class="dash-card-title">Upcoming Deadlines</h3>
+              <div id="overviewDeadlinesBody">
+                <div class="dash-empty-state" style="padding: 2rem 1rem">
+                  <div class="dash-empty-icon"><span class="material-symbols-outlined">hourglass_top</span></div>
+                  <h3>Loading…</h3>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1246,12 +1218,36 @@
           </div>
           <div class="dash-messages-layout">
             <div class="dash-card dash-conversations-panel">
+              <div class="dash-conv-search">
+                <span class="material-symbols-outlined">search</span>
+                <input
+                  type="text"
+                  id="conversationSearchInput"
+                  placeholder="Search conversations…"
+                  autocomplete="off"
+                />
+              </div>
               <div id="conversationsList" class="dash-conversations-list">
-                <div class="dash-empty-state" style="padding: 2rem 1rem">
-                  <div class="dash-empty-icon">
-                    <span class="material-symbols-outlined">hourglass_top</span>
+                <div class="dash-conv-skeleton-row" aria-hidden="true">
+                  <span class="ds-skeleton ds-skeleton-avatar"></span>
+                  <div class="dash-conv-skeleton-body">
+                    <span class="ds-skeleton ds-skeleton-text w-60"></span>
+                    <span class="ds-skeleton ds-skeleton-text w-40"></span>
                   </div>
-                  <h3>Loading conversations…</h3>
+                </div>
+                <div class="dash-conv-skeleton-row" aria-hidden="true">
+                  <span class="ds-skeleton ds-skeleton-avatar"></span>
+                  <div class="dash-conv-skeleton-body">
+                    <span class="ds-skeleton ds-skeleton-text w-60"></span>
+                    <span class="ds-skeleton ds-skeleton-text w-40"></span>
+                  </div>
+                </div>
+                <div class="dash-conv-skeleton-row" aria-hidden="true">
+                  <span class="ds-skeleton ds-skeleton-avatar"></span>
+                  <div class="dash-conv-skeleton-body">
+                    <span class="ds-skeleton ds-skeleton-text w-60"></span>
+                    <span class="ds-skeleton ds-skeleton-text w-40"></span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1275,27 +1271,59 @@
                 id="messageComposerForm"
                 class="dash-message-composer is-hidden"
               >
-                <select
-                  id="messageAttachSelect"
-                  class="dash-message-attach-select"
-                  title="Attach an existing file"
+                <div
+                  class="dash-composer-preview"
+                  id="messageAttachPreview"
+                  hidden
                 >
-                  <option value="">No attachment</option>
-                </select>
-                <input
-                  type="text"
-                  id="messageComposerInput"
-                  placeholder="Type a message…"
-                  autocomplete="off"
-                  maxlength="4000"
-                />
-                <button
-                  type="submit"
-                  id="messageComposerSend"
-                  title="Send message"
-                >
-                  <span class="material-symbols-outlined">send</span>
-                </button>
+                  <span class="material-symbols-outlined">description</span>
+                  <span
+                    class="dash-composer-preview-name"
+                    id="messageAttachPreviewName"
+                  ></span>
+                  <button
+                    type="button"
+                    class="dash-composer-preview-remove"
+                    id="messageAttachClear"
+                    aria-label="Remove attachment"
+                  >
+                    <span class="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <div class="dash-composer-row">
+                  <div
+                    class="dash-composer-attach-wrap"
+                    title="Attach an existing file"
+                  >
+                    <span
+                      class="material-symbols-outlined dash-composer-attach-icon"
+                      >attach_file</span
+                    >
+                    <select
+                      id="messageAttachSelect"
+                      class="dash-message-attach-select"
+                    >
+                      <option value="">Attach</option>
+                    </select>
+                  </div>
+                  <textarea
+                    id="messageComposerInput"
+                    class="dash-composer-textarea"
+                    placeholder="Type a message…"
+                    rows="1"
+                    autocomplete="off"
+                    maxlength="4000"
+                  ></textarea>
+                  <button
+                    type="submit"
+                    id="messageComposerSend"
+                    class="dash-composer-send"
+                    title="Send message"
+                    disabled
+                  >
+                    <span class="material-symbols-outlined">send</span>
+                  </button>
+                </div>
               </form>
             </div>
           </div>
